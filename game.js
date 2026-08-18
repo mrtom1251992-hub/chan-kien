@@ -616,8 +616,6 @@ class Game {
     this.hud = document.getElementById('hud');
     this.levelBadge = document.getElementById('level-badge');
     this.levelDivider = document.getElementById('level-divider');
-    this.levelUpPopup = document.getElementById('level-up-popup');
-    this.levelUpSub = document.getElementById('level-up-sub');
     this.addAntBtn = document.getElementById('add-ant-btn');
     this.drawInstruction = document.getElementById('draw-instruction');
     this.scoreDisplay = document.getElementById('score');
@@ -638,7 +636,6 @@ class Game {
     this.currentLevel = 1;
     this.levelTimer = 0;
     this.levelInterval = 10; // seconds per level in Level Mode
-    this.levelPopupTimer = null;
 
     // Game state
     this.state = STATE.MENU;
@@ -901,16 +898,11 @@ class Game {
     this.addAnt(true);
     this.sound.playLevelUp(this.currentLevel);
 
-    // Show Level Up popup
-    if (this.levelUpPopup) {
-      if (this.levelUpSub) {
-        this.levelUpSub.textContent = `Cấp ${this.currentLevel}: Thêm 1 con kiến mới! (${this.ants.filter(a => !a.escaped).length} kiến)`;
-      }
-      this.levelUpPopup.classList.add('show');
-      clearTimeout(this.levelPopupTimer);
-      this.levelPopupTimer = setTimeout(() => {
-        this.levelUpPopup.classList.remove('show');
-      }, 2400);
+    // Subtle pulse effect on the top HUD badge only (no screen obstruction)
+    if (this.levelBadge) {
+      this.levelBadge.classList.remove('pulse');
+      void this.levelBadge.offsetWidth; // trigger reflow
+      this.levelBadge.classList.add('pulse');
     }
 
     this.updateHUD();
