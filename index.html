@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <meta name="description" content="Chăn Kiến - Trò chơi vẽ vòng tròn và giữ kiến bên trong. Chơi trên web và điện thoại!">
+  <meta name="theme-color" content="#0a0e27">
+  <title>🐜 Chăn Kiến - Ant Herding Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- HUD Overlay -->
+    <div id="hud" class="glass-panel">
+      <div id="score" class="hud-item">⏱ 00:00</div>
+      <div class="hud-divider"></div>
+      <div id="ant-count" class="hud-item">🐜 × 0</div>
+    </div>
+
+    <!-- Add Ant FAB -->
+    <button id="add-ant-btn" aria-label="Thêm kiến">
+      <span class="fab-icon">➕</span>
+      <span class="fab-label">Thêm kiến</span>
+    </button>
+
+    <!-- Drawing Instruction -->
+    <div id="draw-instruction">
+      <div class="instruction-icon">✏️</div>
+      <div class="instruction-text">Vẽ một vòng khép kín trên màn hình!</div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="overlay visible">
+      <div class="overlay-content">
+        <h1 class="game-title">
+          <span class="title-emoji">🐜</span>
+          <span class="title-text">Chăn Kiến</span>
+        </h1>
+        <p class="game-subtitle">Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng</p>
+        <div class="rules-box glass-panel">
+          <div class="rule"><span class="rule-num">1</span> Vẽ một vòng khép kín</div>
+          <div class="rule"><span class="rule-num">2</span> Chạm vào kiến để đổi hướng</div>
+          <div class="rule"><span class="rule-num">3</span> Đừng để kiến thoát ra!</div>
+        </div>
+        <button id="start-btn" class="btn-primary">
+          <span>Bắt Đầu</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="overlay">
+      <div class="overlay-content">
+        <!-- Taunting Ant Face -->
+        <div class="taunt-container">
+          <div class="taunt-ant">
+            <div class="taunt-antenna left"></div>
+            <div class="taunt-antenna right"></div>
+            <div class="taunt-head">
+              <div class="taunt-eye left"><div class="taunt-pupil"></div></div>
+              <div class="taunt-eye right"><div class="taunt-pupil"></div></div>
+              <div class="taunt-mouth">
+                <div class="taunt-tongue"></div>
+              </div>
+            </div>
+          </div>
+          <div class="taunt-text">Lêu lêu! 😝</div>
+        </div>
+        <h2 class="gameover-title">Kiến Thoát Rồi!</h2>
+        <div class="score-card glass-panel">
+          <div class="score-row">
+            <span class="score-label">⏱ Thời gian</span>
+            <span id="final-score" class="score-value">00:00</span>
+          </div>
+          <div class="score-row">
+            <span class="score-label">🐜 Số kiến</span>
+            <span id="final-ants" class="score-value">0</span>
+          </div>
+          <div class="score-divider"></div>
+          <div class="score-row highlight">
+            <span class="score-label">🏆 Kỷ lục</span>
+            <span id="high-score" class="score-value">00:00</span>
+          </div>
+        </div>
+        <button id="restart-btn" class="btn-primary">
+          <span>Chơi Lại</span>
+          <span class="btn-arrow">↻</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

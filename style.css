@@ -1,0 +1,755 @@
+/* ============================================
+   CHĂN KIẾN - ANT HERDING GAME
+   Design System & Styles
+   ============================================ */
+
+/* --- CSS Custom Properties --- */
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #0d1333;
+  --bg-accent: #1a0a2e;
+  --neon-green: #00ff88;
+  --neon-green-dim: #00cc6a;
+  --neon-glow: rgba(0, 255, 136, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  --text-primary: #f0f0f0;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-accent: #00ff88;
+  --danger: #ff4d6a;
+  --gold: #ffd700;
+  --font-main: 'Outfit', sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.35s ease;
+  --transition-slow: 0.6s ease;
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-main);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: none;
+}
+
+/* --- Game Container --- */
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* --- Glass Panel Utility --- */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px var(--glass-shadow);
+}
+
+/* --- HUD --- */
+#hud {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-radius: var(--radius-xl);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+#hud.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.hud-item {
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.hud-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--glass-border);
+}
+
+/* --- Add Ant FAB --- */
+#add-ant-btn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(0, 255, 136, 0.3);
+  border-radius: var(--radius-xl);
+  color: var(--neon-green);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--transition-normal);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.1), 0 4px 16px var(--glass-shadow);
+}
+
+#add-ant-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  animation: fabEntrance 0.5s ease backwards;
+}
+
+#add-ant-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 255, 136, 0.1));
+  border-color: rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), 0 4px 20px var(--glass-shadow);
+  transform: scale(1.05);
+}
+
+#add-ant-btn:active {
+  transform: scale(0.95);
+}
+
+.fab-icon {
+  font-size: 1.2rem;
+}
+
+/* --- Drawing Instruction --- */
+#draw-instruction {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+  z-index: 10;
+}
+
+#draw-instruction.visible {
+  opacity: 1;
+  animation: instructionPulse 2s ease-in-out infinite;
+}
+
+.instruction-icon {
+  font-size: 3rem;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+.instruction-text {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Overlay Screens (Start & Game Over) --- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+}
+
+.overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(10, 14, 39, 0.7), rgba(10, 14, 39, 0.95));
+}
+
+.overlay-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px;
+  max-width: 420px;
+  width: 90%;
+  animation: slideUp 0.6s ease backwards;
+}
+
+.overlay.visible .overlay-content {
+  animation: slideUp 0.6s ease backwards;
+}
+
+/* --- Start Screen --- */
+.game-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.title-emoji {
+  font-size: 3.5rem;
+  animation: antWalk 1s ease-in-out infinite;
+}
+
+.title-text {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--neon-green), #00ccff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.3));
+}
+
+.game-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.rules-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 24px;
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.rule-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.05));
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: var(--neon-green);
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* --- Primary Button --- */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  background: linear-gradient(135deg, var(--neon-green), var(--neon-green-dim));
+  border: none;
+  border-radius: var(--radius-xl);
+  color: #0a0e27;
+  font-family: var(--font-main);
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn-arrow {
+  font-size: 1.3rem;
+  transition: transform var(--transition-fast);
+}
+
+.btn-primary:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* --- Taunting Ant Face --- */
+.taunt-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: tauntBounceIn 0.6s ease backwards 0.1s;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 20px;
+  transition: transform 0.2s ease;
+}
+
+.taunt-container:hover {
+  transform: scale(1.05);
+}
+
+.taunt-container:active {
+  transform: scale(0.95);
+}
+
+.taunt-container.taunt-pop .taunt-ant {
+  animation: tauntCrazyWobble 0.4s ease-in-out infinite alternate;
+}
+
+.taunt-container.taunt-pop .taunt-tongue {
+  animation: tauntTongueCrazy 0.2s ease-in-out infinite alternate;
+}
+
+@keyframes tauntCrazyWobble {
+  0% { transform: rotate(-18deg) scale(1.1); }
+  100% { transform: rotate(18deg) scale(1.1); }
+}
+
+@keyframes tauntTongueCrazy {
+  0% { height: 20px; bottom: -15px; }
+  100% { height: 35px; bottom: -28px; }
+}
+
+.taunt-ant {
+  position: relative;
+  width: 120px;
+  height: 130px;
+  animation: tauntWobble 0.6s ease-in-out infinite;
+}
+
+.taunt-head {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 90px;
+  background: radial-gradient(ellipse at 40% 35%, #5a3a25, #2d1810);
+  border-radius: 50% 50% 45% 45%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 -4px 10px rgba(0,0,0,0.3);
+}
+
+.taunt-eye {
+  position: absolute;
+  top: 24px;
+  width: 24px;
+  height: 26px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.taunt-eye.left { left: 18px; }
+.taunt-eye.right { right: 18px; }
+
+.taunt-pupil {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 14px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  animation: tauntLookAround 2s ease-in-out infinite;
+}
+
+.taunt-pupil::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.taunt-mouth {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 16px;
+  background: #1a0808;
+  border-radius: 0 0 50% 50%;
+  overflow: visible;
+}
+
+.taunt-tongue {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 24px;
+  background: linear-gradient(180deg, #ff6b8a, #ff4d6a);
+  border-radius: 40% 40% 50% 50%;
+  animation: tauntTongue 0.8s ease-in-out infinite;
+  box-shadow: 0 2px 6px rgba(255, 77, 106, 0.3);
+}
+
+.taunt-tongue::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+.taunt-antenna {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  height: 40px;
+  background: #3d2b1f;
+  border-radius: 2px;
+  transform-origin: bottom center;
+}
+
+.taunt-antenna.left {
+  left: 28px;
+  transform: rotate(-25deg);
+  animation: tauntAntennaLeft 0.8s ease-in-out infinite;
+}
+
+.taunt-antenna.right {
+  right: 28px;
+  transform: rotate(25deg);
+  animation: tauntAntennaRight 0.8s ease-in-out infinite;
+}
+
+.taunt-antenna::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  background: #3d2b1f;
+  border-radius: 50%;
+}
+
+.taunt-text {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  animation: tauntTextBounce 0.5s ease-in-out infinite alternate;
+  letter-spacing: 2px;
+}
+
+@keyframes tauntWobble {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+
+@keyframes tauntTongue {
+  0%, 100% { height: 24px; bottom: -18px; }
+  50% { height: 30px; bottom: -24px; }
+}
+
+@keyframes tauntLookAround {
+  0%, 100% { transform: translateX(-70%); }
+  50% { transform: translateX(-30%); }
+}
+
+@keyframes tauntAntennaLeft {
+  0%, 100% { transform: rotate(-25deg); }
+  50% { transform: rotate(-40deg); }
+}
+
+@keyframes tauntAntennaRight {
+  0%, 100% { transform: rotate(25deg); }
+  50% { transform: rotate(40deg); }
+}
+
+@keyframes tauntBounceIn {
+  0% { opacity: 0; transform: scale(0.3) translateY(30px); }
+  50% { transform: scale(1.15) translateY(-5px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes tauntTextBounce {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-4px) scale(1.05); }
+}
+
+.gameover-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--danger);
+  text-shadow: 0 0 30px rgba(255, 77, 106, 0.3);
+}
+
+.score-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.score-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.score-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-divider {
+  height: 1px;
+  background: var(--glass-border);
+}
+
+.score-row.highlight .score-value {
+  color: var(--gold);
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.new-record {
+  display: none;
+  font-size: 0.8rem;
+  color: var(--gold);
+  font-weight: 600;
+  animation: newRecordPulse 1s ease-in-out infinite;
+}
+
+.new-record.visible {
+  display: inline;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fabEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes instructionPulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes antWalk {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes escapeAnt {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  50% { transform: translateX(30px) scale(1.2); opacity: 1; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes newRecordPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, -2px); }
+  20% { transform: translate(3px, 2px); }
+  30% { transform: translate(-2px, 3px); }
+  40% { transform: translate(2px, -3px); }
+  50% { transform: translate(-1px, 1px); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .title-text {
+    font-size: 2.2rem;
+  }
+
+  .title-emoji {
+    font-size: 2.5rem;
+  }
+
+  .overlay-content {
+    padding: 28px 20px;
+    gap: 20px;
+  }
+
+  .game-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .rules-box {
+    padding: 16px 18px;
+    gap: 10px;
+  }
+
+  .rule {
+    font-size: 0.85rem;
+  }
+
+  .btn-primary {
+    padding: 14px 32px;
+    font-size: 1.05rem;
+  }
+
+  #hud {
+    top: 12px;
+    padding: 8px 18px;
+    gap: 8px;
+  }
+
+  .hud-item {
+    font-size: 0.95rem;
+  }
+
+  #add-ant-btn {
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+
+  .instruction-icon {
+    font-size: 2.5rem;
+  }
+
+  .instruction-text {
+    font-size: 1.1rem;
+  }
+
+  .gameover-title {
+    font-size: 1.6rem;
+  }
+
+  .gameover-emoji {
+    font-size: 3rem;
+  }
+
+  .score-card {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .title-text {
+    font-size: 1.8rem;
+  }
+
+  .overlay-content {
+    padding: 20px 16px;
+  }
+
+  #add-ant-btn {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+/* --- Utility --- */
+.hidden {
+  display: none !important;
+}
