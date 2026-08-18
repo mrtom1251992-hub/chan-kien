@@ -2,25 +2,24 @@
 
 Một trò chơi web tương tác vui nhộn và gây nghiện, hỗ trợ đa nền tảng (PC, Mobile, Tablet).
 
-🎮 **Luật chơi đơn giản**:
-1. Dùng chuột hoặc ngón tay vẽ một vòng tròn khép kín trên màn hình.
-2. Con kiến sẽ xuất hiện bên trong vòng.
-3. Chạm / Click vào đầu kiến để đổi hướng đi của nó.
-4. Nhấn **➕ Thêm kiến** để tự thử thách bản thân với nhiều con kiến cùng lúc!
-5. Cố gắng giữ kiến không thoát ra ngoài. Nếu để kiến thoát, nó sẽ **lè lưỡi "Lêu lêu"** trêu bạn! 😝
+🎮 **2 Chế độ chơi hấp dẫn**:
+- 🎯 **Chế độ Tự Do (Free Mode)**: Tự tay nhấn nút **➕ Thêm kiến** bất cứ lúc nào để tự thử thách bản thân với 2, 3, 5, 10... con kiến!
+- 🏆 **Chế độ Cấp Độ (Level Mode)**: Tự động tăng cấp mỗi 10 giây và thêm kiến mới liên tục! Tốc độ kiến tăng dần theo cấp, có banner thông báo Level Up hoành tráng & giọng lồng tiếng cổ vũ!
 
 ---
 
 ## ✨ Tính năng nổi bật
 
-- 🎨 **Thiết kế hiện đại**: Dark theme, neon glow, glassmorphism, responsive toàn diện.
+- 🎛️ **Chuyển đổi chế độ chơi mượt mà**: Tự Do hoặc Cấp Độ ngay tại màn hình bắt đầu.
+- 🎨 **Thiết kế hiện đại**: Dark theme, neon glow, glassmorphism, responsive toàn diện cho PC & Mobile.
 - 📱 **Hỗ trợ cảm ứng**: Tối ưu hóa mượt mà cho màn hình cảm ứng điện thoại & tablet (`touch-action: none`).
 - 🔊 **Âm thanh & Giọng nói bựa**: 
   - Hiệu ứng phì bọt mép (Raspberry `Phè phè...`).
   - Giọng đọc hoạt hình the thé chế giễu bằng tiếng Việt (`SpeechSynthesis`).
   - Giai điệu trêu ngươi cổ điển `Na-na-na-na-boo-boo`.
-- 🏆 **Lưu kỷ lục**: Tự động lưu High Score (thời gian sống sót lâu nhất & số lượng kiến) vào `localStorage`.
-- ⚡ **Siêu nhẹ**: 100% Vanilla HTML5 Canvas, CSS3, JavaScript thuần (không cần thư viện ngoài, không cần backend).
+  - Nhạc hiệu chiến thắng Level Up khi vượt ải thành công!
+- 🏆 **Lưu kỷ lục riêng biệt**: Tự động lưu High Score cho từng chế độ vào `localStorage`.
+- ⚡ **Siêu nhẹ**: 100% Vanilla HTML5 Canvas, CSS3, JavaScript thuần.
 
 ---
 

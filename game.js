@@ -293,6 +293,35 @@ class SoundManager {
     }
   }
 
+  // Victory Level Up Fanfare
+  playLevelUp(level) {
+    if (!this.ctx) return;
+    const notes = [523, 659, 784, 1046]; // C5, E5, G5, C6
+    const timing = [0, 0.12, 0.24, 0.38];
+    notes.forEach((freq, i) => {
+      const s = this._createOsc('triangle', freq, 0.25, 0.3);
+      if (s) {
+        const t = s.t + timing[i];
+        s.osc.frequency.setValueAtTime(freq, t);
+        s.gain.gain.setValueAtTime(0.001, t);
+        s.gain.gain.linearRampToValueAtTime(0.3, t + 0.02);
+        s.gain.gain.exponentialRampToValueAtTime(0.001, t + (i === 3 ? 0.45 : 0.2));
+        s.osc.start(t);
+        s.osc.stop(t + (i === 3 ? 0.5 : 0.25));
+      }
+    });
+
+    if ('speechSynthesis' in window) {
+      try {
+        const utter = new SpeechSynthesisUtterance(`Cấp ${level}! Cố lên!`);
+        utter.lang = 'vi-VN';
+        utter.pitch = 1.6;
+        utter.rate = 1.3;
+        setTimeout(() => window.speechSynthesis.speak(utter), 400);
+      } catch (e) {}
+    }
+  }
+
   // Full bựa taunt package: Raspberry + Mocking melody + Voice
   playBuaTaunt() {
     this.playSlideWhistle(0);
@@ -585,16 +614,31 @@ class Game {
     this.startScreen = document.getElementById('start-screen');
     this.gameOverScreen = document.getElementById('game-over-screen');
     this.hud = document.getElementById('hud');
+    this.levelBadge = document.getElementById('level-badge');
+    this.levelDivider = document.getElementById('level-divider');
+    this.levelUpPopup = document.getElementById('level-up-popup');
+    this.levelUpSub = document.getElementById('level-up-sub');
     this.addAntBtn = document.getElementById('add-ant-btn');
     this.drawInstruction = document.getElementById('draw-instruction');
     this.scoreDisplay = document.getElementById('score');
     this.antCountDisplay = document.getElementById('ant-count');
+    this.finalModeEl = document.getElementById('final-mode');
+    this.finalLevelRow = document.getElementById('final-level-row');
+    this.finalLevelEl = document.getElementById('final-level');
     this.finalScoreEl = document.getElementById('final-score');
     this.finalAntsEl = document.getElementById('final-ants');
     this.highScoreEl = document.getElementById('high-score');
+    this.modeDescEl = document.getElementById('mode-desc');
 
     // Sound
     this.sound = new SoundManager();
+
+    // Game Mode & Level State
+    this.mode = 'free'; // 'free' or 'level'
+    this.currentLevel = 1;
+    this.levelTimer = 0;
+    this.levelInterval = 10; // seconds per level in Level Mode
+    this.levelPopupTimer = null;
 
     // Game state
     this.state = STATE.MENU;
@@ -615,8 +659,8 @@ class Game {
     this.pulseTime = 0;
     this.gameOverDelay = 0;
 
-    // High score
-    this.highScore = this.loadHighScore();
+    // High scores
+    this.highScores = this.loadHighScore();
 
     // Setup
     this.resizeCanvas();
@@ -705,6 +749,14 @@ class Game {
       this.onPointerUp();
     }, { passive: false });
 
+    // Mode Switcher Buttons
+    document.querySelectorAll('.mode-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const mode = btn.dataset.mode;
+        this.setGameMode(mode);
+      });
+    });
+
     // Buttons & Interactive
     document.getElementById('start-btn').addEventListener('click', () => this.startGame());
     document.getElementById('restart-btn').addEventListener('click', () => this.restartGame());
@@ -730,7 +782,6 @@ class Game {
         const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
         if (tauntText) tauntText.textContent = randomPhrase;
         
-        // Add wiggle pop animation class
         tauntContainer.classList.remove('taunt-pop');
         void tauntContainer.offsetWidth; // trigger reflow
         tauntContainer.classList.add('taunt-pop');
@@ -742,6 +793,21 @@ class Game {
 
     // Prevent context menu on long press
     this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  setGameMode(mode) {
+    this.mode = mode;
+    this.sound.playClick();
+    document.querySelectorAll('.mode-btn').forEach((b) => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    if (this.modeDescEl) {
+      if (mode === 'level') {
+        this.modeDescEl.textContent = 'Chế độ Cấp Độ: Cứ mỗi 10 giây tăng 1 cấp và thêm 1 con kiến!';
+      } else {
+        this.modeDescEl.textContent = 'Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích';
+      }
+    }
   }
 
   getCanvasPos(clientX, clientY) {
@@ -780,20 +846,18 @@ class Game {
 
       // Validate: centroid should be inside the polygon
       if (!isPointInPolygon(this.centroid.x, this.centroid.y, this.enclosure)) {
-        // Fallback: use the average of a few inner points
         this.centroid = this.findSafeCenter();
       }
 
       this.sound.playDrawComplete();
       this.setState(STATE.PLAYING);
-      this.addAnt();
+      this.addAnt(false);
     } else {
       this.currentPath = [];
     }
   }
 
   findSafeCenter() {
-    // Try the centroid first, then try center of bounding box
     const xs = this.enclosure.map(p => p.x);
     const ys = this.enclosure.map(p => p.y);
     const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
@@ -801,7 +865,6 @@ class Game {
     if (isPointInPolygon(cx, cy, this.enclosure)) {
       return { x: cx, y: cy };
     }
-    // Fallback: use the centroid anyway
     return polygonCentroid(this.enclosure);
   }
 
@@ -816,13 +879,40 @@ class Game {
     }
   }
 
-  addAnt() {
+  addAnt(isLevelUp = false) {
     if (this.state !== STATE.PLAYING) return;
     const ant = new Ant(this.centroid.x, this.centroid.y, this.antIdCounter++);
+    // In higher levels, slight speed increase
+    if (this.mode === 'level' && this.currentLevel > 1) {
+      ant.speed += (this.currentLevel - 1) * 3.5;
+    }
     this.ants.push(ant);
     this.maxAnts = Math.max(this.maxAnts, this.ants.length);
     this.ripples.push(new Ripple(this.centroid.x, this.centroid.y));
-    this.sound.playAddAnt();
+    if (!isLevelUp) {
+      this.sound.playAddAnt();
+    }
+    this.updateHUD();
+  }
+
+  levelUp() {
+    this.currentLevel++;
+    this.levelTimer = 0;
+    this.addAnt(true);
+    this.sound.playLevelUp(this.currentLevel);
+
+    // Show Level Up popup
+    if (this.levelUpPopup) {
+      if (this.levelUpSub) {
+        this.levelUpSub.textContent = `Cấp ${this.currentLevel}: Thêm 1 con kiến mới! (${this.ants.filter(a => !a.escaped).length} kiến)`;
+      }
+      this.levelUpPopup.classList.add('show');
+      clearTimeout(this.levelPopupTimer);
+      this.levelPopupTimer = setTimeout(() => {
+        this.levelUpPopup.classList.remove('show');
+      }, 2400);
+    }
+
     this.updateHUD();
   }
 
@@ -843,9 +933,12 @@ class Game {
     this.particles = [];
     this.score = 0;
     this.maxAnts = 0;
+    this.currentLevel = 1;
+    this.levelTimer = 0;
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
+    if (this.levelUpPopup) this.levelUpPopup.classList.remove('show');
     this.createMenuAnts();
     this.setState(STATE.MENU);
   }
@@ -856,13 +949,17 @@ class Game {
 
     if (newState === STATE.PLAYING) {
       this.score = 0;
+      this.currentLevel = 1;
+      this.levelTimer = 0;
     }
 
     if (newState === STATE.GAME_OVER) {
       this.gameOverFlash = 0.6;
       this.gameOverDelay = 1.0; // seconds before showing modal
 
-      // Sound effects: Buzzy tone + Raspberry + Mocking melody + Funny voice "Lêu lêu"
+      if (this.levelUpPopup) this.levelUpPopup.classList.remove('show');
+
+      // Sound effects
       this.sound.playGameOver();
       this.sound.playBuaTaunt();
 
@@ -875,16 +972,36 @@ class Game {
       }
 
       // Check & save high score
-      const isNewRecord = this.score > this.highScore.time;
+      const hs = this.highScores[this.mode] || { time: 0, ants: 0, level: 1 };
+      const isNewRecord = this.score > hs.time;
       if (isNewRecord) {
-        this.highScore = { time: this.score, ants: this.maxAnts };
+        this.highScores[this.mode] = {
+          time: this.score,
+          ants: this.maxAnts,
+          level: this.currentLevel
+        };
         this.saveHighScore();
       }
 
       // Update game over UI
+      if (this.finalModeEl) {
+        this.finalModeEl.textContent = this.mode === 'level' ? '🏆 Cấp Độ' : '🎯 Tự Do';
+      }
+      if (this.finalLevelRow) {
+        this.finalLevelRow.classList.toggle('hidden', this.mode !== 'level');
+      }
+      if (this.finalLevelEl) {
+        this.finalLevelEl.textContent = `Cấp ${this.currentLevel}`;
+      }
       this.finalScoreEl.textContent = this.formatTime(this.score);
       this.finalAntsEl.textContent = `${this.maxAnts}`;
-      this.highScoreEl.textContent = `${this.formatTime(this.highScore.time)} (${this.highScore.ants} kiến)`;
+
+      const activeHs = this.highScores[this.mode];
+      if (this.mode === 'level') {
+        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (Cấp ${activeHs.level || 1})`;
+      } else {
+        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${activeHs.ants} kiến)`;
+      }
     }
   }
 
@@ -893,13 +1010,27 @@ class Game {
     this.gameOverScreen.classList.toggle('visible',
       this.state === STATE.GAME_OVER && this.gameOverDelay <= 0);
     this.hud.classList.toggle('visible', this.state === STATE.PLAYING);
-    this.addAntBtn.classList.toggle('visible', this.state === STATE.PLAYING);
+    
+    // Add ant FAB only visible in Free Mode
+    this.addAntBtn.classList.toggle('visible', this.state === STATE.PLAYING && this.mode === 'free');
+    
+    // Level Badge in HUD only visible in Level Mode
+    if (this.levelBadge) {
+      this.levelBadge.classList.toggle('hidden', this.mode !== 'level');
+    }
+    if (this.levelDivider) {
+      this.levelDivider.classList.toggle('hidden', this.mode !== 'level');
+    }
+
     this.drawInstruction.classList.toggle('visible', this.state === STATE.DRAWING);
   }
 
   updateHUD() {
     this.scoreDisplay.textContent = `⏱ ${this.formatTime(this.score)}`;
     this.antCountDisplay.textContent = `🐜 × ${this.ants.filter(a => !a.escaped).length}`;
+    if (this.levelBadge) {
+      this.levelBadge.textContent = `🏆 Cấp ${this.currentLevel}`;
+    }
   }
 
   formatTime(sec) {
@@ -910,15 +1041,18 @@ class Game {
 
   loadHighScore() {
     try {
-      const data = localStorage.getItem('chan-kien-hs');
+      const data = localStorage.getItem('chan-kien-hs-v2');
       if (data) return JSON.parse(data);
     } catch (e) { /* ignore */ }
-    return { time: 0, ants: 0 };
+    return {
+      free: { time: 0, ants: 0, level: 1 },
+      level: { time: 0, ants: 0, level: 1 }
+    };
   }
 
   saveHighScore() {
     try {
-      localStorage.setItem('chan-kien-hs', JSON.stringify(this.highScore));
+      localStorage.setItem('chan-kien-hs-v2', JSON.stringify(this.highScores));
     } catch (e) { /* ignore */ }
   }
 
@@ -1035,6 +1169,15 @@ class Game {
     // --- PLAYING ---
     if (this.state === STATE.PLAYING) {
       this.score += dt;
+
+      // Level Mode progression
+      if (this.mode === 'level') {
+        this.levelTimer += dt;
+        if (this.levelTimer >= this.levelInterval) {
+          this.levelUp();
+        }
+      }
+
       this.updateHUD();
 
       for (const ant of this.ants) {

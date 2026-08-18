@@ -18,9 +18,17 @@
 
     <!-- HUD Overlay -->
     <div id="hud" class="glass-panel">
+      <div id="level-badge" class="hud-item level-badge hidden">🏆 Cấp 1</div>
+      <div id="level-divider" class="hud-divider hidden"></div>
       <div id="score" class="hud-item">⏱ 00:00</div>
       <div class="hud-divider"></div>
       <div id="ant-count" class="hud-item">🐜 × 0</div>
+    </div>
+
+    <!-- Level Up Banner Popup -->
+    <div id="level-up-popup" class="level-up-popup">
+      <div class="level-up-title">⚡ LEVEL UP! ⚡</div>
+      <div id="level-up-sub" class="level-up-sub">Cấp 2: Thêm 1 con kiến mới! 🐜</div>
     </div>
 
     <!-- Add Ant FAB -->
@@ -43,6 +51,22 @@
           <span class="title-text">Chăn Kiến</span>
         </h1>
         <p class="game-subtitle">Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng</p>
+
+        <!-- Mode Switcher -->
+        <div class="mode-switcher-container">
+          <div class="mode-switcher glass-panel">
+            <button type="button" class="mode-btn active" data-mode="free">
+              <span class="mode-icon">🎯</span>
+              <span class="mode-text">Tự Do</span>
+            </button>
+            <button type="button" class="mode-btn" data-mode="level">
+              <span class="mode-icon">🏆</span>
+              <span class="mode-text">Cấp Độ</span>
+            </button>
+          </div>
+          <div id="mode-desc" class="mode-desc">Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích</div>
+        </div>
+
         <div class="rules-box glass-panel">
           <div class="rule"><span class="rule-num">1</span> Vẽ một vòng khép kín</div>
           <div class="rule"><span class="rule-num">2</span> Chạm vào kiến để đổi hướng</div>
@@ -75,6 +99,14 @@
         </div>
         <h2 class="gameover-title">Kiến Thoát Rồi!</h2>
         <div class="score-card glass-panel">
+          <div class="score-row">
+            <span class="score-label">🎮 Chế độ</span>
+            <span id="final-mode" class="score-value">Tự Do</span>
+          </div>
+          <div id="final-level-row" class="score-row hidden">
+            <span class="score-label">⭐ Cấp đạt được</span>
+            <span id="final-level" class="score-value">Cấp 1</span>
+          </div>
           <div class="score-row">
             <span class="score-label">⏱ Thời gian</span>
             <span id="final-score" class="score-value">00:00</span>
