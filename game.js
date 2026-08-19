@@ -59,42 +59,6 @@ const TRANSLATIONS = {
           "Lêu lêu! Có đàn bò cũng không giữ nổi!",
           "Ùm bòooo! Bò tự do rồi nè!"
         ]
-      },
-      person: {
-        title: "Chăn Người",
-        emoji: "👫",
-        subtitle: "Thành phố đêm · Giữ con xa tệ nạn · Đánh mông đổi hướng",
-        btnName: "Chăn Người",
-        addBtn: "Thêm người",
-        rule1: "Các bạn trẻ lang thang trong thành phố",
-        rule2: "Chạm để đánh mông khi gần tệ nạn 👋",
-        rule3: "Đừng để ai rơi vào tệ nạn!",
-        gameOver: "Sa Ngã Tệ Nạn Rồi! 😱",
-        countLabel: "Số người",
-        unit: "người",
-        drawInstruction: "",
-        tapTaunts: [
-          "Á đau mông! 👋", "Đi đâu thế! 🏃", "Về nhà đi! 🏠", "Đừng vào đó! 🚫",
-          "Ba mẹ biết giờ! 😱", "Quay xe ngay! 🚗💨", "Hư quá! 😤", "Chạy đi nào! 💃",
-          "Ối đau quá! 😵", "Thôi thôi đi nào! 🙏", "Cha mẹ khóc giờ! 😢",
-          "Ngoan nào! 👋", "Không được vào! 🚫"
-        ],
-        taunts: [
-          "Hư quá! Sa ngã tệ nạn rồi!",
-          "Lêu lêu! Chăn người mà để sa ngã!",
-          "Cha mẹ buồn lắm đó! Hư quá!",
-          "Đồ gà! Một đứa cũng giữ không nổi!",
-          "Tệ nạn xã hội nè! Lêu lêu!"
-        ],
-        safeMessages: [
-          "📚 Học giỏi!", "🌳 Thư giãn lành mạnh!", "🏋️ Khỏe mạnh!",
-          "🎵 Năng khiếu!", "⛪ Tâm linh!", "🏫 Chăm ngoan!"
-        ],
-        dangerMessages: [
-          "🎰 Cờ bạc! NGUY HIỂM!", "🍺 Nhậu nhẹt! NGUY HIỂM!",
-          "💊 Chất cấm! NGUY HIỂM!", "📱 Nghiện game! NGUY HIỂM!",
-          "🚬 Thuốc lá! NGUY HIỂM!"
-        ]
       }
     },
     modeFree: "Tự Do",
@@ -184,42 +148,6 @@ const TRANSLATIONS = {
           "Na-na-na boo-boo! Cows ran away!",
           "Too slow! Cows are too fast for you!",
           "Haha! You let the whole herd escape!"
-        ]
-      },
-      person: {
-        title: "People Herder",
-        emoji: "👫",
-        subtitle: "Night city · Keep youth away from vice · Spank to redirect",
-        btnName: "People Herder",
-        addBtn: "Add Person",
-        rule1: "Young people roam around the city",
-        rule2: "Tap to spank when near danger zones 👋",
-        rule3: "Don't let anyone fall into vice!",
-        gameOver: "Fell Into Vice! 😱",
-        countLabel: "People Count",
-        unit: "people",
-        drawInstruction: "",
-        tapTaunts: [
-          "Ouch my butt! 👋", "Where are you going! 🏃", "Go home! 🏠", "Don't go there! 🚫",
-          "Mom will know! 😱", "U-Turn now! 🚗💨", "Bad kid! 😤", "Run away! 💃",
-          "That hurts! 😵", "Please stop! 🙏", "Parents will cry! 😢",
-          "Be good! 👋", "Not allowed! 🚫"
-        ],
-        taunts: [
-          "Bad kid! Fell into vice!",
-          "Na-na-na! Can't even keep one safe!",
-          "Parents are disappointed!",
-          "Too slow! Someone fell into vice!",
-          "Social issues! Na-na-na!"
-        ],
-        safeMessages: [
-          "📚 Studying!", "🌳 Healthy fun!", "🏋️ Working out!",
-          "🎵 Music class!", "⛪ Spiritual!", "🏫 Good student!"
-        ],
-        dangerMessages: [
-          "🎰 Gambling! DANGER!", "🍺 Drinking! DANGER!",
-          "💊 Drugs! DANGER!", "📱 Game addict! DANGER!",
-          "🚬 Smoking! DANGER!"
         ]
       }
     },
@@ -592,11 +520,6 @@ class SoundManager {
       this.playRaspberry(0.3);
       this.playMockingMelody(0.55);
       this.playVoiceTaunt(null, 'cow');
-    } else if (animalType === 'person') {
-      this.playSpank();
-      this.playRaspberry(0.2);
-      this.playMockingMelody(0.45);
-      this.playVoiceTaunt(null, 'person');
     } else {
       this.playSlideWhistle(0);
       this.playRaspberry(0.25);
@@ -618,95 +541,8 @@ class SoundManager {
   playAnimalTap(animalType, phrase = null) {
     if (animalType === 'cow') {
       this.playCowMoo(phrase);
-    } else if (animalType === 'person') {
-      this.playSpank(phrase);
     } else {
       this.playAntSqueak(phrase);
-    }
-  }
-
-  playSpank(phrase = null) {
-    if (!this.ctx) return;
-    const t = this.ctx.currentTime;
-    
-    // Slap sound (noise burst)
-    try {
-      const bufferSize = Math.floor(this.ctx.sampleRate * 0.08);
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.2));
-      }
-      const noise = this.ctx.createBufferSource();
-      noise.buffer = buffer;
-      
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1400, t);
-      
-      const noiseGain = this.ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.35, t);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-      
-      noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(this.ctx.destination);
-      noise.start(t);
-    } catch (e) {}
-
-    // Pop tonal thump
-    const s = this._createOsc('sine', 380, 0.12, 0.35);
-    if (s) {
-      s.osc.frequency.setValueAtTime(420, s.t);
-      s.osc.frequency.exponentialRampToValueAtTime(110, s.t + 0.1);
-      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.12);
-      s.osc.start(s.t);
-      s.osc.stop(s.t + 0.12);
-    }
-
-    if (phrase && Math.random() < 0.45 && 'speechSynthesis' in window) {
-      try {
-        const cleanPhrase = phrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!?']/g, '').trim();
-        if (cleanPhrase) {
-          const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
-          const utter = new SpeechSynthesisUtterance(cleanPhrase);
-          utter.lang = currentTrans.tauntVoiceLang;
-          utter.pitch = 1.45;
-          utter.rate = 1.4;
-          utter.volume = 1.0;
-          window.speechSynthesis.speak(utter);
-        }
-      } catch (e) {}
-    }
-  }
-
-  playSafeZone() {
-    if (!this.ctx) return;
-    const notes = [523, 659, 784, 1046];
-    const t = this.ctx.currentTime;
-    notes.forEach((freq, idx) => {
-      const s = this._createOsc('triangle', freq, 0.18, 0.12);
-      if (s) {
-        const startT = t + idx * 0.05;
-        s.osc.frequency.setValueAtTime(freq, startT);
-        s.gain.gain.setValueAtTime(0.001, startT);
-        s.gain.gain.linearRampToValueAtTime(0.18, startT + 0.02);
-        s.gain.gain.exponentialRampToValueAtTime(0.001, startT + 0.18);
-        s.osc.start(startT);
-        s.osc.stop(startT + 0.2);
-      }
-    });
-  }
-
-  playDangerWarning() {
-    if (!this.ctx) return;
-    const s = this._createOsc('sawtooth', 320, 0.12, 0.15);
-    if (s) {
-      s.osc.frequency.setValueAtTime(480, s.t);
-      s.osc.frequency.linearRampToValueAtTime(240, s.t + 0.12);
-      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.12);
-      s.osc.start(s.t);
-      s.osc.stop(s.t + 0.12);
     }
   }
 
@@ -1206,529 +1042,7 @@ class Bird {
 }
 
 // ============================================
-// CITY SPOT CLASS (Safe & Danger Zones 🏙️)
-// ============================================
-
-const CITY_SPOTS = {
-  safe: [
-    { id: 'library', emoji: '📚', name: 'Thư viện', nameEn: 'Library' },
-    { id: 'park', emoji: '🌳', name: 'Công viên', nameEn: 'Park' },
-    { id: 'gym', emoji: '🏋️', name: 'Phòng Gym', nameEn: 'Gym' },
-    { id: 'music', emoji: '🎵', name: 'Lớp nhạc', nameEn: 'Music Class' },
-    { id: 'church', emoji: '⛪', name: 'Nhà thờ', nameEn: 'Church' },
-    { id: 'school', emoji: '🏫', name: 'Trường học', nameEn: 'School' },
-  ],
-  danger: [
-    { id: 'bar', emoji: '🍺', name: 'Quán Bar & Pub', nameEn: 'Bar & Club' },
-    { id: 'casino', emoji: '🎰', name: 'Casino Cờ Bạc', nameEn: 'Casino' },
-    { id: 'drugs', emoji: '💊', name: 'Chất Cấm', nameEn: 'Drugs' },
-    { id: 'game', emoji: '📱', name: 'Quán Net Game', nameEn: 'Game Addict' },
-    { id: 'smoking', emoji: '🚬', name: 'Thuốc Lá & Khói', nameEn: 'Smoking' },
-  ]
-};
-
-class CitySpot {
-  constructor(x, y, type, category) {
-    this.x = x;
-    this.y = y;
-    this.radius = 44;
-    this.type = type; // 'safe' or 'danger'
-    this.category = category; // object from CITY_SPOTS
-    this.alpha = 0;
-    this.targetAlpha = 1.0;
-    this.scale = 0.2;
-    this.targetScale = 1.0;
-    this.alive = true;
-    this.pulsePhase = Math.random() * Math.PI * 2;
-    this.state = 'FADING_IN'; // 'VISIBLE', 'FADING_OUT', 'FADING_IN', 'HIDDEN'
-    this.dangerWarning = 0; // 0-1, glows red when person is near
-    this.animTime = Math.random() * 10;
-  }
-
-  update(dt) {
-    this.pulsePhase += dt * 3.5;
-    this.animTime += dt;
-
-    if (this.state === 'FADING_IN') {
-      this.alpha = Math.min(1.0, this.alpha + dt * 2.2);
-      this.scale = Math.min(1.0, this.scale + dt * 2.8);
-      if (this.alpha >= 1.0) this.state = 'VISIBLE';
-    } else if (this.state === 'FADING_OUT') {
-      this.alpha = Math.max(0, this.alpha - dt * 2.2);
-      this.scale = Math.max(0.1, this.scale - dt * 2.2);
-      if (this.alpha <= 0) {
-        this.state = 'HIDDEN';
-        this.alive = false;
-      }
-    }
-
-    if (this.dangerWarning > 0) {
-      this.dangerWarning = Math.max(0, this.dangerWarning - dt * 1.5);
-    }
-  }
-
-  draw(ctx, lang = 'vi') {
-    if (this.alpha <= 0) return;
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.scale(this.scale, this.scale);
-    ctx.globalAlpha = this.alpha;
-
-    const t = this.animTime;
-    const pulse = Math.sin(this.pulsePhase) * 0.15;
-    const isDanger = this.type === 'danger';
-    const r = this.radius;
-    const catId = this.category.id;
-
-    // --- 1. Ambient Ground Glow & Pulsing Ring ---
-    const glowColor = isDanger
-      ? `rgba(239, 68, 68, ${0.3 + pulse * 0.15 + this.dangerWarning * 0.5})`
-      : `rgba(34, 197, 94, ${0.22 + pulse * 0.12})`;
-    ctx.fillStyle = glowColor;
-    ctx.beginPath();
-    ctx.arc(0, 0, r + 12 + (isDanger ? Math.sin(t * 5) * 4 : 0), 0, Math.PI * 2);
-    ctx.fill();
-
-    // --- 2. Main Platform Background ---
-    const grad = ctx.createRadialGradient(0, 0, 4, 0, 0, r);
-    if (isDanger) {
-      grad.addColorStop(0, '#450a0a');
-      grad.addColorStop(0.7, '#1c0505');
-      grad.addColorStop(1, '#0f0202');
-    } else {
-      grad.addColorStop(0, '#064e3b');
-      grad.addColorStop(0.7, '#022c22');
-      grad.addColorStop(1, '#011c15');
-    }
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fill();
-
-    // --- 3. Dynamic Neon Border ---
-    ctx.strokeStyle = isDanger ? (this.dangerWarning > 0.3 ? '#ff0033' : '#ef4444') : '#22c55e';
-    ctx.lineWidth = 3;
-    ctx.shadowColor = isDanger ? '#ef4444' : '#22c55e';
-    ctx.shadowBlur = 12 + pulse * 8;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // --- 4. CATEGORY-SPECIFIC ANIMATED ATTRACTIONS ---
-    if (catId === 'bar') {
-      // 🍺 QUÁN BAR / PUB: Laser Beams & Dancers
-      this.drawBarDetails(ctx, t, r);
-    } else if (catId === 'casino') {
-      // 🎰 CASINO: Jackpot roulette & Floating Gold
-      this.drawCasinoDetails(ctx, t, r);
-    } else if (catId === 'gym') {
-      // 🏋️ GYM: Bodybuilder lifting weights
-      this.drawGymDetails(ctx, t, r);
-    } else if (catId === 'music') {
-      // 🎵 LỚP NHẠC: Floating Musical Notes
-      this.drawMusicDetails(ctx, t, r);
-    } else if (catId === 'park') {
-      // 🌳 CÔNG VIÊN: Animated tree & leaves
-      this.drawParkDetails(ctx, t, r);
-    } else if (catId === 'library') {
-      // 📚 THƯ VIỆN: Cozy reading lamp & glowing books
-      this.drawLibraryDetails(ctx, t, r);
-    } else if (catId === 'game') {
-      // 📱 QUÁN NET: RGB Gaming Monitors & Gamer
-      this.drawNetDetails(ctx, t, r);
-    } else if (catId === 'smoking') {
-      // 🚬 THUỐC LÁ: Rising smoke clouds
-      this.drawSmokeDetails(ctx, t, r);
-    } else if (catId === 'drugs') {
-      // 💊 CHẤT CẤM: Toxic swirl
-      this.drawDrugsDetails(ctx, t, r);
-    } else {
-      // Default icon
-      ctx.font = '26px serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(this.category.emoji, 0, -4);
-    }
-
-    // --- 5. Name Label Badge Below ---
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-    ctx.beginPath();
-    ctx.roundRect(-42, r - 12, 84, 16, 8);
-    ctx.fill();
-    ctx.strokeStyle = isDanger ? 'rgba(239, 68, 68, 0.6)' : 'rgba(34, 197, 94, 0.6)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.font = 'bold 9px Outfit, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = isDanger ? '#fca5a5' : '#bbf7d0';
-    const label = lang === 'vi' ? this.category.name : this.category.nameEn;
-    ctx.fillText(label, 0, r - 4);
-
-    // --- 6. Danger Warning Pulse Ring ---
-    if (this.dangerWarning > 0 && isDanger) {
-      ctx.strokeStyle = `rgba(255, 30, 30, ${this.dangerWarning * 0.9})`;
-      ctx.lineWidth = 3.5;
-      ctx.setLineDash([6, 6]);
-      ctx.beginPath();
-      ctx.arc(0, 0, r + 16 + Math.sin(this.pulsePhase * 3) * 5, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    ctx.restore();
-  }
-
-  // --- SUB-RENDERERS FOR LIVELY CITY SPOTS ---
-
-  drawBarDetails(ctx, t, r) {
-    // Rotating colorful disco laser beams
-    const beamAngle = t * 2.5;
-    ctx.save();
-    const colors = ['rgba(236, 72, 153, 0.45)', 'rgba(59, 130, 246, 0.45)', 'rgba(234, 179, 8, 0.45)', 'rgba(168, 85, 247, 0.45)'];
-    for (let i = 0; i < 4; i++) {
-      ctx.fillStyle = colors[i];
-      ctx.beginPath();
-      const a = beamAngle + (i * Math.PI) / 2;
-      ctx.moveTo(0, -18);
-      ctx.lineTo(Math.cos(a - 0.25) * (r - 2), Math.sin(a - 0.25) * (r - 2));
-      ctx.lineTo(Math.cos(a + 0.25) * (r - 2), Math.sin(a + 0.25) * (r - 2));
-      ctx.closePath();
-      ctx.fill();
-    }
-
-    // Disco ball at top
-    ctx.fillStyle = '#f8fafc';
-    ctx.beginPath();
-    ctx.arc(0, -18, 6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.fillRect(-2, -26, 4, 8); // wire
-
-    // Neon "BAR" glowing sign
-    ctx.font = 'bold 8px Outfit, sans-serif';
-    ctx.fillStyle = Math.sin(t * 8) > 0 ? '#f43f5e' : '#fb7185';
-    ctx.textAlign = 'center';
-    ctx.fillText('⚡ BAR ⚡', 0, -8);
-
-    // 💃 2 DANCING CHIBI CHARACTERS nhún nhảy!
-    // Left Dancer (Pink dress girl)
-    const bounce1 = Math.abs(Math.sin(t * 7)) * 4;
-    const handWave1 = Math.sin(t * 7) * 5;
-    ctx.save();
-    ctx.translate(-14, 8 - bounce1);
-    // Head
-    ctx.fillStyle = '#fed7aa';
-    ctx.beginPath();
-    ctx.arc(0, -7, 4.5, 0, Math.PI * 2);
-    ctx.fill();
-    // Hair
-    ctx.fillStyle = '#f43f5e';
-    ctx.beginPath();
-    ctx.arc(0, -9, 4.8, 0, Math.PI);
-    ctx.fill();
-    // Body / Dress
-    ctx.fillStyle = '#ec4899';
-    ctx.beginPath();
-    ctx.moveTo(-4, 4);
-    ctx.lineTo(0, -2);
-    ctx.lineTo(4, 4);
-    ctx.closePath();
-    ctx.fill();
-    // Hands up waving!
-    ctx.strokeStyle = '#fed7aa';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(-2, -1); ctx.lineTo(-6, -8 + handWave1);
-    ctx.moveTo(2, -1); ctx.lineTo(6, -8 - handWave1);
-    ctx.stroke();
-    ctx.restore();
-
-    // Right Dancer (Cyan shirt boy)
-    const bounce2 = Math.abs(Math.cos(t * 7)) * 4;
-    const handWave2 = Math.cos(t * 7) * 5;
-    ctx.save();
-    ctx.translate(14, 8 - bounce2);
-    // Head
-    ctx.fillStyle = '#fde68a';
-    ctx.beginPath();
-    ctx.arc(0, -7, 4.5, 0, Math.PI * 2);
-    ctx.fill();
-    // Hair
-    ctx.fillStyle = '#06b6d4';
-    ctx.beginPath();
-    ctx.arc(0, -9, 4.8, 0, Math.PI);
-    ctx.fill();
-    // Shirt
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(-3.5, -2, 7, 6);
-    // Hands up waving!
-    ctx.strokeStyle = '#fde68a';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(-2, -1); ctx.lineTo(-6, -8 - handWave2);
-    ctx.moveTo(2, -1); ctx.lineTo(6, -8 + handWave2);
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.restore();
-  }
-
-  drawCasinoDetails(ctx, t, r) {
-    // Flashing Casino lights
-    const spin = t * 3;
-    ctx.save();
-    // Roulette wheel outer
-    ctx.strokeStyle = '#eab308';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(0, -6, 18, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Wheel spokes
-    for (let i = 0; i < 6; i++) {
-      const a = spin + (i * Math.PI) / 3;
-      ctx.strokeStyle = i % 2 === 0 ? '#ef4444' : '#1e293b';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, -6);
-      ctx.lineTo(Math.cos(a) * 16, -6 + Math.sin(a) * 16);
-      ctx.stroke();
-    }
-
-    // Center 777 or Slot Emoji
-    ctx.font = '16px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🎰', 0, -6);
-
-    // Floating Gold Coins ($$$)
-    const coinY1 = -((t * 22) % 30);
-    const coinY2 = -(((t + 0.5) * 22) % 30);
-    ctx.font = 'bold 9px Outfit, sans-serif';
-    ctx.fillStyle = '#facc15';
-    ctx.fillText('💰', -16, 2 + coinY1 * 0.4);
-    ctx.fillText('💵', 16, 2 + coinY2 * 0.4);
-    ctx.restore();
-  }
-
-  drawGymDetails(ctx, t, r) {
-    // Bodybuilder lifting barbell up and down!
-    const liftPhase = Math.sin(t * 4);
-    const barY = -12 + liftPhase * 6; // up and down
-    ctx.save();
-
-    // Barbell
-    ctx.strokeStyle = '#94a3b8';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(-18, barY);
-    ctx.lineTo(18, barY);
-    ctx.stroke();
-    // Heavy plates on ends
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-21, barY - 6, 4, 12);
-    ctx.fillRect(17, barY - 6, 4, 12);
-    ctx.fillStyle = '#ef4444';
-    ctx.fillRect(-23, barY - 5, 2.5, 10);
-    ctx.fillRect(20.5, barY - 5, 2.5, 10);
-
-    // Chibi Lifter
-    // Head
-    ctx.fillStyle = '#fed7aa';
-    ctx.beginPath();
-    ctx.arc(0, -2, 5, 0, Math.PI * 2);
-    ctx.fill();
-    // Headband
-    ctx.fillStyle = '#ef4444';
-    ctx.fillRect(-5, -5, 10, 2);
-
-    // Muscle arms holding barbell
-    ctx.strokeStyle = '#fed7aa';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(-3, 3); ctx.lineTo(-10, barY);
-    ctx.moveTo(3, 3); ctx.lineTo(10, barY);
-    ctx.stroke();
-
-    // Body tank top
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(-4, 2, 8, 7);
-
-    // Sweat drop when lifting heavy
-    if (liftPhase < -0.3) {
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = '8px sans-serif';
-      ctx.fillText('💦', 8, -4);
-    }
-    ctx.restore();
-  }
-
-  drawMusicDetails(ctx, t, r) {
-    // Floating musical notes dancing up
-    ctx.save();
-    const notes = ['♪', '♫', '♬', '♩'];
-    for (let i = 0; i < 4; i++) {
-      const progress = ((t * 0.8 + i * 0.25) % 1);
-      const ny = 12 - progress * 32;
-      const nx = Math.sin(t * 3 + i * 2) * 14 + (i - 1.5) * 6;
-      ctx.font = 'bold 12px serif';
-      ctx.fillStyle = `rgba(244, 114, 182, ${1.0 - progress * 0.7})`;
-      ctx.fillText(notes[i], nx, ny);
-    }
-
-    // Center piano keyboard / guitar icon
-    ctx.font = '22px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🎵', 0, 2);
-    ctx.restore();
-  }
-
-  drawParkDetails(ctx, t, r) {
-    // Animated lush tree with swaying branches & bench
-    ctx.save();
-    const sway = Math.sin(t * 2) * 3;
-
-    // Tree trunk
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(-3, 0, 6, 12);
-
-    // Tree foliage (swaying crown)
-    ctx.fillStyle = '#22c55e';
-    ctx.beginPath();
-    ctx.arc(sway, -8, 14, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#16a34a';
-    ctx.beginPath();
-    ctx.arc(sway - 5, -5, 9, 0, Math.PI * 2);
-    ctx.arc(sway + 5, -5, 9, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Little flowers / blossoms
-    ctx.fillStyle = '#f472b6';
-    ctx.beginPath();
-    ctx.arc(sway - 4, -9, 2.5, 0, Math.PI * 2);
-    ctx.arc(sway + 6, -7, 2, 0, Math.PI * 2);
-    ctx.arc(sway + 1, -14, 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  drawLibraryDetails(ctx, t, r) {
-    // Cozy library desk with reading lamp & book
-    ctx.save();
-    // Warm lamp cone glow
-    const lampGlow = ctx.createRadialGradient(0, -10, 2, 0, -6, 22);
-    lampGlow.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
-    lampGlow.addColorStop(1, 'transparent');
-    ctx.fillStyle = lampGlow;
-    ctx.beginPath();
-    ctx.arc(0, -6, 22, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Book stack
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(-10, 4, 20, 4);
-    ctx.fillStyle = '#ef4444';
-    ctx.fillRect(-8, 0, 16, 4);
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(-6, -4, 12, 4);
-
-    // Open book on top
-    ctx.font = '20px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('📖', 0, -8);
-
-    // Sparkles
-    const spY = Math.sin(t * 3) * 3;
-    ctx.font = '8px sans-serif';
-    ctx.fillText('✨', 12, -14 + spY);
-    ctx.restore();
-  }
-
-  drawNetDetails(ctx, t, r) {
-    // Gaming Monitor with animated RGB flicker
-    ctx.save();
-    const screenColor = Math.sin(t * 6) > 0 ? '#38bdf8' : '#a855f7';
-    // Monitor screen
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(-12, -14, 24, 16);
-    ctx.fillStyle = screenColor;
-    ctx.fillRect(-10, -12, 20, 12);
-    // Stand
-    ctx.fillStyle = '#475569';
-    ctx.fillRect(-2, 2, 4, 4);
-    ctx.fillRect(-6, 6, 12, 2);
-
-    // Keyboard & RGB Mouse
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-8, 9, 16, 3);
-    ctx.fillStyle = '#f43f5e';
-    ctx.fillRect(9, 9, 3, 3);
-
-    // Game Icon / Pad
-    ctx.font = '10px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🎮', 0, -4);
-    ctx.restore();
-  }
-
-  drawSmokeDetails(ctx, t, r) {
-    // Animated rising smoke clouds from cigarette
-    ctx.save();
-    // Cigarette
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(-10, 6, 14, 3);
-    ctx.fillStyle = '#ea580c';
-    ctx.fillRect(-14, 6, 4, 3);
-    // Glowing red burning tip
-    ctx.fillStyle = Math.sin(t * 8) > 0 ? '#ef4444' : '#f97316';
-    ctx.fillRect(4, 6, 3, 3);
-
-    // Billowing smoke puffs
-    for (let i = 0; i < 3; i++) {
-      const p = ((t * 0.7 + i * 0.33) % 1);
-      const sy = 4 - p * 28;
-      const sx = 5 + Math.sin(t * 3 + i * 2) * 8 + p * 6;
-      ctx.fillStyle = `rgba(203, 213, 225, ${0.7 - p * 0.6})`;
-      ctx.beginPath();
-      ctx.arc(sx, sy, 3 + p * 5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  drawDrugsDetails(ctx, t, r) {
-    // Toxic purple/green swirl & warning
-    ctx.save();
-    const rot = t * 2;
-    ctx.rotate(rot);
-    ctx.strokeStyle = 'rgba(168, 85, 247, 0.6)';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.arc(0, 0, 14 + Math.sin(t * 4) * 3, 0, Math.PI * 1.5);
-    ctx.stroke();
-    ctx.rotate(-rot);
-
-    ctx.font = '22px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('💊', 0, -2);
-    ctx.restore();
-  }
-
-  containsPoint(px, py) {
-    return dist(this.x, this.y, px, py) < this.radius + 6;
-  }
-
-  fadeOut() {
-    this.state = 'FADING_OUT';
-  }
-}
-
-// ============================================
-// ANIMAL CLASS (Ant 🐜, Dairy Cow 🐮 & Person 👫)
+// ANIMAL CLASS (Ant 🐜 & Dairy Cow 🐮)
 // ============================================
 
 class Animal {
@@ -1738,14 +1052,11 @@ class Animal {
     this.y = y;
     this.animalType = animalType;
     this.angle = Math.random() * Math.PI * 2;
-    const speedMap = { cow: CONFIG.ANT_SPEED * 0.9, person: CONFIG.ANT_SPEED * 0.75 };
-    this.speed = (speedMap[animalType] || CONFIG.ANT_SPEED) + (Math.random() - 0.5) * 10;
+    this.speed = (animalType === 'cow' ? CONFIG.ANT_SPEED * 0.9 : CONFIG.ANT_SPEED) + (Math.random() - 0.5) * 10;
     this.wanderStrength = CONFIG.WANDER_STRENGTH;
     this.legPhase = Math.random() * Math.PI * 2;
     this.startled = false;
     this.startledTimer = 0;
-    this.gender = Math.random() < 0.5 ? 'girl' : 'boy'; // For person mode
-    this.spankBounce = 0; // Animation bounce for spank effect
     this.escaped = false;
     this.wanderTimer = 0;
     this.wanderTarget = this.angle;
@@ -1856,23 +1167,17 @@ class Animal {
     this.wanderTarget = this.angle;
     this.behaviorState = 'WALK';
     this.startled = true;
-    this.startledTimer = 0.45;
-    if (this.animalType === 'person') {
-      this.spankBounce = 1.0;
-    }
+    this.startledTimer = 0.4;
   }
 
   containsPoint(px, py) {
-    const hitMap = { cow: 44, person: 32 };
-    const hitRadius = hitMap[this.animalType] || CONFIG.ANT_HIT_RADIUS;
+    const hitRadius = this.animalType === 'cow' ? 44 : CONFIG.ANT_HIT_RADIUS;
     return dist(this.x, this.y, px, py) < hitRadius;
   }
 
   draw(ctx) {
     if (this.animalType === 'cow') {
       this.drawCow(ctx);
-    } else if (this.animalType === 'person') {
-      this.drawPerson(ctx);
     } else {
       this.drawAnt(ctx);
     }
@@ -2178,247 +1483,6 @@ class Animal {
 
     ctx.restore();
   }
-
-  drawPerson(ctx) {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-
-    // Spank bounce animation
-    if (this.spankBounce > 0) {
-      this.spankBounce = Math.max(0, this.spankBounce - 0.05);
-      ctx.translate(0, -Math.sin(this.spankBounce * Math.PI) * 10);
-    }
-
-    // Flip horizontally depending on moving left or right
-    const isFacingLeft = Math.cos(this.angle) < 0;
-    if (isFacingLeft) {
-      ctx.scale(-1, 1);
-    }
-
-    const isGirl = this.gender === 'girl';
-    const legSwing = Math.sin(this.legPhase) * 6;
-    const armSwing = Math.sin(this.legPhase + Math.PI / 2) * 5;
-    const bobY = Math.abs(Math.sin(this.legPhase)) * 2;
-    const isStopped = this.behaviorState !== 'WALK';
-
-    // --- 1. Soft Shadow ---
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-    ctx.beginPath();
-    ctx.ellipse(0, 16, 11, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // --- 2. Back Hair (drawn behind head for girl) ---
-    if (isGirl) {
-      ctx.fillStyle = '#854d0e'; // Warm brown hair
-      // Left/back long ponytail
-      ctx.beginPath();
-      ctx.ellipse(-8, -4 - bobY, 4, 9, -0.3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // --- 3. Legs & Shoes ---
-    ctx.strokeStyle = isGirl ? '#fed7aa' : '#fde68a';
-    ctx.lineWidth = 3.5;
-    ctx.lineCap = 'round';
-
-    // Left leg
-    ctx.beginPath();
-    ctx.moveTo(-3, 6);
-    ctx.lineTo(-3 + (isStopped ? 0 : legSwing * 0.7), 14);
-    ctx.stroke();
-
-    // Right leg
-    ctx.beginPath();
-    ctx.moveTo(3, 6);
-    ctx.lineTo(3 - (isStopped ? 0 : legSwing * 0.7), 14);
-    ctx.stroke();
-
-    // Shoes
-    ctx.fillStyle = isGirl ? '#f472b6' : '#3b82f6';
-    ctx.beginPath();
-    ctx.arc(-3 + (isStopped ? 0 : legSwing * 0.7), 14, 2.8, 0, Math.PI * 2);
-    ctx.arc(3 - (isStopped ? 0 : legSwing * 0.7), 14, 2.8, 0, Math.PI * 2);
-    ctx.fill();
-
-    // --- 4. Torso / Clothes ---
-    if (isGirl) {
-      // Cute Pink Dress
-      ctx.fillStyle = '#f43f5e';
-      ctx.beginPath();
-      ctx.moveTo(-6, 7);
-      ctx.lineTo(-3.5, -1);
-      ctx.lineTo(3.5, -1);
-      ctx.lineTo(6, 7);
-      ctx.closePath();
-      ctx.fill();
-
-      // White collar
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(0, -1, 3, 0, Math.PI);
-      ctx.fill();
-    } else {
-      // Blue T-shirt & Jeans
-      ctx.fillStyle = '#3b82f6';
-      ctx.beginPath();
-      ctx.roundRect(-4.5, -2, 9, 8, 2);
-      ctx.fill();
-
-      // Yellow collar
-      ctx.fillStyle = '#fde047';
-      ctx.beginPath();
-      ctx.arc(0, -2, 2.5, 0, Math.PI);
-      ctx.fill();
-    }
-
-    // --- 5. Arms ---
-    ctx.strokeStyle = isGirl ? '#fed7aa' : '#fde68a';
-    ctx.lineWidth = 3;
-
-    // Back arm
-    ctx.beginPath();
-    ctx.moveTo(-4, 0);
-    ctx.lineTo(-7 + (isStopped ? 0 : armSwing), 6);
-    ctx.stroke();
-
-    // Front arm
-    ctx.beginPath();
-    ctx.moveTo(4, 0);
-    ctx.lineTo(7 - (isStopped ? 0 : armSwing), 6);
-    ctx.stroke();
-
-    // --- 6. Head & Bright Face ---
-    ctx.save();
-    ctx.translate(0, -7 - bobY);
-
-    // Head base (Bright skin)
-    ctx.fillStyle = isGirl ? '#fef3c7' : '#fde68a';
-    ctx.beginPath();
-    ctx.arc(0, 0, 8.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // --- 7. Hair (Drawn ON TOP of head only, NOT over face!) ---
-    if (isGirl) {
-      ctx.fillStyle = '#854d0e';
-      // Crown of hair (top half only)
-      ctx.beginPath();
-      ctx.arc(0, 0, 8.8, Math.PI, 0); // Only from 9 o'clock to 3 o'clock!
-      ctx.fill();
-
-      // Cute bangs
-      ctx.beginPath();
-      ctx.moveTo(-8, -1);
-      ctx.quadraticCurveTo(-4, -2, 0, -4);
-      ctx.quadraticCurveTo(4, -2, 8, -1);
-      ctx.lineTo(8, -8);
-      ctx.lineTo(-8, -8);
-      ctx.closePath();
-      ctx.fill();
-
-      // Side hair strand
-      ctx.beginPath();
-      ctx.moveTo(7, -3);
-      ctx.quadraticCurveTo(9, 2, 7, 7);
-      ctx.lineTo(5, 5);
-      ctx.closePath();
-      ctx.fill();
-
-      // Cute Pink Flower Hair Clip
-      ctx.fillStyle = '#f43f5e';
-      ctx.beginPath();
-      ctx.arc(5, -6, 2.8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#fef08a';
-      ctx.beginPath();
-      ctx.arc(5, -6, 1.2, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      // Short stylish hair for boy
-      ctx.fillStyle = '#1e293b';
-      // Crown of hair (top half only)
-      ctx.beginPath();
-      ctx.arc(0, 0, 8.8, Math.PI * 0.95, Math.PI * 0.05); // Only top!
-      ctx.fill();
-
-      // Spiky front bangs
-      ctx.beginPath();
-      ctx.moveTo(-8, -2);
-      ctx.lineTo(-5, -3);
-      ctx.lineTo(-3, -1);
-      ctx.lineTo(0, -3);
-      ctx.lineTo(3, -1);
-      ctx.lineTo(6, -3);
-      ctx.lineTo(8, -2);
-      ctx.lineTo(8, -8);
-      ctx.lineTo(-8, -8);
-      ctx.closePath();
-      ctx.fill();
-
-      // Extra top spikes
-      ctx.beginPath();
-      ctx.moveTo(-4, -8); ctx.lineTo(-2, -12); ctx.lineTo(0, -8);
-      ctx.moveTo(1, -8); ctx.lineTo(3, -12); ctx.lineTo(5, -8);
-      ctx.fill();
-    }
-
-    // --- 8. Cute Facial Features (Drawn in front of face) ---
-    if (!this.startled) {
-      // Sparkling Eyes
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(-2.5, 0, 1.8, 0, Math.PI * 2);
-      ctx.arc(3.5, 0, 1.8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye White Sparkle Highlights
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(-2, -0.6, 0.7, 0, Math.PI * 2);
-      ctx.arc(4, -0.6, 0.7, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Rosy Blushing Cheeks
-      ctx.fillStyle = 'rgba(244, 63, 94, 0.45)';
-      ctx.beginPath();
-      ctx.ellipse(-4.5, 2.5, 2.5, 1.4, 0, 0, Math.PI * 2);
-      ctx.ellipse(4.5, 2.5, 2.5, 1.4, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Cute Smile
-      ctx.strokeStyle = '#9a3412';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.arc(0.5, 2.5, 2, 0.1, Math.PI - 0.1);
-      ctx.stroke();
-    } else {
-      // Startled Dizzy Eyes (X X)
-      ctx.strokeStyle = '#ef4444';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(-4, -1.5); ctx.lineTo(-1, 1.5);
-      ctx.moveTo(-1, -1.5); ctx.lineTo(-4, 1.5);
-      ctx.moveTo(2, -1.5); ctx.lineTo(5, 1.5);
-      ctx.moveTo(5, -1.5); ctx.lineTo(2, 1.5);
-      ctx.stroke();
-
-      // Surprised Mouth
-      ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      ctx.arc(0.5, 3.5, 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.restore();
-
-    // --- 9. Spank emoji 👋 on butt when tapped ---
-    if (this.startled && this.startledTimer > 0.15) {
-      ctx.font = '16px serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('👋', isFacingLeft ? 10 : -10, 10);
-    }
-
-    ctx.restore();
-  }
 }
 
 const Ant = Animal; // Backward compatibility alias
@@ -2484,12 +1548,9 @@ class Game {
     this.birds = [];
     this.birdTimer = 2.0 + Math.random() * 3.0;
     this.floraSproutTimer = 1.5 + Math.random() * 1.5;
-    this.citySpots = [];
-    this.spotShuffleTimer = 10.0;
     this.ripples = [];
     this.particles = [];
     this.floatingTexts = [];
-    this.cityMode = false;
     this.score = 0;
     this.maxAnts = 0;
     this.antIdCounter = 0;
@@ -2562,8 +1623,6 @@ class Game {
     if (animalAntText) animalAntText.textContent = t.animals.ant.btnName;
     const animalCowText = document.getElementById('animal-cow-text');
     if (animalCowText) animalCowText.textContent = t.animals.cow.btnName;
-    const animalPersonText = document.getElementById('animal-person-text');
-    if (animalPersonText) animalPersonText.textContent = t.animals.person.btnName;
 
     const modeFreeText = document.getElementById('mode-free-text');
     if (modeFreeText) modeFreeText.textContent = t.modeFree;
@@ -3044,201 +2103,15 @@ class Game {
     }
   }
 
-  // --- CITY MODE METHODS (Chăn Người 👫) ---
-  spawnCitySpots() {
-    this.citySpots = [];
-    const countSafe = 3;
-    const countDanger = 3;
-    
-    const safeCategories = [...CITY_SPOTS.safe];
-    const dangerCategories = [...CITY_SPOTS.danger];
-
-    // Helper to find non-overlapping position
-    const getPos = () => {
-      const padX = 65;
-      const padY = 85;
-      for (let i = 0; i < 40; i++) {
-        const x = padX + Math.random() * (this.width - padX * 2);
-        const y = padY + Math.random() * (this.height - padY * 2);
-        const tooClose = this.citySpots.some(s => dist(x, y, s.x, s.y) < 95);
-        if (!tooClose) return { x, y };
-      }
-      return {
-        x: padX + Math.random() * (this.width - padX * 2),
-        y: padY + Math.random() * (this.height - padY * 2)
-      };
-    };
-
-    // Safe spots
-    for (let i = 0; i < countSafe; i++) {
-      const pos = getPos();
-      const cat = safeCategories[i % safeCategories.length];
-      this.citySpots.push(new CitySpot(pos.x, pos.y, 'safe', cat));
-    }
-
-    // Danger spots
-    for (let i = 0; i < countDanger; i++) {
-      const pos = getPos();
-      const cat = dangerCategories[i % dangerCategories.length];
-      this.citySpots.push(new CitySpot(pos.x, pos.y, 'danger', cat));
-    }
-
-    this.spotShuffleTimer = 10.0;
-  }
-
-  shuffleCitySpots() {
-    if (this.animal !== 'person' || this.state !== STATE.PLAYING) return;
-    
-    // Pick 1-2 visible spots to fade out
-    const visibleSpots = this.citySpots.filter(s => s.state === 'VISIBLE');
-    if (visibleSpots.length >= 2) {
-      const numToFade = Math.min(2, Math.floor(1 + Math.random() * 2));
-      for (let i = 0; i < numToFade; i++) {
-        const idx = Math.floor(Math.random() * visibleSpots.length);
-        const spotToFade = visibleSpots.splice(idx, 1)[0];
-        if (spotToFade) spotToFade.fadeOut();
-      }
-
-      // Add 1 or 2 new spots
-      setTimeout(() => {
-        if (this.state !== STATE.PLAYING || this.animal !== 'person') return;
-        const isDanger = Math.random() < 0.5;
-        const catList = isDanger ? CITY_SPOTS.danger : CITY_SPOTS.safe;
-        const cat = catList[Math.floor(Math.random() * catList.length)];
-        
-        const padX = 65;
-        const padY = 85;
-        let bestX = padX + Math.random() * (this.width - padX * 2);
-        let bestY = padY + Math.random() * (this.height - padY * 2);
-        for (let attempt = 0; attempt < 30; attempt++) {
-          const tx = padX + Math.random() * (this.width - padX * 2);
-          const ty = padY + Math.random() * (this.height - padY * 2);
-          const activeSpots = this.citySpots.filter(s => s.state !== 'HIDDEN');
-          if (!activeSpots.some(s => dist(tx, ty, s.x, s.y) < 95)) {
-            bestX = tx;
-            bestY = ty;
-            break;
-          }
-        }
-        const newSpot = new CitySpot(bestX, bestY, isDanger ? 'danger' : 'safe', cat);
-        this.citySpots.push(newSpot);
-
-        // Sound cue for shuffle
-        this.sound.playClick();
-      }, 500);
-    }
-  }
-
-  drawCityBackground() {
-    const ctx = this.ctx;
-    const w = this.width;
-    const h = this.height;
-
-    // Dark midnight city gradient
-    const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, '#040714');
-    grad.addColorStop(0.5, '#0a0f26');
-    grad.addColorStop(1, '#130c26');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-
-    // City grid road lines (subtle luminous street map)
-    ctx.strokeStyle = 'rgba(56, 189, 248, 0.07)';
-    ctx.lineWidth = 20;
-    const gridSize = 120;
-    for (let x = 40; x < w; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    for (let y = 40; y < h; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    // Dashed center road markers
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.12)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([8, 12]);
-    for (let x = 40; x < w; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    for (let y = 40; y < h; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-    ctx.setLineDash([]);
-
-    // Background Skyline Silhouettes
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
-    const buildingWidth = 55;
-    const numBuildings = Math.ceil(w / buildingWidth) + 1;
-    for (let i = 0; i < numBuildings; i++) {
-      const bx = i * buildingWidth;
-      const bHeight = 45 + ((i * 37) % 65);
-      ctx.fillRect(bx, h - bHeight, buildingWidth - 6, bHeight);
-
-      // Glowing windows
-      ctx.fillStyle = 'rgba(253, 224, 71, 0.2)';
-      for (let wy = h - bHeight + 10; wy < h - 10; wy += 14) {
-        for (let wx = bx + 6; wx < bx + buildingWidth - 12; wx += 12) {
-          if ((i + wx + wy) % 3 !== 0) {
-            ctx.fillRect(wx, wy, 4, 6);
-          }
-        }
-      }
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
-    }
-
-    // Street lamps glow
-    for (let x = 40; x < w; x += gridSize * 2) {
-      for (let y = 40; y < h; y += gridSize * 2) {
-        const lampGlow = ctx.createRadialGradient(x, y, 2, x, y, 40);
-        lampGlow.addColorStop(0, 'rgba(253, 224, 71, 0.08)');
-        lampGlow.addColorStop(1, 'transparent');
-        ctx.fillStyle = lampGlow;
-        ctx.beginPath();
-        ctx.arc(x, y, 40, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-  }
-
   addAnt(isLevelUp = false) {
     if (this.state !== STATE.PLAYING) return;
-    let spawnX, spawnY;
-    if (this.animal === 'person') {
-      const padX = 70;
-      const padY = 90;
-      spawnX = padX + Math.random() * (this.width - padX * 2);
-      spawnY = padY + Math.random() * (this.height - padY * 2);
-      // Avoid spawning right on a danger spot
-      for (let i = 0; i < 20; i++) {
-        const nearDanger = this.citySpots.some(s => s.type === 'danger' && dist(spawnX, spawnY, s.x, s.y) < 60);
-        if (!nearDanger) break;
-        spawnX = padX + Math.random() * (this.width - padX * 2);
-        spawnY = padY + Math.random() * (this.height - padY * 2);
-      }
-    } else {
-      spawnX = this.centroid.x;
-      spawnY = this.centroid.y;
-    }
-
-    const ant = new Animal(spawnX, spawnY, this.antIdCounter++, this.animal);
+    const ant = new Animal(this.centroid.x, this.centroid.y, this.antIdCounter++, this.animal);
     if (this.mode === 'level' && this.currentLevel > 1) {
       ant.speed += (this.currentLevel - 1) * 3.5;
     }
     this.ants.push(ant);
     this.maxAnts = Math.max(this.maxAnts, this.ants.length);
-    this.ripples.push(new Ripple(spawnX, spawnY));
+    this.ripples.push(new Ripple(this.centroid.x, this.centroid.y));
     if (!isLevelUp) {
       this.sound.playAddAnt();
     }
@@ -3265,16 +2138,7 @@ class Game {
     this.sound.init();
     this.sound.resume();
     this.sound.playClick();
-    if (this.animal === 'person') {
-      this.cityMode = true;
-      this.enclosure = [];
-      this.spawnCitySpots();
-      this.setState(STATE.PLAYING);
-      this.addAnt(false);
-    } else {
-      this.cityMode = false;
-      this.setState(STATE.DRAWING);
-    }
+    this.setState(STATE.DRAWING);
   }
 
   restartGame() {
@@ -3292,18 +2156,9 @@ class Game {
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
-    if (this.animal === 'person') {
-      this.cityMode = true;
-      this.spawnCitySpots();
-      this.createMenuAnts();
-      this.setState(STATE.PLAYING);
-      this.addAnt(false);
-    } else {
-      this.cityMode = false;
-      this.spawnFlora();
-      this.createMenuAnts();
-      this.setState(STATE.DRAWING);
-    }
+    this.spawnFlora();
+    this.createMenuAnts();
+    this.setState(STATE.DRAWING);
   }
 
   setState(newState) {
@@ -3575,8 +2430,8 @@ class Game {
 
       this.updateHUD();
 
-      // Continuous natural sprouting of grass & wildflowers (for ant/cow mode)
-      if (this.animal !== 'person' && this.enclosure.length > 2) {
+      // Continuous natural sprouting of grass & wildflowers
+      if (this.enclosure.length > 2) {
         this.floraSproutTimer -= dt;
         if (this.floraSproutTimer <= 0) {
           if (this.floraList.length < 32) {
@@ -3602,76 +2457,7 @@ class Game {
       for (const p of this.particles) p.update(dt);
       this.particles = this.particles.filter(p => p.alive);
 
-      // --- Collision & Logic Routing ---
-      if (this.animal === 'person') {
-        // Update city spots
-        for (const spot of this.citySpots) spot.update(dt);
-        this.citySpots = this.citySpots.filter(s => s.alive);
-
-        // Spot shuffling / dynamic difficulty
-        this.spotShuffleTimer -= dt;
-        if (this.spotShuffleTimer <= 0) {
-          this.shuffleCitySpots();
-          this.spotShuffleTimer = Math.max(6.0, 11.0 - (this.currentLevel - 1) * 0.7);
-        }
-
-        // Check each person
-        for (const ant of this.ants) {
-          if (ant.escaped) continue;
-
-          // Screen bounds bouncing
-          const pad = 24;
-          if (ant.x < pad) { ant.x = pad; ant.angle = Math.PI - ant.angle; ant.wanderTarget = ant.angle; }
-          if (ant.x > this.width - pad) { ant.x = this.width - pad; ant.angle = Math.PI - ant.angle; ant.wanderTarget = ant.angle; }
-          if (ant.y < pad) { ant.y = pad; ant.angle = -ant.angle; ant.wanderTarget = ant.angle; }
-          if (ant.y > this.height - pad) { ant.y = this.height - pad; ant.angle = -ant.angle; ant.wanderTarget = ant.angle; }
-
-          // Check against city spots
-          for (const spot of this.citySpots) {
-            if (spot.state !== 'VISIBLE' && spot.state !== 'FADING_IN') continue;
-            const d = dist(ant.x, ant.y, spot.x, spot.y);
-
-            if (spot.type === 'danger') {
-              if (d < spot.radius + 38) {
-                spot.dangerWarning = 1.0;
-                if (!ant.warnedSoundTimer || ant.warnedSoundTimer <= 0) {
-                  this.sound.playDangerWarning();
-                  ant.warnedSoundTimer = 0.8;
-                }
-              }
-              if (d < spot.radius + 4) {
-                // GAME OVER: Fell into vice!
-                ant.escaped = true;
-                const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
-                const dangerMsgs = t.animals.person.dangerMessages || ["🎰 Tệ nạn! NGUY HIỂM!"];
-                const msg = dangerMsgs[Math.floor(Math.random() * dangerMsgs.length)];
-                this.floatingTexts.push(new FloatingText(spot.x, spot.y - 18, msg));
-                this.setState(STATE.GAME_OVER);
-                return;
-              }
-            } else if (spot.type === 'safe') {
-              if (d < spot.radius) {
-                if (!ant.lastSafeSpotTime || (timestamp - ant.lastSafeSpotTime > 3500)) {
-                  ant.lastSafeSpotTime = timestamp;
-                  const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
-                  const safeMsgs = t.animals.person.safeMessages || ["📚 Học giỏi!"];
-                  const msg = safeMsgs[Math.floor(Math.random() * safeMsgs.length)];
-                  this.floatingTexts.push(new FloatingText(spot.x, spot.y - 18, msg));
-                  this.ripples.push(new Ripple(spot.x, spot.y));
-                  this.sound.playSafeZone();
-                  ant.redirect();
-                }
-              }
-            }
-          }
-
-          if (ant.warnedSoundTimer > 0) {
-            ant.warnedSoundTimer -= dt;
-          }
-        }
-      } else {
-        this.checkEscapes();
-      }
+      this.checkEscapes();
     }
 
     // --- GAME OVER ---
@@ -3707,35 +2493,26 @@ class Game {
   }
 
   render(timestamp) {
-    if (this.animal === 'person') {
-      this.drawCityBackground();
-      
-      // Draw City spots
-      for (const spot of this.citySpots) {
-        spot.draw(this.ctx, this.lang);
-      }
-    } else {
-      this.drawBackground();
+    this.drawBackground();
 
-      // --- 1. Draw Grass & Flowers / Flora first on the ground ---
-      for (const fl of this.floraList) {
-        fl.draw(this.ctx);
-      }
+    // --- 1. Draw Grass & Flowers / Flora first on the ground ---
+    for (const fl of this.floraList) {
+      fl.draw(this.ctx);
+    }
 
-      // --- 2. MENU: decorative ants ---
-      if (this.state === STATE.MENU) {
-        for (const ant of this.menuAnts) {
-          ant.draw(this.ctx);
-        }
-      }
-
-      // --- 3. DRAWING / PLAYING / PAUSED / GAME OVER: enclosure ---
-      if (this.state !== STATE.MENU) {
-        this.drawEnclosure(timestamp);
+    // --- 2. MENU: decorative ants ---
+    if (this.state === STATE.MENU) {
+      for (const ant of this.menuAnts) {
+        ant.draw(this.ctx);
       }
     }
 
-    // --- PLAYING / PAUSED / GAME OVER: entities & effects ---
+    // --- 3. DRAWING / PLAYING / PAUSED / GAME OVER: enclosure ---
+    if (this.state !== STATE.MENU) {
+      this.drawEnclosure(timestamp);
+    }
+
+    // --- 4. PLAYING / PAUSED / GAME OVER: ants & effects ---
     if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.GAME_OVER) {
       for (const ant of this.ants) {
         ant.draw(this.ctx);
@@ -3751,14 +2528,7 @@ class Game {
       }
     }
 
-    // In menu state for person mode, draw menu persons
-    if (this.animal === 'person' && this.state === STATE.MENU) {
-      for (const ant of this.menuAnts) {
-        ant.draw(this.ctx);
-      }
-    }
-
-    // --- Flying Birds in Sky (with ground shadows) ---
+    // --- 5. Flying Birds in Sky (with ground shadows) ---
     for (const b of this.birds) {
       b.draw(this.ctx);
     }
