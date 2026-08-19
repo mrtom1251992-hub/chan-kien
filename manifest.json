@@ -2,9 +2,9 @@
   "name": "Chăn Kiến - Ant Herding Game",
   "short_name": "Chăn Kiến",
   "description": "Trò chơi vẽ vòng tròn và giữ kiến bên trong. Chơi mượt mà trên web và điện thoại Android!",
-  "id": "com.mrtom.chankien",
-  "start_url": "./index.html",
-  "scope": "./",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0a0e27",
@@ -14,25 +14,25 @@
   "categories": ["games", "arcade", "entertainment"],
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-maskable.png",
+      "src": "/icons/icon-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icons/icon.svg",
+      "src": "/icons/icon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
@@ -40,14 +40,14 @@
   ],
   "screenshots": [
     {
-      "src": "icons/screenshot-1.png",
+      "src": "/icons/screenshot-1.png",
       "sizes": "540x960",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Màn hình chơi game chăn kiến"
     },
     {
-      "src": "icons/screenshot-2.png",
+      "src": "/icons/screenshot-2.png",
       "sizes": "540x960",
       "type": "image/png",
       "form_factor": "narrow",
@@ -59,15 +59,15 @@
       "name": "Chơi Chế Độ Tự Do",
       "short_name": "Tự Do",
       "description": "Bắt đầu chế độ chăn kiến tự do",
-      "url": "./index.html?mode=free",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+      "url": "/?mode=free",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Chơi Chế Độ Cấp Độ",
       "short_name": "Cấp Độ",
       "description": "Thử thách tăng cấp độ liên tục",
-      "url": "./index.html?mode=level",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+      "url": "/?mode=level",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

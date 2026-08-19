@@ -1,15 +1,15 @@
-const CACHE_NAME = 'chan-kien-v1.0.0';
+const CACHE_NAME = 'chan-kien-v1.0.1';
 const ASSETS = [
-  './',
-  './index.html',
-  './style.css',
-  './game.js',
-  './manifest.json',
-  './favicon.png',
-  './icons/icon.svg',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable.png'
+  '/',
+  '/index.html',
+  '/style.css',
+  '/game.js',
+  '/manifest.json',
+  '/favicon.png',
+  '/icons/icon.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon-maskable.png'
 ];
 
 // Install Event - Pre-cache core assets
@@ -40,29 +40,23 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event - Cache-first with network fallback
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
-
-  // Ignore chrome-extension or external analytics if needed
   if (!event.request.url.startsWith('http')) return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch in background to update cache for next time (Stale-While-Revalidate)
+        // Stale-While-Revalidate
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, networkResponse);
             });
           }
-        }).catch(() => {
-          // Offline, ignore network error
-        });
+        }).catch(() => {});
         return cachedResponse;
       }
 
-      // Not in cache, fetch from network
       return fetch(event.request).then((networkResponse) => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
@@ -73,9 +67,8 @@ self.addEventListener('fetch', (event) => {
         });
         return networkResponse;
       }).catch(() => {
-        // If offline and request is for page, return cached index.html
         if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
+          return caches.match('/') || caches.match('/index.html');
         }
       });
     })
