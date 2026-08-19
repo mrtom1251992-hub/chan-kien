@@ -38,56 +38,64 @@
     <!-- Add Ant FAB -->
     <button id="add-ant-btn" aria-label="Thêm kiến">
       <span class="fab-icon">➕</span>
-      <span class="fab-label">Thêm kiến</span>
+      <span id="add-ant-label" class="fab-label">Thêm kiến</span>
     </button>
 
     <!-- Drawing Instruction -->
     <div id="draw-instruction">
       <div class="instruction-icon">✏️</div>
-      <div class="instruction-text">Vẽ một vòng khép kín trên màn hình!</div>
+      <div id="instruction-text" class="instruction-text">Vẽ một vòng khép kín trên màn hình!</div>
     </div>
 
     <!-- Start Screen -->
     <div id="start-screen" class="overlay visible">
       <div class="overlay-content">
+        <!-- Language Switcher -->
+        <div class="lang-switcher-container">
+          <div class="lang-switcher">
+            <button type="button" class="lang-btn active" data-lang="vi">🇻🇳 Tiếng Việt</button>
+            <button type="button" class="lang-btn" data-lang="en">🇬🇧 English</button>
+          </div>
+        </div>
+
         <h1 class="game-title">
           <span class="title-emoji">🐜</span>
-          <span class="title-text">Chăn Kiến</span>
+          <span id="title-text" class="title-text">Chăn Kiến</span>
         </h1>
-        <p class="game-subtitle">Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng</p>
+        <p id="game-subtitle" class="game-subtitle">Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng</p>
 
         <!-- Mode Switcher -->
         <div class="mode-switcher-container">
           <div class="mode-switcher glass-panel">
             <button type="button" class="mode-btn active" data-mode="free">
               <span class="mode-icon">🎯</span>
-              <span class="mode-text">Tự Do</span>
+              <span id="mode-free-text" class="mode-text">Tự Do</span>
             </button>
             <button type="button" class="mode-btn" data-mode="level">
               <span class="mode-icon">🏆</span>
-              <span class="mode-text">Cấp Độ</span>
+              <span id="mode-level-text" class="mode-text">Cấp Độ</span>
             </button>
           </div>
           <div id="mode-desc" class="mode-desc">Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích</div>
         </div>
 
         <div class="rules-box glass-panel">
-          <div class="rule"><span class="rule-num">1</span> Vẽ một vòng khép kín</div>
-          <div class="rule"><span class="rule-num">2</span> Chạm vào kiến để đổi hướng</div>
-          <div class="rule"><span class="rule-num">3</span> Đừng để kiến thoát ra!</div>
+          <div class="rule"><span class="rule-num">1</span> <span id="rule-1-text">Vẽ một vòng khép kín</span></div>
+          <div class="rule"><span class="rule-num">2</span> <span id="rule-2-text">Chạm vào kiến để đổi hướng</span></div>
+          <div class="rule"><span class="rule-num">3</span> <span id="rule-3-text">Đừng để kiến thoát ra!</span></div>
         </div>
         <div class="action-buttons-group">
           <button id="start-btn" class="btn-primary">
-            <span>Bắt Đầu</span>
+            <span id="start-btn-text">Bắt Đầu</span>
             <span class="btn-arrow">→</span>
           </button>
           <button id="install-pwa-btn" class="btn-install" type="button">
             <span>📱</span>
-            <span>Cài Đặt App Vào Điện Thoại</span>
+            <span id="install-btn-text">Cài Đặt App Vào Điện Thoại</span>
           </button>
           <a href="https://s.shopee.vn/3qMPGGcTFV" target="_blank" rel="noopener noreferrer" class="shopee-btn" aria-label="Shopee">
             <span class="shopee-icon">🛍️</span>
-            <span>Click Shopee để ủng hộ</span>
+            <span id="shopee-btn-text">Click Shopee để ủng hộ</span>
           </a>
         </div>
       </div>
@@ -109,40 +117,60 @@
               </div>
             </div>
           </div>
-          <div class="taunt-text">Lêu lêu! 😝</div>
+          <div id="taunt-bubble" class="taunt-text">Lêu lêu! 😝</div>
         </div>
-        <h2 class="gameover-title">Kiến Thoát Rồi!</h2>
+        <h2 id="gameover-title" class="gameover-title">Kiến Thoát Rồi!</h2>
         <div class="score-card glass-panel">
           <div class="score-row">
-            <span class="score-label">🎮 Chế độ</span>
+            <span id="score-label-mode" class="score-label">🎮 Chế độ</span>
             <span id="final-mode" class="score-value">Tự Do</span>
           </div>
           <div id="final-level-row" class="score-row hidden">
-            <span class="score-label">⭐ Cấp đạt được</span>
+            <span id="score-label-level" class="score-label">⭐ Cấp đạt được</span>
             <span id="final-level" class="score-value">Cấp 1</span>
           </div>
           <div class="score-row">
-            <span class="score-label">⏱ Thời gian</span>
+            <span id="score-label-time" class="score-label">⏱ Thời gian</span>
             <span id="final-score" class="score-value">00:00</span>
           </div>
           <div class="score-row">
-            <span class="score-label">🐜 Số kiến</span>
+            <span id="score-label-ants" class="score-label">🐜 Số kiến</span>
             <span id="final-ants" class="score-value">0</span>
           </div>
           <div class="score-divider"></div>
           <div class="score-row highlight">
-            <span class="score-label">🏆 Kỷ lục</span>
+            <span id="score-label-record" class="score-label">🏆 Kỷ lục</span>
             <span id="high-score" class="score-value">00:00</span>
           </div>
         </div>
+
+        <!-- Google Ads / Support Slot (Ready for Google AdSense) -->
+        <div id="ad-slot-wrapper" class="ad-slot-wrapper glass-panel">
+          <div class="ad-header">
+            <span class="ad-tag">📢 <span id="ad-tag-text">Quảng Cáo / Ủng Hộ</span></span>
+            <span id="ad-subtitle-text" class="ad-subtitle">Ủng hộ duy trì máy chủ</span>
+          </div>
+          <div id="google-ad-container" class="ad-content-box">
+            <!-- 
+              ============================================================
+              DANH CHO GOOGLE ADSENSE (Dán mã adsbygoogle vào đây sau này)
+              ============================================================
+            -->
+            <div class="ad-placeholder-inner">
+              <span class="ad-placeholder-icon">🎁</span>
+              <p id="ad-placeholder-text" class="ad-placeholder-text">Cảm ơn bạn đã chơi! Click ủng hộ giúp tác giả duy trì máy chủ & cập nhật game nhé.</p>
+            </div>
+          </div>
+        </div>
+
         <div class="action-buttons-group">
           <button id="restart-btn" class="btn-primary">
-            <span>Chơi Lại</span>
+            <span id="restart-btn-text">Chơi Lại</span>
             <span class="btn-arrow">↻</span>
           </button>
           <a href="https://s.shopee.vn/3qMPGGcTFV" target="_blank" rel="noopener noreferrer" class="shopee-btn" aria-label="Shopee">
             <span class="shopee-icon">🛍️</span>
-            <span>Click Shopee để ủng hộ</span>
+            <span id="shopee-btn-text-2">Click Shopee để ủng hộ</span>
           </a>
         </div>
       </div>

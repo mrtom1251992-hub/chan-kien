@@ -1,7 +1,109 @@
 // ============================================
 // CHĂN KIẾN - ANT HERDING GAME
-// Full Game Engine
+// Full Game Engine (English & Vietnamese)
 // ============================================
+
+// --- Multi-language Translations ---
+const TRANSLATIONS = {
+  vi: {
+    gameTitle: "Chăn Kiến",
+    gameSubtitle: "Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng",
+    modeFree: "Tự Do",
+    modeLevel: "Cấp Độ",
+    modeDescFree: "Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích",
+    modeDescLevel: "Chế độ Cấp Độ: Cứ mỗi 10 giây tăng 1 cấp và thêm 1 con kiến!",
+    rule1: "Vẽ một vòng khép kín",
+    rule2: "Chạm vào kiến để đổi hướng",
+    rule3: "Đừng để kiến thoát ra!",
+    startBtn: "Bắt Đầu",
+    installBtn: "Cài Đặt App Vào Điện Thoại",
+    shopeeBtn: "Click Shopee để ủng hộ",
+    floatingShopee: "Ủng hộ Shopee",
+    addAnt: "Thêm kiến",
+    drawInstruction: "Vẽ một vòng khép kín trên màn hình!",
+    levelBadge: "Cấp",
+    gameOverTitle: "Kiến Thoát Rồi!",
+    scoreMode: "Chế độ",
+    scoreLevel: "Cấp đạt được",
+    scoreTime: "Thời gian",
+    scoreAnts: "Số kiến",
+    scoreHigh: "Kỷ lục",
+    restartBtn: "Chơi Lại",
+    adTag: "Quảng Cáo / Ủng Hộ",
+    adSubtitle: "Ủng hộ duy trì máy chủ",
+    adPlaceholder: "Cảm ơn bạn đã chơi! Bấm ủng hộ giúp tác giả duy trì máy chủ & cập nhật tính năng mới nhé.",
+    tauntInitial: "Lêu lêu! 😝",
+    tauntVoiceLang: "vi-VN",
+    taunts: [
+      "Lêu lêu! Lêu lêu! Đồ con gà!",
+      "A hi hi, lêu lêu! Bắt hụt rồi!",
+      "Lêu lêu! Non và xanh lắm!",
+      "Lêu lêu lêu lêu lêu lêu!",
+      "Chăn kiến mà để kiến chạy mất! Lêu lêu!",
+      "Gà thế này thì chăn ai! Lêu lêu!",
+      "Đố bắt được tao đấy! Lêu lêu!",
+      "Lêu lêu! Có mỗi con kiến cũng không giữ nổi!"
+    ],
+    interactiveTaunts: [
+      "Bắt hộ cái! 😜",
+      "Còn non lắm! 🤣",
+      "Lêu lêu đồ con gà! 🤪",
+      "Ahihi đồ ngốc! 😝",
+      "Chạy thoát rồi nè! 🏃‍♂️🐜",
+      "Lêu lêu! Lêu lêu! 😛"
+    ],
+    levelUpVoice: (lvl) => `Cấp ${lvl}! Cố lên!`
+  },
+  en: {
+    gameTitle: "Ant Herder",
+    gameSubtitle: "Draw a circle · Trap the ants · Tap to redirect",
+    modeFree: "Free Mode",
+    modeLevel: "Level Mode",
+    modeDescFree: "Free Mode: Tap ➕ anytime to add ants and test your reflexes!",
+    modeDescLevel: "Level Mode: Level up and spawn a new ant every 10 seconds!",
+    rule1: "Draw a closed loop fence",
+    rule2: "Tap ants to bounce & redirect",
+    rule3: "Don't let any ant escape!",
+    startBtn: "Start Game",
+    installBtn: "Install App on Phone",
+    shopeeBtn: "Support Creator",
+    floatingShopee: "Support Us",
+    addAnt: "Add Ant",
+    drawInstruction: "Draw a closed loop on the screen!",
+    levelBadge: "Level",
+    gameOverTitle: "Ants Escaped!",
+    scoreMode: "Mode",
+    scoreLevel: "Level Reached",
+    scoreTime: "Time Survived",
+    scoreAnts: "Ants Count",
+    scoreHigh: "High Score",
+    restartBtn: "Play Again",
+    adTag: "Ads / Support",
+    adSubtitle: "Support to keep servers running",
+    adPlaceholder: "Thank you for playing! Click ads to support developer with new game updates.",
+    tauntInitial: "Na-na-na boo-boo! 😝",
+    tauntVoiceLang: "en-US",
+    taunts: [
+      "Na-na-na boo-boo! Too slow!",
+      "You let the ants escape! Haha!",
+      "Too slow! Try harder!",
+      "Can't even catch a little ant!",
+      "Haha! Better luck next time!",
+      "Loser! The ants are too fast for you!",
+      "Catch me if you can! Na-na-na boo-boo!",
+      "Oops! Did you drop your guard?"
+    ],
+    interactiveTaunts: [
+      "Catch me if you can! 😜",
+      "Way too slow! 🤣",
+      "Na-na-na boo-boo! 🤪",
+      "Haha missed me! 😝",
+      "I'm free! Run! 🏃‍♂️🐜",
+      "Na-na-na-na boo-boo! 😛"
+    ],
+    levelUpVoice: (lvl) => `Level ${lvl}! Keep going!`
+  }
+};
 
 // --- Configuration ---
 const CONFIG = {
@@ -81,16 +183,11 @@ class SoundManager {
   constructor() {
     this.ctx = null;
     this.initialized = false;
-    this.tauntPhrases = [
-      "Lêu lêu! Lêu lêu! Đồ con gà!",
-      "A hi hi, lêu lêu! Bắt hụt rồi!",
-      "Lêu lêu! Non và xanh lắm!",
-      "Lêu lêu lêu lêu lêu lêu!",
-      "Chăn kiến mà để kiến chạy mất! Lêu lêu!",
-      "Gà thế này thì chăn ai! Lêu lêu!",
-      "Đố bắt được tao đấy! Lêu lêu!",
-      "Lêu lêu! Có mỗi con kiến cũng không giữ nổi!"
-    ];
+    this.lang = 'vi';
+  }
+
+  setLanguage(lang) {
+    this.lang = lang;
   }
 
   init() {
@@ -120,7 +217,6 @@ class SoundManager {
     return { osc, gain, t: this.ctx.currentTime };
   }
 
-  // Short pop when tapping ant
   playTap() {
     const s = this._createOsc('sine', 0, 0.1, 0.3);
     if (!s) return;
@@ -131,7 +227,6 @@ class SoundManager {
     s.osc.stop(s.t + 0.1);
   }
 
-  // Ascending blip when adding ant
   playAddAnt() {
     const s = this._createOsc('sine', 0, 0.15, 0.2);
     if (!s) return;
@@ -142,17 +237,16 @@ class SoundManager {
     s.osc.stop(s.t + 0.15);
   }
 
-  // Two-note chime when drawing complete
   playDrawComplete() {
     if (!this.ctx) return;
     const s1 = this._createOsc('sine', 0, 0.15, 0.2);
-    s1.osc.frequency.setValueAtTime(523, s1.t); // C5
+    s1.osc.frequency.setValueAtTime(523, s1.t);
     s1.gain.gain.exponentialRampToValueAtTime(0.001, s1.t + 0.15);
     s1.osc.start(s1.t);
     s1.osc.stop(s1.t + 0.15);
 
     const s2 = this._createOsc('sine', 0, 0.2, 0.2);
-    s2.osc.frequency.setValueAtTime(659, s2.t + 0.12); // E5
+    s2.osc.frequency.setValueAtTime(659, s2.t + 0.12);
     s2.gain.gain.setValueAtTime(0.001, s2.t);
     s2.gain.gain.linearRampToValueAtTime(0.2, s2.t + 0.12);
     s2.gain.gain.exponentialRampToValueAtTime(0.001, s2.t + 0.3);
@@ -160,7 +254,6 @@ class SoundManager {
     s2.osc.stop(s2.t + 0.3);
   }
 
-  // Descending sad tone on game over
   playGameOver() {
     if (!this.ctx) return;
     const s = this._createOsc('sawtooth', 0, 0.5, 0.18);
@@ -171,17 +264,14 @@ class SoundManager {
     s.osc.stop(s.t + 0.55);
   }
 
-  // Cartoon raspberry / tongue blow "Phè phè phè phè bbrrrrttt" sound
   playRaspberry(delay = 0) {
     if (!this.ctx) return;
     const t = this.ctx.currentTime + delay;
 
-    // Fluttering noise + low saw to simulate tongue vibration blowing air
     const bufferSize = this.ctx.sampleRate * 0.45;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      // Modulated noise with 26Hz flutter
       const flutter = Math.sin((i / this.ctx.sampleRate) * 26 * Math.PI * 2);
       data[i] = (Math.random() * 2 - 1) * (0.5 + 0.5 * flutter);
     }
@@ -207,7 +297,6 @@ class SoundManager {
     noise.start(t);
     noise.stop(t + 0.45);
 
-    // Also add a buzzy low oscillator for wet vibrating lips
     const buzzy = this.ctx.createOscillator();
     const buzzyGain = this.ctx.createGain();
     buzzy.type = 'sawtooth';
@@ -224,7 +313,6 @@ class SoundManager {
     buzzy.stop(t + 0.45);
   }
 
-  // Cartoon slide whistle taunt
   playSlideWhistle(delay = 0) {
     if (!this.ctx) return;
     const t = this.ctx.currentTime + delay;
@@ -245,46 +333,43 @@ class SoundManager {
     osc.stop(t + 0.45);
   }
 
-  // Classic teasing melody "Na na na na boo boo"
   playMockingMelody(delay = 0) {
     if (!this.ctx) return;
-    // G4, E4, A4, G4, E4 - the universal playground teasing rhythm
     const notes = [
-      { f: 587, dur: 0.16, pause: 0.04 }, // D5
-      { f: 494, dur: 0.16, pause: 0.04 }, // B4
-      { f: 659, dur: 0.2, pause: 0.05 },  // E5
-      { f: 587, dur: 0.18, pause: 0.05 }, // D5
-      { f: 494, dur: 0.35, pause: 0.05 }  // B4 (long)
+      { f: 784, dur: 0.15, pause: 0.05 },
+      { f: 659, dur: 0.15, pause: 0.05 },
+      { f: 880, dur: 0.18, pause: 0.05 },
+      { f: 784, dur: 0.18, pause: 0.08 },
+      { f: 659, dur: 0.35, pause: 0.05 },
     ];
 
     let curT = this.ctx.currentTime + delay;
     notes.forEach((n) => {
-      const s = this._createOsc('triangle', n.f, n.dur, 0.25);
+      const s = this._createOsc('triangle', n.f, n.dur, 0.22);
       if (s) {
         s.osc.frequency.setValueAtTime(n.f, curT);
         s.gain.gain.setValueAtTime(0.001, curT);
-        s.gain.gain.linearRampToValueAtTime(0.25, curT + 0.02);
+        s.gain.gain.linearRampToValueAtTime(0.22, curT + 0.02);
         s.gain.gain.exponentialRampToValueAtTime(0.001, curT + n.dur);
         s.osc.start(curT);
-        s.osc.stop(curT + n.dur);
+        s.osc.stop(curT + n.dur + 0.02);
       }
       curT += n.dur + n.pause;
     });
   }
 
-  // Vietnamese TTS funny voice taunt
   playVoiceTaunt(customPhrase = null) {
     if (!('speechSynthesis' in window)) return;
     try {
-      window.speechSynthesis.cancel(); // Cancel any ongoing speech
-      const phrase = customPhrase || this.tauntPhrases[Math.floor(Math.random() * this.tauntPhrases.length)];
+      window.speechSynthesis.cancel();
+      const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+      const phrase = customPhrase || currentTrans.taunts[Math.floor(Math.random() * currentTrans.taunts.length)];
       const utter = new SpeechSynthesisUtterance(phrase);
-      utter.lang = 'vi-VN';
-      utter.pitch = 1.75; // Squeaky high pitched cartoon ant voice
-      utter.rate = 1.35;  // Fast teasing speed
+      utter.lang = currentTrans.tauntVoiceLang;
+      utter.pitch = 1.75;
+      utter.rate = 1.35;
       utter.volume = 1.0;
       
-      // Delay speech slightly to let the raspberry sound play first
       setTimeout(() => {
         window.speechSynthesis.speak(utter);
       }, 350);
@@ -293,10 +378,9 @@ class SoundManager {
     }
   }
 
-  // Victory Level Up Fanfare
   playLevelUp(level) {
     if (!this.ctx) return;
-    const notes = [523, 659, 784, 1046]; // C5, E5, G5, C6
+    const notes = [523, 659, 784, 1046];
     const timing = [0, 0.12, 0.24, 0.38];
     notes.forEach((freq, i) => {
       const s = this._createOsc('triangle', freq, 0.25, 0.3);
@@ -313,8 +397,9 @@ class SoundManager {
 
     if ('speechSynthesis' in window) {
       try {
-        const utter = new SpeechSynthesisUtterance(`Cấp ${level}! Cố lên!`);
-        utter.lang = 'vi-VN';
+        const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+        const utter = new SpeechSynthesisUtterance(currentTrans.levelUpVoice(level));
+        utter.lang = currentTrans.tauntVoiceLang;
         utter.pitch = 1.6;
         utter.rate = 1.3;
         setTimeout(() => window.speechSynthesis.speak(utter), 400);
@@ -322,16 +407,14 @@ class SoundManager {
     }
   }
 
-  // Full bựa taunt package: Raspberry + Mocking melody + Voice
   playBuaTaunt() {
     this.playSlideWhistle(0);
     this.playRaspberry(0.25);
-    this.playRaspberry(0.75); // double raspberry
+    this.playRaspberry(0.75);
     this.playMockingMelody(0.5);
     this.playVoiceTaunt();
   }
 
-  // Subtle click for UI buttons
   playClick() {
     const s = this._createOsc('sine', 0, 0.05, 0.15);
     if (!s) return;
@@ -631,6 +714,11 @@ class Game {
     // Sound
     this.sound = new SoundManager();
 
+    // Language Detection & Setup
+    const savedLang = localStorage.getItem('chan-kien-lang');
+    const browserLang = (navigator.language || '').toLowerCase().startsWith('vi') ? 'vi' : 'en';
+    this.lang = savedLang || browserLang;
+
     // Game Mode & Level State
     this.mode = 'free'; // 'free' or 'level'
     this.currentLevel = 1;
@@ -664,10 +752,91 @@ class Game {
     this.createBgPattern();
     this.createMenuAnts();
     this.bindEvents();
+    this.setLanguage(this.lang);
     this.updateUIVisibility();
 
     // Start loop
     requestAnimationFrame((t) => this.gameLoop(t));
+  }
+
+  setLanguage(lang) {
+    this.lang = lang;
+    localStorage.setItem('chan-kien-lang', lang);
+    this.sound.setLanguage(lang);
+    
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+
+    const t = TRANSLATIONS[lang] || TRANSLATIONS.vi;
+    
+    document.title = `🐜 ${t.gameTitle} - Ant Herding Game`;
+    const titleText = document.getElementById('title-text');
+    if (titleText) titleText.textContent = t.gameTitle;
+    const gameSubtitle = document.getElementById('game-subtitle');
+    if (gameSubtitle) gameSubtitle.textContent = t.gameSubtitle;
+    const modeFreeText = document.getElementById('mode-free-text');
+    if (modeFreeText) modeFreeText.textContent = t.modeFree;
+    const modeLevelText = document.getElementById('mode-level-text');
+    if (modeLevelText) modeLevelText.textContent = t.modeLevel;
+    
+    if (this.modeDescEl) {
+      this.modeDescEl.textContent = this.mode === 'level' ? t.modeDescLevel : t.modeDescFree;
+    }
+
+    const rule1 = document.getElementById('rule-1-text');
+    if (rule1) rule1.textContent = t.rule1;
+    const rule2 = document.getElementById('rule-2-text');
+    if (rule2) rule2.textContent = t.rule2;
+    const rule3 = document.getElementById('rule-3-text');
+    if (rule3) rule3.textContent = t.rule3;
+
+    const startBtnText = document.getElementById('start-btn-text');
+    if (startBtnText) startBtnText.textContent = t.startBtn;
+    const installBtnText = document.getElementById('install-btn-text');
+    if (installBtnText) installBtnText.textContent = t.installBtn;
+    const shopeeBtnText = document.getElementById('shopee-btn-text');
+    if (shopeeBtnText) shopeeBtnText.textContent = t.shopeeBtn;
+    const shopeeBtnText2 = document.getElementById('shopee-btn-text-2');
+    if (shopeeBtnText2) shopeeBtnText2.textContent = t.shopeeBtn;
+    const floatingShopee = document.getElementById('floating-shopee');
+    if (floatingShopee) {
+      floatingShopee.innerHTML = `<span class="floating-shopee-icon">🛍️</span><span class="floating-shopee-text">${t.floatingShopee}</span>`;
+    }
+
+    const addAntLabel = document.getElementById('add-ant-label');
+    if (addAntLabel) addAntLabel.textContent = t.addAnt;
+    const instructionText = document.getElementById('instruction-text');
+    if (instructionText) instructionText.textContent = t.drawInstruction;
+
+    const tauntBubble = document.getElementById('taunt-bubble');
+    if (tauntBubble) tauntBubble.textContent = t.tauntInitial;
+
+    const gameoverTitle = document.getElementById('gameover-title');
+    if (gameoverTitle) gameoverTitle.textContent = t.gameOverTitle;
+
+    const labelMode = document.getElementById('score-label-mode');
+    if (labelMode) labelMode.textContent = `🎮 ${t.scoreMode}`;
+    const labelLevel = document.getElementById('score-label-level');
+    if (labelLevel) labelLevel.textContent = `⭐ ${t.scoreLevel}`;
+    const labelTime = document.getElementById('score-label-time');
+    if (labelTime) labelTime.textContent = `⏱ ${t.scoreTime}`;
+    const labelAnts = document.getElementById('score-label-ants');
+    if (labelAnts) labelAnts.textContent = `🐜 ${t.scoreAnts}`;
+    const labelRecord = document.getElementById('score-label-record');
+    if (labelRecord) labelRecord.textContent = `🏆 ${t.scoreHigh}`;
+
+    const restartBtnText = document.getElementById('restart-btn-text');
+    if (restartBtnText) restartBtnText.textContent = t.restartBtn;
+
+    const adTagText = document.getElementById('ad-tag-text');
+    if (adTagText) adTagText.textContent = t.adTag;
+    const adSubtitleText = document.getElementById('ad-subtitle-text');
+    if (adSubtitleText) adSubtitleText.textContent = t.adSubtitle;
+    const adPlaceholderText = document.getElementById('ad-placeholder-text');
+    if (adPlaceholderText) adPlaceholderText.textContent = t.adPlaceholder;
+
+    this.updateHUD();
   }
 
   // --- Canvas Setup ---
@@ -746,6 +915,15 @@ class Game {
       this.onPointerUp();
     }, { passive: false });
 
+    // Language Switcher Buttons
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+        this.sound.playClick();
+        this.setLanguage(lang);
+      });
+    });
+
     // Mode Switcher Buttons
     document.querySelectorAll('.mode-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
@@ -768,23 +946,17 @@ class Game {
     if (tauntContainer) {
       tauntContainer.style.cursor = 'pointer';
       tauntContainer.addEventListener('click', () => {
-        const phrases = [
-          "Bắt hộ cái! 😜",
-          "Còn non lắm! 🤣",
-          "Lêu lêu đồ con gà! 🤪",
-          "Ahihi đồ ngốc! 😝",
-          "Chạy thoát rồi nè! 🏃‍♂️🐜",
-          "Lêu lêu! Lêu lêu! 😛"
-        ];
+        const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+        const phrases = t.interactiveTaunts;
         const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
         if (tauntText) tauntText.textContent = randomPhrase;
         
         tauntContainer.classList.remove('taunt-pop');
-        void tauntContainer.offsetWidth; // trigger reflow
+        void tauntContainer.offsetWidth;
         tauntContainer.classList.add('taunt-pop');
         
         this.sound.playRaspberry();
-        this.sound.playVoiceTaunt(randomPhrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!]/g, ''));
+        this.sound.playVoiceTaunt(randomPhrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!?,']/g, ''));
       });
     }
 
@@ -798,11 +970,12 @@ class Game {
     document.querySelectorAll('.mode-btn').forEach((b) => {
       b.classList.toggle('active', b.dataset.mode === mode);
     });
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
     if (this.modeDescEl) {
       if (mode === 'level') {
-        this.modeDescEl.textContent = 'Chế độ Cấp Độ: Cứ mỗi 10 giây tăng 1 cấp và thêm 1 con kiến!';
+        this.modeDescEl.textContent = t.modeDescLevel;
       } else {
-        this.modeDescEl.textContent = 'Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích';
+        this.modeDescEl.textContent = t.modeDescFree;
       }
     }
   }
@@ -879,7 +1052,6 @@ class Game {
   addAnt(isLevelUp = false) {
     if (this.state !== STATE.PLAYING) return;
     const ant = new Ant(this.centroid.x, this.centroid.y, this.antIdCounter++);
-    // In higher levels, slight speed increase
     if (this.mode === 'level' && this.currentLevel > 1) {
       ant.speed += (this.currentLevel - 1) * 3.5;
     }
@@ -898,10 +1070,9 @@ class Game {
     this.addAnt(true);
     this.sound.playLevelUp(this.currentLevel);
 
-    // Subtle pulse effect on the top HUD badge only (no screen obstruction)
     if (this.levelBadge) {
       this.levelBadge.classList.remove('pulse');
-      void this.levelBadge.offsetWidth; // trigger reflow
+      void this.levelBadge.offsetWidth;
       this.levelBadge.classList.add('pulse');
     }
 
@@ -947,7 +1118,7 @@ class Game {
 
     if (newState === STATE.GAME_OVER) {
       this.gameOverFlash = 0.6;
-      this.gameOverDelay = 1.0; // seconds before showing modal
+      this.gameOverDelay = 1.0;
 
       if (this.levelUpPopup) this.levelUpPopup.classList.remove('show');
 
@@ -975,24 +1146,27 @@ class Game {
         this.saveHighScore();
       }
 
+      const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+
       // Update game over UI
       if (this.finalModeEl) {
-        this.finalModeEl.textContent = this.mode === 'level' ? '🏆 Cấp Độ' : '🎯 Tự Do';
+        this.finalModeEl.textContent = this.mode === 'level' ? `🏆 ${t.modeLevel}` : `🎯 ${t.modeFree}`;
       }
       if (this.finalLevelRow) {
         this.finalLevelRow.classList.toggle('hidden', this.mode !== 'level');
       }
       if (this.finalLevelEl) {
-        this.finalLevelEl.textContent = `Cấp ${this.currentLevel}`;
+        this.finalLevelEl.textContent = `${t.levelBadge} ${this.currentLevel}`;
       }
       this.finalScoreEl.textContent = this.formatTime(this.score);
       this.finalAntsEl.textContent = `${this.maxAnts}`;
 
       const activeHs = this.highScores[this.mode];
+      const antUnit = this.lang === 'vi' ? 'kiến' : 'ants';
       if (this.mode === 'level') {
-        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (Cấp ${activeHs.level || 1})`;
+        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${t.levelBadge} ${activeHs.level || 1})`;
       } else {
-        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${activeHs.ants} kiến)`;
+        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${activeHs.ants} ${antUnit})`;
       }
     }
   }
@@ -1018,10 +1192,11 @@ class Game {
   }
 
   updateHUD() {
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
     this.scoreDisplay.textContent = `⏱ ${this.formatTime(this.score)}`;
     this.antCountDisplay.textContent = `🐜 × ${this.ants.filter(a => !a.escaped).length}`;
     if (this.levelBadge) {
-      this.levelBadge.textContent = `🏆 Cấp ${this.currentLevel}`;
+      this.levelBadge.textContent = `🏆 ${t.levelBadge} ${this.currentLevel}`;
     }
   }
 
