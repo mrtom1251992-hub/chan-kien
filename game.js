@@ -6,100 +6,163 @@
 // --- Multi-language Translations ---
 const TRANSLATIONS = {
   vi: {
-    gameTitle: "Chăn Kiến",
-    gameSubtitle: "Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng",
+    animals: {
+      ant: {
+        title: "Chăn Kiến",
+        emoji: "🐜",
+        subtitle: "Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng",
+        btnName: "Chăn Kiến",
+        addBtn: "Thêm kiến",
+        rule1: "Vẽ một vòng khép kín",
+        rule2: "Chạm vào kiến để đổi hướng",
+        rule3: "Đừng để kiến thoát ra!",
+        gameOver: "Kiến Thoát Rồi!",
+        countLabel: "Số kiến",
+        unit: "kiến",
+        drawInstruction: "Vẽ một vòng khép kín trên màn hình!",
+        tapTaunts: [
+          "Á đù! 😵", "Đau nha má! 💢", "Né đẹp chưa! 💃", "Quay xe! 🚗💨",
+          "Bắt hộ cái! 😜", "Gà mờ! 🐔", "Đừng sờ tui! 😤", "Ahihi hụt rồi! 😝",
+          "Chóng mặt quá! 🌀", "Ui da! 💥", "Còn non lắm! 🍼", "Ủa alo? 📱",
+          "Lêu lêu! 😛", "Chạy đâu cho thoát! 🏃"
+        ],
+        taunts: [
+          "Lêu lêu! Lêu lêu! Đồ con gà!",
+          "A hi hi, lêu lêu! Bắt hụt rồi!",
+          "Lêu lêu! Non và xanh lắm!",
+          "Chăn kiến mà để kiến chạy mất! Lêu lêu!",
+          "Gà thế này thì chăn ai! Lêu lêu!"
+        ]
+      },
+      cow: {
+        title: "Chăn Bò",
+        emoji: "🐮",
+        subtitle: "Vẽ chuồng bò · Giữ đàn bò sữa · Chạm bò quay xe",
+        btnName: "Chăn Bò",
+        addBtn: "Thêm bò",
+        rule1: "Vẽ chuồng bò khép kín",
+        rule2: "Chạm vào bò để đổi hướng",
+        rule3: "Đừng để bò xổng chuồng!",
+        gameOver: "Bò Xổng Chuồng!",
+        countLabel: "Số bò",
+        unit: "bò",
+        drawInstruction: "Vẽ một chuồng bò khép kín trên màn hình!",
+        tapTaunts: [
+          "Ùm bòooo! 🐮", "Đau nha sen! 💢", "Húc bay màu giờ! 💥", "Né đẹp chưa! 💃",
+          "Quay xe! 🐮💨", "Bò chứ đâu phải gà! 🐔", "Cho một bãi giờ! 💩",
+          "Xổng chuồng nè! 🏃", "Ủa alo sen? 📱", "Chóng mặt quá! 🌀", "Ahihi hụt rồi! 😝"
+        ],
+        taunts: [
+          "Ùm bòooo! Bò xổng chuồng rồi!",
+          "Chăn bò mà để bò chạy mất! Lêu lêu!",
+          "Đồ con gà! Bò chạy mất tiêu rồi!",
+          "Lêu lêu! Có đàn bò cũng không giữ nổi!",
+          "Ùm bòooo! Bò tự do rồi nè!"
+        ]
+      }
+    },
     modeFree: "Tự Do",
     modeLevel: "Cấp Độ",
-    modeDescFree: "Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích",
-    modeDescLevel: "Chế độ Cấp Độ: Cứ mỗi 10 giây tăng 1 cấp và thêm 1 con kiến!",
-    rule1: "Vẽ một vòng khép kín",
-    rule2: "Chạm vào kiến để đổi hướng",
-    rule3: "Đừng để kiến thoát ra!",
+    modeDescFree: "Chế độ Tự Do: Tự nhấn ➕ để thêm thú tùy thích",
+    modeDescLevel: "Chế độ Cấp Độ: Cứ mỗi 10 giây tăng 1 cấp và thêm 1 con thú!",
     startBtn: "Bắt Đầu",
     installBtn: "Cài Đặt App Vào Điện Thoại",
     shopeeBtn: "Click Shopee để ủng hộ",
     floatingShopee: "Ủng hộ Shopee",
-    addAnt: "Thêm kiến",
-    drawInstruction: "Vẽ một vòng khép kín trên màn hình!",
     levelBadge: "Cấp",
-    gameOverTitle: "Kiến Thoát Rồi!",
     scoreMode: "Chế độ",
     scoreLevel: "Cấp đạt được",
     scoreTime: "Thời gian",
-    scoreAnts: "Số kiến",
     scoreHigh: "Kỷ lục",
     restartBtn: "Chơi Lại",
     adTag: "Quảng Cáo / Ủng Hộ",
     adSubtitle: "Ủng hộ duy trì máy chủ",
-    adPlaceholder: "Cảm ơn bạn đã chơi! Bấm ủng hộ giúp tác giả duy trì máy chủ & cập nhật tính năng mới nhé.",
+    adPlaceholder: "Cảm ơn bạn đã chơi! Bấm ủng hộ giúp tác giả duy trì máy chủ nhé.",
     pauseTitle: "⏸ Đang Tạm Dừng",
     resumeBtn: "Tiếp Tục Chơi",
     pauseRestart: "Chơi Lại",
     mainMenuBtn: "Menu",
     shareBtn: "Chia Sẻ",
     shareCopied: "Đã sao chép thành tựu! Hãy dán để khoe bạn bè 🎉",
-    shareText: (score, ants, mode, level) => 
-      `🐜 Tôi vừa giữ được ${ants} con kiến sống sót trong ${score} ${mode === 'level' ? `(Cấp ${level})` : ''} ở game Chăn Kiến!\n👉 Thử thách xem bạn có bắt kịp tôi không: https://chan-kien.pages.dev`,
+    shareText: (animalName, score, count, unit, mode, level) =>
+      `🐾 Tôi vừa giữ được ${count} con ${unit} trong ${score} ${mode === 'level' ? `(Cấp ${level})` : ''} ở game ${animalName}!\n👉 Thử thách xem bạn có bắt kịp tôi không: https://chan-kien.pages.dev`,
     tauntInitial: "Lêu lêu! 😝",
     tauntVoiceLang: "vi-VN",
-    taunts: [
-      "Lêu lêu! Lêu lêu! Đồ con gà!",
-      "A hi hi, lêu lêu! Bắt hụt rồi!",
-      "Lêu lêu! Non và xanh lắm!",
-      "Lêu lêu lêu lêu lêu lêu!",
-      "Chăn kiến mà để kiến chạy mất! Lêu lêu!",
-      "Gà thế này thì chăn ai! Lêu lêu!",
-      "Đố bắt được tao đấy! Lêu lêu!",
-      "Lêu lêu! Có mỗi con kiến cũng không giữ nổi!"
-    ],
     interactiveTaunts: [
       "Bắt hộ cái! 😜",
       "Còn non lắm! 🤣",
       "Lêu lêu đồ con gà! 🤪",
       "Ahihi đồ ngốc! 😝",
-      "Chạy thoát rồi nè! 🏃‍♂️🐜",
+      "Chạy thoát rồi nè! 🏃‍♂️",
       "Lêu lêu! Lêu lêu! 😛"
-    ],
-    tapTaunts: [
-      "Á đù! 😵",
-      "Đau nha má! 💢",
-      "Né đẹp chưa! 💃",
-      "Quay xe! 🚗💨",
-      "Bắt hộ cái! 😜",
-      "Gà mờ! 🐔",
-      "Đừng sờ tui! 😤",
-      "Ahihi hụt rồi! 😝",
-      "Chóng mặt quá! 🌀",
-      "Ui da! 💥",
-      "Còn non lắm! 🍼",
-      "Ủa alo? 📱",
-      "Lêu lêu! 😛",
-      "Chạy đâu cho thoát! 🏃"
     ],
     levelUpVoice: (lvl) => `Cấp ${lvl}! Cố lên!`
   },
   en: {
-    gameTitle: "Ant Herder",
-    gameSubtitle: "Draw a circle · Trap the ants · Tap to redirect",
+    animals: {
+      ant: {
+        title: "Ant Herder",
+        emoji: "🐜",
+        subtitle: "Draw a circle · Trap the ants · Tap to redirect",
+        btnName: "Ant Herder",
+        addBtn: "Add Ant",
+        rule1: "Draw a closed loop fence",
+        rule2: "Tap ants to bounce & redirect",
+        rule3: "Don't let any ant escape!",
+        gameOver: "Ants Escaped!",
+        countLabel: "Ants Count",
+        unit: "ants",
+        drawInstruction: "Draw a closed loop on the screen!",
+        tapTaunts: [
+          "Ouch! 😵", "Missed me! 😜", "U-Turn! ↩️", "Too slow! 💨",
+          "Hey watch it! 😤", "Dodge! 💃", "Haha noob! 🐔", "Spinning! 🌀",
+          "Can't touch this! 🕺", "Whoops! 😝", "Boing! 💥", "Na-na boo-boo! 🤪"
+        ],
+        taunts: [
+          "Na-na-na boo-boo! Too slow!",
+          "You let the ants escape! Haha!",
+          "Too slow! Try harder!",
+          "Can't even catch a little ant!"
+        ]
+      },
+      cow: {
+        title: "Cow Herder",
+        emoji: "🐮",
+        subtitle: "Draw a fence · Herd dairy cows · Tap to redirect",
+        btnName: "Cow Herder",
+        addBtn: "Add Cow",
+        rule1: "Draw a closed fence for cows",
+        rule2: "Tap cows to bounce & redirect",
+        rule3: "Don't let cows escape the ranch!",
+        gameOver: "Cows Escaped!",
+        countLabel: "Cows Count",
+        unit: "cows",
+        drawInstruction: "Draw a closed fence on the screen!",
+        tapTaunts: [
+          "Moooo! 🐮", "Don't touch me! 💢", "Escaping! 🏃", "Holy Cow! 💥",
+          "Too slow! 💨", "Udderly ridiculous! 🥛", "Moo-ve out of the way! 💃",
+          "Haha noob! 🐔", "Spinning! 🌀", "Na-na boo-boo! 🤪"
+        ],
+        taunts: [
+          "Moooo! The cows broke out!",
+          "Na-na-na boo-boo! Cows ran away!",
+          "Too slow! Cows are too fast for you!",
+          "Haha! You let the whole herd escape!"
+        ]
+      }
+    },
     modeFree: "Free Mode",
     modeLevel: "Level Mode",
-    modeDescFree: "Free Mode: Tap ➕ anytime to add ants and test your reflexes!",
-    modeDescLevel: "Level Mode: Level up and spawn a new ant every 10 seconds!",
-    rule1: "Draw a closed loop fence",
-    rule2: "Tap ants to bounce & redirect",
-    rule3: "Don't let any ant escape!",
+    modeDescFree: "Free Mode: Tap ➕ anytime to add animals and test your reflexes!",
+    modeDescLevel: "Level Mode: Level up and spawn a new animal every 10 seconds!",
     startBtn: "Start Game",
     installBtn: "Install App on Phone",
     shopeeBtn: "Support Creator",
     floatingShopee: "Support Us",
-    addAnt: "Add Ant",
-    drawInstruction: "Draw a closed loop on the screen!",
     levelBadge: "Level",
-    gameOverTitle: "Ants Escaped!",
     scoreMode: "Mode",
     scoreLevel: "Level Reached",
     scoreTime: "Time Survived",
-    scoreAnts: "Ants Count",
     scoreHigh: "High Score",
     restartBtn: "Play Again",
     adTag: "Ads / Support",
@@ -111,41 +174,17 @@ const TRANSLATIONS = {
     mainMenuBtn: "Menu",
     shareBtn: "Share",
     shareCopied: "Achievement copied! Paste to challenge your friends 🎉",
-    shareText: (score, ants, mode, level) => 
-      `🐜 I survived ${score} with ${ants} ants ${mode === 'level' ? `(Level ${level})` : ''} in Ant Herder!\n👉 Can you beat my high score? Play now: https://chan-kien.pages.dev`,
+    shareText: (animalName, score, count, unit, mode, level) =>
+      `🐾 I survived ${score} with ${count} ${unit} ${mode === 'level' ? `(Level ${level})` : ''} in ${animalName}!\n👉 Can you beat my high score? Play now: https://chan-kien.pages.dev`,
     tauntInitial: "Na-na-na boo-boo! 😝",
     tauntVoiceLang: "en-US",
-    taunts: [
-      "Na-na-na boo-boo! Too slow!",
-      "You let the ants escape! Haha!",
-      "Too slow! Try harder!",
-      "Can't even catch a little ant!",
-      "Haha! Better luck next time!",
-      "Loser! The ants are too fast for you!",
-      "Catch me if you can! Na-na-na boo-boo!",
-      "Oops! Did you drop your guard?"
-    ],
     interactiveTaunts: [
       "Catch me if you can! 😜",
       "Way too slow! 🤣",
       "Na-na-na boo-boo! 🤪",
       "Haha missed me! 😝",
-      "I'm free! Run! 🏃‍♂️🐜",
+      "I'm free! Run! 🏃‍♂️",
       "Na-na-na-na boo-boo! 😛"
-    ],
-    tapTaunts: [
-      "Ouch! 😵",
-      "Missed me! 😜",
-      "U-Turn! ↩️",
-      "Too slow! 💨",
-      "Hey watch it! 😤",
-      "Dodge! 💃",
-      "Haha noob! 🐔",
-      "Spinning! 🌀",
-      "Can't touch this! 🕺",
-      "Whoops! 😝",
-      "Boing! 💥",
-      "Na-na boo-boo! 🤪"
     ],
     levelUpVoice: (lvl) => `Level ${lvl}! Keep going!`
   }
@@ -454,12 +493,40 @@ class SoundManager {
     }
   }
 
-  playBuaTaunt() {
-    this.playSlideWhistle(0);
-    this.playRaspberry(0.25);
-    this.playRaspberry(0.75);
-    this.playMockingMelody(0.5);
-    this.playVoiceTaunt();
+  playVoiceTaunt(customPhrase = null, animalType = 'ant') {
+    if (!('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+      const animalData = currentTrans.animals[animalType] || currentTrans.animals.ant;
+      const phrase = customPhrase || animalData.taunts[Math.floor(Math.random() * animalData.taunts.length)];
+      const utter = new SpeechSynthesisUtterance(phrase);
+      utter.lang = currentTrans.tauntVoiceLang;
+      utter.pitch = animalType === 'cow' ? 1.25 : 1.75;
+      utter.rate = animalType === 'cow' ? 1.2 : 1.35;
+      utter.volume = 1.0;
+      
+      setTimeout(() => {
+        window.speechSynthesis.speak(utter);
+      }, 350);
+    } catch (e) {
+      console.warn('Speech synthesis error', e);
+    }
+  }
+
+  playBuaTaunt(animalType = 'ant') {
+    if (animalType === 'cow') {
+      this.playCowMoo();
+      this.playRaspberry(0.3);
+      this.playMockingMelody(0.55);
+      this.playVoiceTaunt(null, 'cow');
+    } else {
+      this.playSlideWhistle(0);
+      this.playRaspberry(0.25);
+      this.playRaspberry(0.75);
+      this.playMockingMelody(0.5);
+      this.playVoiceTaunt(null, 'ant');
+    }
   }
 
   playClick() {
@@ -471,9 +538,16 @@ class SoundManager {
     s.osc.stop(s.t + 0.05);
   }
 
+  playAnimalTap(animalType, phrase = null) {
+    if (animalType === 'cow') {
+      this.playCowMoo(phrase);
+    } else {
+      this.playAntSqueak(phrase);
+    }
+  }
+
   playAntSqueak(phrase = null) {
     if (!this.ctx) return;
-    // Funny high pitch cartoon boing
     const s = this._createOsc('sine', 400, 0.15, 0.25);
     if (s) {
       s.osc.frequency.setValueAtTime(450, s.t);
@@ -483,7 +557,6 @@ class SoundManager {
       s.osc.stop(s.t + 0.15);
     }
 
-    // High pitch cartoon speech (35% chance to speak funny word)
     if (phrase && Math.random() < 0.35 && 'speechSynthesis' in window) {
       try {
         const cleanPhrase = phrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!?']/g, '').trim();
@@ -491,12 +564,56 @@ class SoundManager {
           const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
           const utter = new SpeechSynthesisUtterance(cleanPhrase);
           utter.lang = currentTrans.tauntVoiceLang;
-          utter.pitch = 2.0; // Max high cartoon squeak pitch
-          utter.rate = 1.6;  // Fast cartoon speed
+          utter.pitch = 2.0;
+          utter.rate = 1.6;
           utter.volume = 0.9;
           window.speechSynthesis.speak(utter);
         }
       } catch (e) {}
+    }
+  }
+
+  playCowMoo(phrase = null) {
+    if (!this.ctx) return;
+    // Low frequency cow moo resonance
+    const s = this._createOsc('sawtooth', 130, 0.45, 0.35);
+    if (s) {
+      s.osc.frequency.setValueAtTime(120, s.t);
+      s.osc.frequency.linearRampToValueAtTime(165, s.t + 0.12);
+      s.osc.frequency.exponentialRampToValueAtTime(95, s.t + 0.45);
+      s.gain.gain.setValueAtTime(0.001, s.t);
+      s.gain.gain.linearRampToValueAtTime(0.35, s.t + 0.08);
+      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.45);
+      s.osc.start(s.t);
+      s.osc.stop(s.t + 0.47);
+    }
+
+    // Cowbell ding
+    this.playCowBell();
+
+    if (phrase && Math.random() < 0.4 && 'speechSynthesis' in window) {
+      try {
+        const cleanPhrase = phrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!?']/g, '').trim();
+        if (cleanPhrase) {
+          const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+          const utter = new SpeechSynthesisUtterance(cleanPhrase);
+          utter.lang = currentTrans.tauntVoiceLang;
+          utter.pitch = 1.25;
+          utter.rate = 1.35;
+          utter.volume = 1.0;
+          window.speechSynthesis.speak(utter);
+        }
+      } catch (e) {}
+    }
+  }
+
+  playCowBell() {
+    if (!this.ctx) return;
+    const s = this._createOsc('triangle', 820, 0.25, 0.2);
+    if (s) {
+      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.25);
+      s.osc.start(s.t);
+      s.osc.stop(s.t + 0.25);
     }
   }
 }
@@ -655,13 +772,18 @@ class FloatingText {
 // ANT CLASS
 // ============================================
 
-class Ant {
-  constructor(x, y, id) {
+// ============================================
+// ANIMAL CLASS (Ant 🐜 & Dairy Cow 🐮)
+// ============================================
+
+class Animal {
+  constructor(x, y, id, animalType = 'ant') {
     this.id = id;
     this.x = x;
     this.y = y;
+    this.animalType = animalType;
     this.angle = Math.random() * Math.PI * 2;
-    this.speed = CONFIG.ANT_SPEED + (Math.random() - 0.5) * 10;
+    this.speed = (animalType === 'cow' ? CONFIG.ANT_SPEED * 0.9 : CONFIG.ANT_SPEED) + (Math.random() - 0.5) * 10;
     this.wanderStrength = CONFIG.WANDER_STRENGTH;
     this.legPhase = Math.random() * Math.PI * 2;
     this.startled = false;
@@ -701,7 +823,7 @@ class Ant {
     this.y += Math.sin(this.angle) * currentSpeed * dt;
 
     // Animate legs
-    this.legPhase += currentSpeed * dt * 0.18;
+    this.legPhase += currentSpeed * dt * (this.animalType === 'cow' ? 0.14 : 0.18);
   }
 
   redirect() {
@@ -712,10 +834,19 @@ class Ant {
   }
 
   containsPoint(px, py) {
-    return dist(this.x, this.y, px, py) < CONFIG.ANT_HIT_RADIUS;
+    const hitRadius = this.animalType === 'cow' ? 44 : CONFIG.ANT_HIT_RADIUS;
+    return dist(this.x, this.y, px, py) < hitRadius;
   }
 
   draw(ctx) {
+    if (this.animalType === 'cow') {
+      this.drawCow(ctx);
+    } else {
+      this.drawAnt(ctx);
+    }
+  }
+
+  drawAnt(ctx) {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
@@ -736,7 +867,6 @@ class Ant {
       const phase = this.legPhase + i * (Math.PI / 1.5);
       const swing = Math.sin(phase);
 
-      // Upper leg joint
       const kneeOffsetY = 7 + Math.abs(swing) * 3;
       const footOffsetX = swing * 4;
 
@@ -753,25 +883,24 @@ class Ant {
       ctx.stroke();
     }
 
-    // --- Abdomen (back, largest segment) ---
+    // --- Abdomen ---
     ctx.fillStyle = CONFIG.ANT_BODY_COLOR;
     ctx.beginPath();
     ctx.ellipse(-11, 0, 8, 6, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Stripe detail
     ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.lineWidth = 0.8;
     ctx.beginPath();
     ctx.ellipse(-13, 0, 3, 4.5, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    // --- Petiole (thin waist) ---
+    // --- Petiole ---
     ctx.fillStyle = CONFIG.ANT_BODY_MID;
     ctx.beginPath();
     ctx.ellipse(-3, 0, 2.5, 2, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- Thorax (middle segment) ---
+    // --- Thorax ---
     ctx.fillStyle = CONFIG.ANT_BODY_MID;
     ctx.beginPath();
     ctx.ellipse(2, 0, 4.5, 3.8, 0, 0, Math.PI * 2);
@@ -808,7 +937,7 @@ class Ant {
     ctx.quadraticCurveTo(16, 7 - antennaWave, 20, 9 - antennaWave);
     ctx.stroke();
 
-    // --- Antenna tips (small dots) ---
+    // --- Antenna tips ---
     ctx.fillStyle = CONFIG.ANT_LEG_COLOR;
     ctx.beginPath();
     ctx.arc(20, -9 + antennaWave, 1.2, 0, Math.PI * 2);
@@ -821,23 +950,183 @@ class Ant {
     ctx.fillStyle = this.startled ? '#ff6b6b' : '#eee';
     ctx.beginPath();
     ctx.arc(10.5, -2.2, 1.4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
     ctx.arc(10.5, 2.2, 1.4, 0, Math.PI * 2);
     ctx.fill();
 
-    // Eye pupils
     ctx.fillStyle = this.startled ? '#cc0000' : '#222';
     ctx.beginPath();
     ctx.arc(11, -2.2, 0.7, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
     ctx.arc(11, 2.2, 0.7, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();
   }
+
+  drawCow(ctx) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+
+    const legWave = Math.sin(this.legPhase) * 4.5;
+    const tailWave = Math.sin(this.legPhase * 1.3) * 0.35;
+
+    // --- Shadow ---
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, 3, 18, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- 4 Legs ---
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#334155';
+    ctx.lineWidth = 1;
+
+    // Rear legs
+    ctx.beginPath();
+    ctx.roundRect(-10, -9 + legWave * 0.7, 4.5, 7, 2);
+    ctx.roundRect(-10, 3 - legWave * 0.7, 4.5, 7, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Front legs
+    ctx.beginPath();
+    ctx.roundRect(5, -9 - legWave * 0.7, 4.5, 7, 2);
+    ctx.roundRect(5, 3 + legWave * 0.7, 4.5, 7, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Black hooves
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(-10, -9 + legWave * 0.7 + 5, 4.5, 2.5);
+    ctx.fillRect(-10, 3 - legWave * 0.7 + 5, 4.5, 2.5);
+    ctx.fillRect(5, -9 - legWave * 0.7 + 5, 4.5, 2.5);
+    ctx.fillRect(5, 3 + legWave * 0.7 + 5, 4.5, 2.5);
+
+    // --- Tail ---
+    ctx.save();
+    ctx.translate(-14, 0);
+    ctx.rotate(tailWave);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(-6, 2, -9, 0);
+    ctx.stroke();
+    // Bushy tail tip
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-9, 0, 2.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // --- Plump Body (White with Black Spots) ---
+    ctx.fillStyle = '#f8fafc';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.ellipse(-1, 0, 15, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Cow spots
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.ellipse(-7, -4, 5, 4, Math.PI / 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(3, 4, 5.5, 4, -Math.PI / 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(-3, 6, 3.5, 2.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Golden Cowbell ---
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#a16207';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.arc(9, 0, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // --- Head ---
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(14, 0, 8, 7.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Head patch
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.ellipse(12, -3, 3.8, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Ears ---
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.ellipse(11, -8, 4, 2.2, -Math.PI / 3, 0, Math.PI * 2);
+    ctx.ellipse(11, 8, 4, 2.2, Math.PI / 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f472b6'; // Pink inner ear
+    ctx.beginPath();
+    ctx.ellipse(11, -8, 2.4, 1.2, -Math.PI / 3, 0, Math.PI * 2);
+    ctx.ellipse(11, 8, 2.4, 1.2, Math.PI / 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Horns (Golden/Cream) ---
+    ctx.fillStyle = '#fef08a';
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(12, -5);
+    ctx.quadraticCurveTo(11, -10, 15, -9);
+    ctx.lineTo(14, -5);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(12, 5);
+    ctx.quadraticCurveTo(11, 10, 15, 9);
+    ctx.lineTo(14, 5);
+    ctx.fill();
+    ctx.stroke();
+
+    // --- Pink Muzzle & Nostrils ---
+    ctx.fillStyle = '#fda4af';
+    ctx.beginPath();
+    ctx.ellipse(19, 0, 4.5, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Nostrils
+    ctx.fillStyle = '#881337';
+    ctx.beginPath();
+    ctx.arc(20, -1.8, 1, 0, Math.PI * 2);
+    ctx.arc(20, 1.8, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Eyes ---
+    ctx.fillStyle = this.startled ? '#ef4444' : '#0f172a';
+    ctx.beginPath();
+    ctx.arc(15, -3.5, this.startled ? 2.3 : 1.6, 0, Math.PI * 2);
+    ctx.arc(15, 3.5, this.startled ? 2.3 : 1.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (!this.startled) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(15.5, -3.8, 0.65, 0, Math.PI * 2);
+      ctx.arc(15.5, 3.2, 0.65, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
 }
+
+const Ant = Animal; // Backward compatibility alias
 
 // ============================================
 // MAIN GAME CLASS
@@ -882,6 +1171,9 @@ class Game {
     const browserLang = (navigator.language || '').toLowerCase().startsWith('vi') ? 'vi' : 'en';
     this.lang = savedLang || browserLang;
 
+    // Animal Theme ('ant' or 'cow')
+    this.animal = localStorage.getItem('chan-kien-animal') || 'ant';
+
     // Game Mode & Level State
     this.mode = 'free'; // 'free' or 'level'
     this.currentLevel = 1;
@@ -918,11 +1210,28 @@ class Game {
     this.createBgPattern();
     this.createMenuAnts();
     this.bindEvents();
+    this.setAnimal(this.animal, false);
     this.setLanguage(this.lang);
     this.updateUIVisibility();
 
     // Start loop
     requestAnimationFrame((t) => this.gameLoop(t));
+  }
+
+  setAnimal(animalType, playSound = true) {
+    this.animal = animalType || 'ant';
+    localStorage.setItem('chan-kien-animal', this.animal);
+
+    document.querySelectorAll('.animal-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.animal === this.animal);
+    });
+
+    if (playSound) {
+      this.sound.playAnimalTap(this.animal);
+    }
+
+    this.createMenuAnts();
+    this.setLanguage(this.lang);
   }
 
   setLanguage(lang) {
@@ -935,12 +1244,21 @@ class Game {
     });
 
     const t = TRANSLATIONS[lang] || TRANSLATIONS.vi;
+    const animalData = t.animals[this.animal] || t.animals.ant;
     
-    document.title = `🐜 ${t.gameTitle} - Ant Herding Game`;
+    document.title = `${animalData.emoji} ${animalData.title} - Herding Game`;
+    const titleEmoji = document.getElementById('title-emoji');
+    if (titleEmoji) titleEmoji.textContent = animalData.emoji;
     const titleText = document.getElementById('title-text');
-    if (titleText) titleText.textContent = t.gameTitle;
+    if (titleText) titleText.textContent = animalData.title;
     const gameSubtitle = document.getElementById('game-subtitle');
-    if (gameSubtitle) gameSubtitle.textContent = t.gameSubtitle;
+    if (gameSubtitle) gameSubtitle.textContent = animalData.subtitle;
+
+    const animalAntText = document.getElementById('animal-ant-text');
+    if (animalAntText) animalAntText.textContent = t.animals.ant.btnName;
+    const animalCowText = document.getElementById('animal-cow-text');
+    if (animalCowText) animalCowText.textContent = t.animals.cow.btnName;
+
     const modeFreeText = document.getElementById('mode-free-text');
     if (modeFreeText) modeFreeText.textContent = t.modeFree;
     const modeLevelText = document.getElementById('mode-level-text');
@@ -951,11 +1269,11 @@ class Game {
     }
 
     const rule1 = document.getElementById('rule-1-text');
-    if (rule1) rule1.textContent = t.rule1;
+    if (rule1) rule1.textContent = animalData.rule1;
     const rule2 = document.getElementById('rule-2-text');
-    if (rule2) rule2.textContent = t.rule2;
+    if (rule2) rule2.textContent = animalData.rule2;
     const rule3 = document.getElementById('rule-3-text');
-    if (rule3) rule3.textContent = t.rule3;
+    if (rule3) rule3.textContent = animalData.rule3;
 
     const startBtnText = document.getElementById('start-btn-text');
     if (startBtnText) startBtnText.textContent = t.startBtn;
@@ -971,15 +1289,15 @@ class Game {
     }
 
     const addAntLabel = document.getElementById('add-ant-label');
-    if (addAntLabel) addAntLabel.textContent = t.addAnt;
+    if (addAntLabel) addAntLabel.textContent = animalData.addBtn;
     const instructionText = document.getElementById('instruction-text');
-    if (instructionText) instructionText.textContent = t.drawInstruction;
+    if (instructionText) instructionText.textContent = animalData.drawInstruction;
 
     const tauntBubble = document.getElementById('taunt-bubble');
     if (tauntBubble) tauntBubble.textContent = t.tauntInitial;
 
     const gameoverTitle = document.getElementById('gameover-title');
-    if (gameoverTitle) gameoverTitle.textContent = t.gameOverTitle;
+    if (gameoverTitle) gameoverTitle.textContent = animalData.gameOver;
 
     const labelMode = document.getElementById('score-label-mode');
     if (labelMode) labelMode.textContent = `🎮 ${t.scoreMode}`;
@@ -988,7 +1306,7 @@ class Game {
     const labelTime = document.getElementById('score-label-time');
     if (labelTime) labelTime.textContent = `⏱ ${t.scoreTime}`;
     const labelAnts = document.getElementById('score-label-ants');
-    if (labelAnts) labelAnts.textContent = `🐜 ${t.scoreAnts}`;
+    if (labelAnts) labelAnts.textContent = `${animalData.emoji} ${animalData.countLabel}`;
     const labelRecord = document.getElementById('score-label-record');
     if (labelRecord) labelRecord.textContent = `🏆 ${t.scoreHigh}`;
 
@@ -1003,7 +1321,7 @@ class Game {
     const pauseLabelTime = document.getElementById('pause-label-time');
     if (pauseLabelTime) pauseLabelTime.textContent = `⏱ ${t.scoreTime}`;
     const pauseLabelAnts = document.getElementById('pause-label-ants');
-    if (pauseLabelAnts) pauseLabelAnts.textContent = `🐜 ${t.scoreAnts}`;
+    if (pauseLabelAnts) pauseLabelAnts.textContent = `${animalData.emoji} ${animalData.countLabel}`;
     const resumeBtnText = document.getElementById('resume-btn-text');
     if (resumeBtnText) resumeBtnText.textContent = t.resumeBtn;
     const pauseRestartText = document.getElementById('pause-restart-text');
@@ -1058,10 +1376,11 @@ class Game {
   createMenuAnts() {
     this.menuAnts = [];
     for (let i = 0; i < 6; i++) {
-      const ant = new Ant(
+      const ant = new Animal(
         100 + Math.random() * (this.width - 200),
         100 + Math.random() * (this.height - 200),
-        -1
+        -1,
+        this.animal
       );
       ant.speed = 30 + Math.random() * 20;
       this.menuAnts.push(ant);
@@ -1103,6 +1422,14 @@ class Game {
       e.preventDefault();
       this.onPointerUp();
     }, { passive: false });
+
+    // Animal Switcher Buttons (Kiến 🐜 / Bò 🐮)
+    document.querySelectorAll('.animal-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const animal = btn.dataset.animal;
+        this.setAnimal(animal, true);
+      });
+    });
 
     // Language Switcher Buttons
     document.querySelectorAll('.lang-btn').forEach((btn) => {
@@ -1161,7 +1488,8 @@ class Game {
       tauntContainer.style.cursor = 'pointer';
       tauntContainer.addEventListener('click', () => {
         const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
-        const phrases = t.interactiveTaunts;
+        const animalData = t.animals[this.animal] || t.animals.ant;
+        const phrases = animalData.tapTaunts || t.interactiveTaunts;
         const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
         if (tauntText) tauntText.textContent = randomPhrase;
         
@@ -1169,8 +1497,7 @@ class Game {
         void tauntContainer.offsetWidth;
         tauntContainer.classList.add('taunt-pop');
         
-        this.sound.playRaspberry();
-        this.sound.playVoiceTaunt(randomPhrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!?,']/g, ''));
+        this.sound.playAnimalTap(this.animal, randomPhrase);
       });
     }
 
@@ -1223,14 +1550,15 @@ class Game {
   async shareAchievement() {
     this.sound.playClick();
     const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    const animalData = t.animals[this.animal] || t.animals.ant;
     const formattedTime = this.formatTime(this.score);
     const antsCount = this.maxAnts || this.ants.length;
-    const text = t.shareText(formattedTime, antsCount, this.mode, this.currentLevel);
+    const text = t.shareText(animalData.title, formattedTime, antsCount, animalData.unit, this.mode, this.currentLevel);
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `🐜 ${t.gameTitle} - High Score`,
+          title: `${animalData.emoji} ${animalData.title} - High Score`,
           text: text,
           url: 'https://chan-kien.pages.dev'
         });
@@ -1351,12 +1679,13 @@ class Game {
         
         // Random funny / trolling phrase popup
         const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
-        const taunts = t.tapTaunts || ["Á đù! 😵", "Đau nha má! 💢", "Né đẹp chưa! 💃"];
+        const animalData = t.animals[this.animal] || t.animals.ant;
+        const taunts = animalData.tapTaunts || ["Á đù! 😵", "Đau nha má! 💢", "Né đẹp chưa! 💃"];
         const phrase = taunts[Math.floor(Math.random() * taunts.length)];
         this.floatingTexts.push(new FloatingText(ant.x, ant.y, phrase));
 
         this.sound.playTap();
-        this.sound.playAntSqueak(phrase);
+        this.sound.playAnimalTap(this.animal, phrase);
         return;
       }
     }
@@ -1364,7 +1693,7 @@ class Game {
 
   addAnt(isLevelUp = false) {
     if (this.state !== STATE.PLAYING) return;
-    const ant = new Ant(this.centroid.x, this.centroid.y, this.antIdCounter++);
+    const ant = new Animal(this.centroid.x, this.centroid.y, this.antIdCounter++, this.animal);
     if (this.mode === 'level' && this.currentLevel > 1) {
       ant.speed += (this.currentLevel - 1) * 3.5;
     }
@@ -1436,7 +1765,7 @@ class Game {
 
       // Sound effects
       this.sound.playGameOver();
-      this.sound.playBuaTaunt();
+      this.sound.playBuaTaunt(this.animal);
 
       // Spawn particles at escape point
       const escapedAnt = this.ants.find(a => a.escaped);
@@ -1459,6 +1788,7 @@ class Game {
       }
 
       const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+      const animalData = t.animals[this.animal] || t.animals.ant;
 
       // Update game over UI
       if (this.finalModeEl) {
@@ -1474,11 +1804,10 @@ class Game {
       this.finalAntsEl.textContent = `${this.maxAnts}`;
 
       const activeHs = this.highScores[this.mode];
-      const antUnit = this.lang === 'vi' ? 'kiến' : 'ants';
       if (this.mode === 'level') {
         this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${t.levelBadge} ${activeHs.level || 1})`;
       } else {
-        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${activeHs.ants} ${antUnit})`;
+        this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${activeHs.ants} ${animalData.unit})`;
       }
     }
   }
@@ -1511,8 +1840,9 @@ class Game {
 
   updateHUD() {
     const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    const animalData = t.animals[this.animal] || t.animals.ant;
     this.scoreDisplay.textContent = `⏱ ${this.formatTime(this.score)}`;
-    this.antCountDisplay.textContent = `🐜 × ${this.ants.filter(a => !a.escaped).length}`;
+    this.antCountDisplay.textContent = `${animalData.emoji} × ${this.ants.filter(a => !a.escaped).length}`;
     if (this.levelBadge) {
       this.levelBadge.textContent = `🏆 ${t.levelBadge} ${this.currentLevel}`;
     }

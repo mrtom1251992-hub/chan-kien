@@ -69,10 +69,24 @@
         </div>
 
         <h1 class="game-title">
-          <span class="title-emoji">🐜</span>
+          <span id="title-emoji" class="title-emoji">🐜</span>
           <span id="title-text" class="title-text">Chăn Kiến</span>
         </h1>
         <p id="game-subtitle" class="game-subtitle">Vẽ vòng tròn · Đặt kiến vào · Chạm kiến đổi hướng</p>
+
+        <!-- Animal Theme Switcher (Kiến 🐜 / Bò 🐮) -->
+        <div class="animal-switcher-container">
+          <div class="animal-switcher glass-panel">
+            <button type="button" class="animal-btn active" data-animal="ant">
+              <span>🐜</span>
+              <span id="animal-ant-text">Chăn Kiến</span>
+            </button>
+            <button type="button" class="animal-btn" data-animal="cow">
+              <span>🐮</span>
+              <span id="animal-cow-text">Chăn Bò</span>
+            </button>
+          </div>
+        </div>
 
         <!-- Mode Switcher -->
         <div class="mode-switcher-container">
@@ -86,7 +100,7 @@
               <span id="mode-level-text" class="mode-text">Cấp Độ</span>
             </button>
           </div>
-          <div id="mode-desc" class="mode-desc">Chế độ Tự Do: Tự nhấn ➕ để thêm kiến tùy thích</div>
+          <div id="mode-desc" class="mode-desc">Chế độ Tự Do: Tự nhấn ➕ để thêm thú tùy thích</div>
         </div>
 
         <div class="rules-box glass-panel">
