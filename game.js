@@ -777,10 +777,12 @@ class Flora {
     this.x = x;
     this.y = y;
     this.type = floraType; // 'grass', 'flower_daisy', 'flower_pink', 'sugar'
-    this.scale = 0.65 + Math.random() * 0.45;
+    this.targetScale = 0.65 + Math.random() * 0.45;
+    this.scale = 0.05; // Starts tiny as a sprout and grows up!
+    this.growth = 0.05;
     this.rotation = (Math.random() - 0.5) * 0.6;
     this.alive = true;
-    this.alpha = 1.0;
+    this.alpha = 0.2;
     this.eaten = false;
     this.eatenTimer = 0;
     this.swayPhase = Math.random() * Math.PI * 2;
@@ -788,6 +790,14 @@ class Flora {
 
   update(dt) {
     this.swayPhase += dt * 2.5;
+
+    // Smooth growth from ground
+    if (this.growth < 1.0) {
+      this.growth = Math.min(1.0, this.growth + dt * 1.6);
+      this.scale = this.targetScale * this.growth;
+      this.alpha = Math.min(1.0, this.growth * 1.2);
+    }
+
     if (this.eaten) {
       this.alpha = Math.max(0, this.alpha - dt * 2.5);
       this.scale = Math.max(0, this.scale - dt * 1.8);
@@ -890,6 +900,142 @@ class Flora {
       ctx.arc(-1, -1, 1, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    ctx.restore();
+  }
+}
+
+// ============================================
+// BIRD CLASS (Flying Birds & Soft Shadows 🕊️🦅🐦)
+// ============================================
+
+class Bird {
+  constructor(screenWidth, screenHeight) {
+    const fromLeft = Math.random() < 0.5;
+    this.x = fromLeft ? -60 : screenWidth + 60;
+    this.y = 40 + Math.random() * (screenHeight * 0.45);
+    
+    const targetX = fromLeft ? screenWidth + 90 : -90;
+    const targetY = this.y + (Math.random() - 0.5) * 140;
+    
+    const angle = Math.atan2(targetY - this.y, targetX - this.x);
+    this.speed = 100 + Math.random() * 60;
+    this.vx = Math.cos(angle) * this.speed;
+    this.vy = Math.sin(angle) * this.speed;
+    this.angle = angle;
+
+    this.wingPhase = Math.random() * Math.PI * 2;
+    this.wingSpeed = 11 + Math.random() * 4;
+    this.scale = 0.75 + Math.random() * 0.35;
+    this.glideTimer = 0;
+    this.alive = true;
+    this.birdType = Math.random() < 0.45 ? 'white_dove' : 'swallow';
+  }
+
+  update(dt, screenWidth, screenHeight) {
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+
+    // Flap wings or glide gracefully in wind
+    this.glideTimer -= dt;
+    if (this.glideTimer <= 0) {
+      this.wingPhase += this.wingSpeed * dt;
+      if (Math.random() < 0.018) {
+        this.glideTimer = 0.8 + Math.random() * 1.2; // Glide with spread wings
+      }
+    }
+
+    if (this.vx > 0 && this.x > screenWidth + 120) this.alive = false;
+    if (this.vx < 0 && this.x < -120) this.alive = false;
+  }
+
+  draw(ctx) {
+    if (!this.alive) return;
+    ctx.save();
+
+    // --- 1. Soft Ground Shadow ---
+    const shadowOffsetY = 55 * this.scale;
+    const shadowOffsetX = -8;
+    ctx.save();
+    ctx.translate(this.x + shadowOffsetX, this.y + shadowOffsetY);
+    ctx.rotate(this.angle);
+    ctx.scale(this.scale * 0.9, this.scale * 0.38);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.14)';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 14, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // --- 2. Bird Body in Air ---
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    ctx.scale(this.scale, this.scale);
+
+    const wingFlap = Math.sin(this.wingPhase);
+    const wingSpan = 13 * wingFlap;
+
+    const isDove = this.birdType === 'white_dove';
+    const bodyColor = isDove ? '#f8fafc' : '#1e293b';
+    const wingColor = isDove ? '#ffffff' : '#0f172a';
+    const wingHighlight = isDove ? '#e2e8f0' : '#334155';
+    const beakColor = '#f59e0b';
+
+    // --- Wings (Top & Bottom Wings) ---
+    ctx.fillStyle = wingColor;
+    ctx.strokeStyle = wingHighlight;
+    ctx.lineWidth = 1;
+
+    // Top Wing
+    ctx.beginPath();
+    ctx.moveTo(-2, 0);
+    ctx.quadraticCurveTo(0, -12 - wingSpan, 8, -14 - wingSpan);
+    ctx.quadraticCurveTo(3, -6, 2, 0);
+    ctx.fill();
+    ctx.stroke();
+
+    // Bottom Wing
+    ctx.beginPath();
+    ctx.moveTo(-2, 0);
+    ctx.quadraticCurveTo(0, 12 + wingSpan, 8, 14 + wingSpan);
+    ctx.quadraticCurveTo(3, 6, 2, 0);
+    ctx.fill();
+    ctx.stroke();
+
+    // --- Tail Feathers ---
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.moveTo(-7, 0);
+    ctx.lineTo(-17, -4);
+    ctx.lineTo(-13, 0);
+    ctx.lineTo(-17, 4);
+    ctx.closePath();
+    ctx.fill();
+
+    // --- Bird Torso / Body ---
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 10, 4.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Head ---
+    ctx.beginPath();
+    ctx.arc(8, 0, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Beak ---
+    ctx.fillStyle = beakColor;
+    ctx.beginPath();
+    ctx.moveTo(11, -1);
+    ctx.lineTo(15, 0);
+    ctx.lineTo(11, 1);
+    ctx.closePath();
+    ctx.fill();
+
+    // --- Eye ---
+    ctx.fillStyle = isDove ? '#0f172a' : '#ffffff';
+    ctx.beginPath();
+    ctx.arc(8.5, -1, 0.8, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
   }
@@ -1399,6 +1545,9 @@ class Game {
     this.enclosure = [];
     this.ants = [];
     this.floraList = [];
+    this.birds = [];
+    this.birdTimer = 2.0 + Math.random() * 3.0;
+    this.floraSproutTimer = 1.5 + Math.random() * 1.5;
     this.ripples = [];
     this.particles = [];
     this.floatingTexts = [];
@@ -2237,6 +2386,24 @@ class Game {
     for (const fl of this.floraList) fl.update(dt);
     this.floraList = this.floraList.filter(fl => fl.alive);
 
+    // --- Update Flying Birds in the Sky ---
+    this.birdTimer -= dt;
+    if (this.birdTimer <= 0) {
+      this.birds.push(new Bird(this.width, this.height));
+      // 35% chance to spawn a pair of birds
+      if (Math.random() < 0.35) {
+        setTimeout(() => {
+          this.birds.push(new Bird(this.width, this.height));
+        }, 450);
+      }
+      this.birdTimer = 5.0 + Math.random() * 7.0;
+    }
+
+    for (const b of this.birds) {
+      b.update(dt, this.width, this.height);
+    }
+    this.birds = this.birds.filter(b => b.alive);
+
     // --- MENU ---
     if (this.state === STATE.MENU) {
       for (const ant of this.menuAnts) {
@@ -2263,9 +2430,15 @@ class Game {
 
       this.updateHUD();
 
-      // Respawn flora if cows eat most of it
-      if (this.floraList.length < 10) {
-        this.spawnSingleFloraInEnclosure();
+      // Continuous natural sprouting of grass & wildflowers
+      if (this.enclosure.length > 2) {
+        this.floraSproutTimer -= dt;
+        if (this.floraSproutTimer <= 0) {
+          if (this.floraList.length < 32) {
+            this.spawnSingleFloraInEnclosure();
+          }
+          this.floraSproutTimer = 1.4 + Math.random() * 1.8;
+        }
       }
 
       for (const ant of this.ants) {
@@ -2322,24 +2495,24 @@ class Game {
   render(timestamp) {
     this.drawBackground();
 
-    // --- Draw Grass & Flowers / Flora first ---
+    // --- 1. Draw Grass & Flowers / Flora first on the ground ---
     for (const fl of this.floraList) {
       fl.draw(this.ctx);
     }
 
-    // --- MENU: decorative ants ---
+    // --- 2. MENU: decorative ants ---
     if (this.state === STATE.MENU) {
       for (const ant of this.menuAnts) {
         ant.draw(this.ctx);
       }
     }
 
-    // --- DRAWING / PLAYING / PAUSED / GAME OVER: enclosure ---
+    // --- 3. DRAWING / PLAYING / PAUSED / GAME OVER: enclosure ---
     if (this.state !== STATE.MENU) {
       this.drawEnclosure(timestamp);
     }
 
-    // --- PLAYING / PAUSED / GAME OVER: ants & effects ---
+    // --- 4. PLAYING / PAUSED / GAME OVER: ants & effects ---
     if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.GAME_OVER) {
       for (const ant of this.ants) {
         ant.draw(this.ctx);
@@ -2353,6 +2526,11 @@ class Game {
       for (const ft of this.floatingTexts) {
         ft.draw(this.ctx);
       }
+    }
+
+    // --- 5. Flying Birds in Sky (with ground shadows) ---
+    for (const b of this.birds) {
+      b.draw(this.ctx);
     }
 
     if (this.state === STATE.GAME_OVER) {
