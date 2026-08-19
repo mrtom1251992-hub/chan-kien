@@ -620,6 +620,24 @@ html, body {
   transform: scale(0.98);
 }
 
+/* --- Resource Counter in HUD --- */
+.resource-item {
+  color: var(--gold);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.resource-item.bump {
+  animation: resBump 0.35s ease;
+}
+
+@keyframes resBump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); color: #ffffff; text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
+  100% { transform: scale(1); }
+}
+
 /* --- In-Game Controls (Top-Right Floating) --- */
 #in-game-controls {
   position: fixed;
@@ -657,6 +675,12 @@ html, body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+.hud-control-btn.shop-btn {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.25), rgba(249, 115, 22, 0.2));
+  border-color: rgba(234, 179, 8, 0.5);
+  color: var(--gold);
+}
+
 .hud-control-btn:hover {
   background: rgba(0, 243, 255, 0.15);
   border-color: var(--neon-cyan);
@@ -665,8 +689,150 @@ html, body {
   transform: scale(1.08);
 }
 
+.hud-control-btn.shop-btn:hover {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(249, 115, 22, 0.35));
+  border-color: var(--gold);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(234, 179, 8, 0.5);
+}
+
 .hud-control-btn:active {
   transform: scale(0.95);
+}
+
+/* --- Farm Shop Modal --- */
+.shop-modal-content {
+  max-width: 420px;
+  gap: 10px;
+}
+
+.shop-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: -4px 0 2px 0;
+}
+
+.shop-balance-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-xl);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.shop-balance-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
+
+.shop-items-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.shop-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition-fast);
+}
+
+.shop-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(0, 243, 255, 0.3);
+}
+
+.shop-card-icon {
+  font-size: 1.9rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+}
+
+.shop-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shop-card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.shop-card-desc {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  line-height: 1.25;
+}
+
+.shop-card-level {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  margin-top: 1px;
+}
+
+.btn-buy {
+  padding: 8px 14px;
+  background: linear-gradient(135deg, var(--neon-green), var(--neon-green-dim));
+  border: none;
+  border-radius: var(--radius-md);
+  color: #0a0e27;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+  white-space: nowrap;
+}
+
+.btn-buy:hover:not(:disabled) {
+  transform: scale(1.06);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+.btn-buy:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-buy:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-buy.maxed {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(249, 115, 22, 0.3));
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  cursor: default;
+  opacity: 1;
 }
 
 /* --- Toast Notification --- */

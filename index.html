@@ -33,16 +33,79 @@
       <div id="score" class="hud-item">⏱ 00:00</div>
       <div class="hud-divider"></div>
       <div id="ant-count" class="hud-item">🐜 × 0</div>
+      <div class="hud-divider"></div>
+      <div id="resource-count" class="hud-item resource-item" title="Sữa / Hạt Đường thu thập">🥛 0</div>
     </div>
 
-    <!-- In-Game Controls (Top-Right: Pause & Quick Restart) -->
+    <!-- In-Game Controls (Top-Right: Shop, Pause & Quick Restart) -->
     <div id="in-game-controls">
+      <button id="shop-btn" class="hud-control-btn shop-btn" aria-label="Nâng Cấp" title="Cửa hàng nâng cấp / Shop">
+        <span>🛒</span>
+      </button>
       <button id="pause-btn" class="hud-control-btn" aria-label="Tạm dừng" title="Tạm dừng / Pause">
         <span>⏸</span>
       </button>
       <button id="quick-restart-btn" class="hud-control-btn" aria-label="Chơi lại" title="Chơi lại / Restart">
         <span>↻</span>
       </button>
+    </div>
+
+    <!-- Farm Upgrades Modal -->
+    <div id="shop-screen" class="overlay">
+      <div class="overlay-content shop-modal-content">
+        <h2 id="shop-title" class="gameover-title" style="color: var(--neon-cyan);">🛒 Nâng Cấp Nông Trại</h2>
+        <p class="shop-subtitle">Dùng <span id="shop-res-icon">🥛</span> thu thập được để thuê người chăn & nâng cấp!</p>
+        
+        <div class="shop-balance-badge glass-panel">
+          <span>Ví hiện có:</span>
+          <span id="shop-balance-val" class="shop-balance-val">0 🥛</span>
+        </div>
+
+        <div class="shop-items-grid">
+          <!-- Upgrade 1: Helper Patrol -->
+          <div class="shop-card glass-panel" id="upgrade-card-helper">
+            <div class="shop-card-icon">👨‍🌾</div>
+            <div class="shop-card-info">
+              <div class="shop-card-name" id="up-helper-name">Người Chăn Phụ</div>
+              <div class="shop-card-desc" id="up-helper-desc">Chạy tuần tra quanh vòng, đập tay cứu thú chạm rìa!</div>
+              <div class="shop-card-level" id="up-helper-lvl">Cấp: 0/3</div>
+            </div>
+            <button type="button" class="btn-buy" id="btn-buy-helper">
+              <span id="up-helper-cost">5 🥛</span>
+            </button>
+          </div>
+
+          <!-- Upgrade 2: Vacuum Magnet -->
+          <div class="shop-card glass-panel" id="upgrade-card-magnet">
+            <div class="shop-card-icon">🧲</div>
+            <div class="shop-card-info">
+              <div class="shop-card-name" id="up-magnet-name">Nam Châm Tự Động</div>
+              <div class="shop-card-desc" id="up-magnet-desc">Tự động hút sữa/đường rơi trên sân về túi bạn.</div>
+              <div class="shop-card-level" id="up-magnet-lvl">Cấp: 0/2</div>
+            </div>
+            <button type="button" class="btn-buy" id="btn-buy-magnet">
+              <span id="up-magnet-cost">8 🥛</span>
+            </button>
+          </div>
+
+          <!-- Upgrade 3: Bumper Shield -->
+          <div class="shop-card glass-panel" id="upgrade-card-shield">
+            <div class="shop-card-icon">🛡️</div>
+            <div class="shop-card-info">
+              <div class="shop-card-name" id="up-shield-name">Khiên Đàn Hồi</div>
+              <div class="shop-card-desc" id="up-shield-desc">Phản xạ thú lại nếu lỡ chạm mép (cứu thua 1 lần).</div>
+              <div class="shop-card-level" id="up-shield-lvl">Cấp: 0/1</div>
+            </div>
+            <button type="button" class="btn-buy" id="btn-buy-shield">
+              <span id="up-shield-cost">12 🥛</span>
+            </button>
+          </div>
+        </div>
+
+        <button id="close-shop-btn" class="btn-primary" type="button" style="margin-top: 4px;">
+          <span>Tiếp Tục Chơi ▶</span>
+        </button>
+      </div>
     </div>
 
     <!-- Add Ant FAB -->

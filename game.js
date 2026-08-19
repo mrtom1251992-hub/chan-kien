@@ -616,6 +616,79 @@ class SoundManager {
       s.osc.stop(s.t + 0.25);
     }
   }
+
+  playCollect() {
+    if (!this.ctx) return;
+    // Cheerful high-pitch coin/milk collect chime (C6 -> E6 -> G6)
+    const notes = [1046, 1318, 1568];
+    notes.forEach((freq, i) => {
+      const s = this._createOsc('sine', freq, 0.12, 0.18);
+      if (s) {
+        const t = s.t + i * 0.045;
+        s.gain.gain.setValueAtTime(0.001, t);
+        s.gain.gain.linearRampToValueAtTime(0.2, t + 0.01);
+        s.gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+        s.osc.start(t);
+        s.osc.stop(t + 0.11);
+      }
+    });
+  }
+
+  playCoinDrop() {
+    if (!this.ctx) return;
+    const s = this._createOsc('triangle', 987, 0.08, 0.1);
+    if (s) {
+      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.08);
+      s.osc.start(s.t);
+      s.osc.stop(s.t + 0.08);
+    }
+  }
+
+  playHelperAction() {
+    if (!this.ctx) return;
+    // Playful whoosh & tap sound
+    const s = this._createOsc('sine', 480, 0.18, 0.25);
+    if (s) {
+      s.osc.frequency.setValueAtTime(320, s.t);
+      s.osc.frequency.linearRampToValueAtTime(680, s.t + 0.08);
+      s.osc.frequency.exponentialRampToValueAtTime(240, s.t + 0.18);
+      s.gain.gain.setValueAtTime(0.001, s.t);
+      s.gain.gain.linearRampToValueAtTime(0.25, s.t + 0.02);
+      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.18);
+      s.osc.start(s.t);
+      s.osc.stop(s.t + 0.19);
+    }
+  }
+
+  playUpgrade() {
+    if (!this.ctx) return;
+    // Triumphant ascending fanfare
+    const freqs = [523, 659, 784, 1046];
+    freqs.forEach((freq, idx) => {
+      const s = this._createOsc('triangle', freq, 0.22, 0.25);
+      if (s) {
+        const t = s.t + idx * 0.06;
+        s.gain.gain.setValueAtTime(0.001, t);
+        s.gain.gain.linearRampToValueAtTime(0.25, t + 0.015);
+        s.gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+        s.osc.start(t);
+        s.osc.stop(t + 0.21);
+      }
+    });
+  }
+
+  playShieldSave() {
+    if (!this.ctx) return;
+    const s = this._createOsc('sawtooth', 300, 0.35, 0.3);
+    if (s) {
+      s.osc.frequency.setValueAtTime(600, s.t);
+      s.osc.frequency.exponentialRampToValueAtTime(150, s.t + 0.35);
+      s.gain.gain.setValueAtTime(0.3, s.t);
+      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.35);
+      s.osc.start(s.t);
+      s.osc.stop(s.t + 0.36);
+    }
+  }
 }
 
 // ============================================
@@ -1042,6 +1115,270 @@ class Bird {
 }
 
 // ============================================
+// COLLECTIBLE CLASS (Milk 🥛, Sugar Drop 🍯, Gold Coin 🪙)
+// ============================================
+
+class Collectible {
+  constructor(x, y, type = 'milk', value = 1) {
+    this.x = x;
+    this.y = y;
+    this.type = type; // 'milk', 'sugar', 'gold'
+    this.value = value;
+    this.radius = 18;
+    this.hitRadius = 34; // Generous tap area for mobile phones
+    this.scale = 0.2;
+    this.targetScale = 1.0;
+    this.alpha = 1.0;
+    this.life = 0;
+    this.maxLife = 14.0;
+    this.alive = true;
+    this.bobPhase = Math.random() * Math.PI * 2;
+  }
+
+  update(dt, game) {
+    this.life += dt;
+    this.bobPhase += dt * 3.5;
+
+    // Pop in scale
+    if (this.scale < this.targetScale) {
+      this.scale = Math.min(this.targetScale, this.scale + dt * 4.0);
+    }
+
+    // Magnet effect if player has upgraded magnet
+    if (game.upgrades.magnet > 0 && game.state === STATE.PLAYING) {
+      const magnetStrength = game.upgrades.magnet === 1 ? 140 : 380;
+      const target = game.centroid;
+      const dx = target.x - this.x;
+      const dy = target.y - this.y;
+      const d = Math.hypot(dx, dy);
+      if (d > 15) {
+        this.x += (dx / d) * magnetStrength * dt;
+        this.y += (dy / d) * magnetStrength * dt;
+      }
+      if (d < 40) {
+        game.collectItem(this);
+        return;
+      }
+    }
+
+    // Fade out near end of life
+    if (this.life > this.maxLife - 2.5) {
+      this.alpha = Math.max(0, (this.maxLife - this.life) / 2.5);
+    }
+
+    if (this.life >= this.maxLife) {
+      this.alive = false;
+    }
+  }
+
+  draw(ctx) {
+    if (!this.alive || this.alpha <= 0) return;
+    ctx.save();
+    const bob = Math.sin(this.bobPhase) * 3;
+    ctx.translate(this.x, this.y + bob);
+    ctx.scale(this.scale, this.scale);
+    ctx.globalAlpha = this.alpha;
+
+    // Soft glowing base disc
+    const auraColor = this.type === 'gold' 
+      ? 'rgba(234, 179, 8, 0.35)' 
+      : (this.type === 'milk' ? 'rgba(56, 189, 248, 0.28)' : 'rgba(249, 115, 22, 0.28)');
+    ctx.fillStyle = auraColor;
+    ctx.beginPath();
+    ctx.arc(0, 0, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Emoji icon
+    ctx.font = '22px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const icon = this.type === 'milk' ? '🥛' : (this.type === 'gold' ? '🪙' : '🍯');
+    ctx.fillText(icon, 0, 0);
+
+    ctx.restore();
+  }
+
+  containsPoint(px, py) {
+    return Math.hypot(this.x - px, this.y - py) <= this.hitRadius;
+  }
+}
+
+// ============================================
+// HELPER CLASS (Patrol Herder Boy / Cowboy 👨‍🌾🤠)
+// ============================================
+
+class Helper {
+  constructor(index, totalHelpers = 1, helperType = 'ant') {
+    this.index = index;
+    this.total = totalHelpers;
+    this.type = helperType; // 'ant' -> Little Herder Boy 👨‍🌾, 'cow' -> Cowboy 🤠
+    this.progress = (index / Math.max(1, totalHelpers)); // 0 to 1 along perimeter
+    this.x = 0;
+    this.y = 0;
+    this.angle = 0;
+    this.speed = 110; // Speed along perimeter in px/s
+    this.actionTimer = 0;
+    this.patrolDir = index % 2 === 0 ? 1 : -1;
+    this.legPhase = 0;
+    this.catchCooldown = 0;
+  }
+
+  update(dt, enclosure, animals, game) {
+    if (!enclosure || enclosure.length < 3) return;
+
+    this.legPhase += dt * 14;
+    if (this.catchCooldown > 0) this.catchCooldown -= dt;
+    if (this.actionTimer > 0) this.actionTimer -= dt;
+
+    // Compute total perimeter length
+    let totalLen = 0;
+    const segLens = [];
+    for (let i = 0; i < enclosure.length; i++) {
+      const p1 = enclosure[i];
+      const p2 = enclosure[(i + 1) % enclosure.length];
+      const d = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      segLens.push(d);
+      totalLen += d;
+    }
+    if (totalLen === 0) return;
+
+    // Advance progress along perimeter
+    const distDelta = (this.speed * dt * this.patrolDir);
+    this.progress = (this.progress + (distDelta / totalLen)) % 1.0;
+    if (this.progress < 0) this.progress += 1.0;
+
+    // Map progress to specific (x, y) on polygon perimeter
+    let targetDist = this.progress * totalLen;
+    let accum = 0;
+    for (let i = 0; i < enclosure.length; i++) {
+      const segLen = segLens[i];
+      if (accum + segLen >= targetDist) {
+        const segProgress = (targetDist - accum) / (segLen || 1);
+        const p1 = enclosure[i];
+        const p2 = enclosure[(i + 1) % enclosure.length];
+        this.x = p1.x + (p2.x - p1.x) * segProgress;
+        this.y = p1.y + (p2.y - p1.y) * segProgress;
+        this.angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        break;
+      }
+      accum += segLen;
+    }
+
+    // Intercept and redirect animals near the boundary
+    if (this.catchCooldown <= 0 && game.state === STATE.PLAYING) {
+      for (const animal of animals) {
+        if (animal.escaped) continue;
+        const d = Math.hypot(animal.x - this.x, animal.y - this.y);
+        if (d < 50) {
+          // Redirect animal towards center
+          const toCenter = Math.atan2(game.centroid.y - animal.y, game.centroid.x - animal.x);
+          animal.angle = toCenter + (Math.random() - 0.5) * 0.5;
+          animal.wanderTarget = animal.angle;
+          animal.startled = true;
+          animal.startledTimer = 0.6;
+          this.actionTimer = 0.45;
+          this.catchCooldown = 0.55;
+
+          // Sound & feedback
+          game.sound.playHelperAction();
+          const taunt = this.type === 'cow' ? '🤠 Bò ngoan nào! 👋' : '👨‍🌾 Đã chặn lại! 👋';
+          game.floatingTexts.push(new FloatingText(this.x, this.y - 12, taunt));
+          break;
+        }
+      }
+    }
+  }
+
+  draw(ctx) {
+    if (this.x === 0 && this.y === 0) return;
+    ctx.save();
+    ctx.translate(this.x, this.y);
+
+    const isActing = this.actionTimer > 0;
+    const swing = Math.sin(this.legPhase) * 4;
+
+    // Glowing aura on ground
+    ctx.fillStyle = 'rgba(0, 243, 255, 0.25)';
+    ctx.beginPath();
+    ctx.arc(0, 2, 13, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Helper body (Chibi sprite)
+    if (this.type === 'cow') {
+      // Cowboy hat
+      ctx.fillStyle = '#78350f';
+      ctx.beginPath();
+      ctx.ellipse(0, -13, 10, 3.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillRect(-5, -18, 10, 6);
+
+      // Head
+      ctx.fillStyle = '#fed7aa';
+      ctx.beginPath();
+      ctx.arc(0, -7, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Shirt & Vest
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(-5, 0, 10, 9);
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(-6, 0, 3, 8);
+      ctx.fillRect(3, 0, 3, 8);
+    } else {
+      // Straw hat for Ant Herder
+      ctx.fillStyle = '#eab308';
+      ctx.beginPath();
+      ctx.ellipse(0, -12, 11, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ca8a04';
+      ctx.beginPath();
+      ctx.arc(0, -14, 5, 0, Math.PI, true);
+      ctx.fill();
+
+      // Head
+      ctx.fillStyle = '#ffedd5';
+      ctx.beginPath();
+      ctx.arc(0, -6, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Shirt (Green farm shirt)
+      ctx.fillStyle = '#16a34a';
+      ctx.fillRect(-5, 0, 10, 8);
+    }
+
+    // Legs
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-2.5, 8);
+    ctx.lineTo(-2.5 + swing, 14);
+    ctx.moveTo(2.5, 8);
+    ctx.lineTo(2.5 - swing, 14);
+    ctx.stroke();
+
+    // Arms / Waving hand when intercepting
+    ctx.strokeStyle = '#fed7aa';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (isActing) {
+      ctx.moveTo(-5, 2);
+      ctx.lineTo(-12, -4);
+      ctx.moveTo(5, 2);
+      ctx.lineTo(12, -4);
+    } else {
+      ctx.moveTo(-5, 2);
+      ctx.lineTo(-7, 6);
+      ctx.moveTo(5, 2);
+      ctx.lineTo(7, 6);
+    }
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+// ============================================
 // ANIMAL CLASS (Ant 🐜 & Dairy Cow 🐮)
 // ============================================
 
@@ -1068,6 +1405,7 @@ class Animal {
     this.chewPhase = 0;
     this.sniffPhase = 0;
     this.isChewingGrass = false;
+    this.dropTimer = 4.0 + Math.random() * 7.0;
   }
 
   update(dt, gameRef = null) {
@@ -1075,6 +1413,21 @@ class Animal {
       this.behaviorState = 'WALK';
       this.startledTimer -= dt;
       if (this.startledTimer <= 0) this.startled = false;
+    }
+
+    // Periodic Resource Drop (Milk 🥛, Sugar 🍯, Gold 🪙)
+    if (gameRef && gameRef.state === STATE.PLAYING && !this.escaped) {
+      this.dropTimer -= dt;
+      if (this.dropTimer <= 0) {
+        this.dropTimer = 7.5 + Math.random() * 8.5;
+        if (gameRef.collectibles && gameRef.collectibles.length < 25) {
+          const isGold = Math.random() < 0.14;
+          const dropType = isGold ? 'gold' : (this.animalType === 'cow' ? 'milk' : 'sugar');
+          const dropVal = isGold ? 3 : 1;
+          gameRef.collectibles.push(new Collectible(this.x, this.y, dropType, dropVal));
+          if (gameRef.sound) gameRef.sound.playCoinDrop();
+        }
+      }
     }
 
     // --- IDLE / GRAZING / SNIFFING BEHAVIOR ---
@@ -1508,6 +1861,7 @@ class Game {
     this.drawInstruction = document.getElementById('draw-instruction');
     this.scoreDisplay = document.getElementById('score');
     this.antCountDisplay = document.getElementById('ant-count');
+    this.resourceDisplay = document.getElementById('resource-count');
     this.finalModeEl = document.getElementById('final-mode');
     this.finalLevelRow = document.getElementById('final-level-row');
     this.finalLevelEl = document.getElementById('final-level');
@@ -1516,6 +1870,14 @@ class Game {
     this.highScoreEl = document.getElementById('high-score');
     this.modeDescEl = document.getElementById('mode-desc');
     this.toastMsg = document.getElementById('toast-msg');
+
+    // Shop Elements
+    this.shopBtn = document.getElementById('shop-btn');
+    this.shopScreen = document.getElementById('shop-screen');
+    this.closeShopBtn = document.getElementById('close-shop-btn');
+    this.btnBuyHelper = document.getElementById('btn-buy-helper');
+    this.btnBuyMagnet = document.getElementById('btn-buy-magnet');
+    this.btnBuyShield = document.getElementById('btn-buy-shield');
 
     // Pause Screen Elements
     this.pauseModeVal = document.getElementById('pause-mode-val');
@@ -1532,6 +1894,13 @@ class Game {
 
     // Animal Theme ('ant' or 'cow')
     this.animal = localStorage.getItem('chan-kien-animal') || 'ant';
+
+    // Farm Economy & Upgrades System
+    this.resources = this.loadResources();
+    this.upgrades = this.loadUpgrades();
+    this.collectibles = [];
+    this.helpers = [];
+    this.shieldCharges = this.upgrades.shield > 0 ? 1 : 0;
 
     // Game Mode & Level State
     this.mode = 'free'; // 'free' or 'level'
@@ -1576,6 +1945,7 @@ class Game {
     this.bindEvents();
     this.setAnimal(this.animal, false);
     this.setLanguage(this.lang);
+    this.updateHUD();
     this.updateUIVisibility();
 
     // Start loop
@@ -1878,6 +2248,13 @@ class Game {
     const quickRestartBtn = document.getElementById('quick-restart-btn');
     if (quickRestartBtn) quickRestartBtn.addEventListener('click', () => this.restartGame());
 
+    // Shop Button & Modal Events
+    if (this.shopBtn) this.shopBtn.addEventListener('click', () => this.openShop());
+    if (this.closeShopBtn) this.closeShopBtn.addEventListener('click', () => this.closeShop());
+    if (this.btnBuyHelper) this.btnBuyHelper.addEventListener('click', () => this.buyUpgrade('helper'));
+    if (this.btnBuyMagnet) this.btnBuyMagnet.addEventListener('click', () => this.buyUpgrade('magnet'));
+    if (this.btnBuyShield) this.btnBuyShield.addEventListener('click', () => this.buyUpgrade('shield'));
+
     // Pause Screen Buttons
     const resumeBtn = document.getElementById('resume-btn');
     if (resumeBtn) resumeBtn.addEventListener('click', () => this.resumeGame());
@@ -1929,6 +2306,174 @@ class Game {
         this.pauseGame();
       }
     });
+  }
+
+  // --- Economy & Farm Upgrades System ---
+  loadResources() {
+    try {
+      const data = localStorage.getItem('chan-kien-res-v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return { milk: 0, sugar: 0 };
+  }
+
+  saveResources() {
+    try {
+      localStorage.setItem('chan-kien-res-v1', JSON.stringify(this.resources));
+    } catch (e) {}
+  }
+
+  loadUpgrades() {
+    try {
+      const data = localStorage.getItem('chan-kien-upgrades-v1');
+      if (data) return JSON.parse(data);
+    } catch (e) {}
+    return { helper: 0, magnet: 0, shield: 0 };
+  }
+
+  saveUpgrades() {
+    try {
+      localStorage.setItem('chan-kien-upgrades-v1', JSON.stringify(this.upgrades));
+    } catch (e) {}
+  }
+
+  initHelpers() {
+    this.helpers = [];
+    const count = this.upgrades.helper || 0;
+    if (count > 0 && this.enclosure.length >= 3) {
+      for (let i = 0; i < count; i++) {
+        const h = new Helper(i, count, this.animal);
+        if (count === 3) h.speed = 140; // Speed boost when helper is maxed
+        this.helpers.push(h);
+      }
+    }
+  }
+
+  collectItem(item) {
+    item.alive = false;
+    const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+    const icon = this.animal === 'cow' ? '🥛' : '🍯';
+    this.resources[resKey] = (this.resources[resKey] || 0) + item.value;
+    this.saveResources();
+    this.sound.playCollect();
+
+    // Floating score popup + bump effect on HUD
+    this.floatingTexts.push(new FloatingText(item.x, item.y, `+${item.value} ${icon}`));
+    if (this.resourceDisplay) {
+      this.resourceDisplay.classList.remove('bump');
+      void this.resourceDisplay.offsetWidth;
+      this.resourceDisplay.classList.add('bump');
+    }
+    this.updateHUD();
+  }
+
+  openShop() {
+    this.sound.playClick();
+    this.previousState = this.state;
+    this.setState(STATE.PAUSED);
+    this.updateShopUI();
+    if (this.shopScreen) this.shopScreen.classList.add('visible');
+  }
+
+  closeShop() {
+    this.sound.playClick();
+    if (this.shopScreen) this.shopScreen.classList.remove('visible');
+    this.setState(this.previousState || STATE.PLAYING);
+  }
+
+  buyUpgrade(type) {
+    const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+    const curRes = this.resources[resKey] || 0;
+    const costs = {
+      helper: [5, 15, 30],
+      magnet: [8, 20],
+      shield: [12]
+    };
+    const maxLvls = { helper: 3, magnet: 2, shield: 1 };
+    const curLvl = this.upgrades[type] || 0;
+    if (curLvl >= maxLvls[type]) return;
+
+    const cost = costs[type][curLvl];
+    if (curRes >= cost) {
+      this.resources[resKey] -= cost;
+      this.upgrades[type] = curLvl + 1;
+      if (type === 'shield') this.shieldCharges = 1;
+      this.saveResources();
+      this.saveUpgrades();
+      this.initHelpers();
+      this.sound.playUpgrade();
+      this.updateHUD();
+      this.updateShopUI();
+      this.showToast(`🎉 Đã nâng cấp ${type.toUpperCase()} lên cấp ${this.upgrades[type]}!`);
+    } else {
+      this.showToast(`❌ Không đủ tài nguyên! Cần ${cost} ${resKey === 'milk' ? '🥛' : '🍯'}`);
+    }
+  }
+
+  updateShopUI() {
+    const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+    const icon = this.animal === 'cow' ? '🥛' : '🍯';
+    const curRes = this.resources[resKey] || 0;
+
+    const shopResIcon = document.getElementById('shop-res-icon');
+    if (shopResIcon) shopResIcon.textContent = icon;
+
+    const balanceVal = document.getElementById('shop-balance-val');
+    if (balanceVal) balanceVal.textContent = `${curRes} ${icon}`;
+
+    // Helper upgrade card
+    const hLvl = this.upgrades.helper || 0;
+    const hCosts = [5, 15, 30];
+    const upHelperLvl = document.getElementById('up-helper-lvl');
+    if (upHelperLvl) upHelperLvl.textContent = `Cấp: ${hLvl}/3`;
+    if (this.btnBuyHelper) {
+      if (hLvl >= 3) {
+        this.btnBuyHelper.textContent = 'ĐÃ TỐI ĐA ⭐';
+        this.btnBuyHelper.className = 'btn-buy maxed';
+        this.btnBuyHelper.disabled = true;
+      } else {
+        const cost = hCosts[hLvl];
+        this.btnBuyHelper.textContent = `${cost} ${icon}`;
+        this.btnBuyHelper.className = 'btn-buy';
+        this.btnBuyHelper.disabled = curRes < cost;
+      }
+    }
+
+    // Magnet upgrade card
+    const mLvl = this.upgrades.magnet || 0;
+    const mCosts = [8, 20];
+    const upMagnetLvl = document.getElementById('up-magnet-lvl');
+    if (upMagnetLvl) upMagnetLvl.textContent = `Cấp: ${mLvl}/2`;
+    if (this.btnBuyMagnet) {
+      if (mLvl >= 2) {
+        this.btnBuyMagnet.textContent = 'ĐÃ TỐI ĐA ⭐';
+        this.btnBuyMagnet.className = 'btn-buy maxed';
+        this.btnBuyMagnet.disabled = true;
+      } else {
+        const cost = mCosts[mLvl];
+        this.btnBuyMagnet.textContent = `${cost} ${icon}`;
+        this.btnBuyMagnet.className = 'btn-buy';
+        this.btnBuyMagnet.disabled = curRes < cost;
+      }
+    }
+
+    // Shield upgrade card
+    const sLvl = this.upgrades.shield || 0;
+    const sCosts = [12];
+    const upShieldLvl = document.getElementById('up-shield-lvl');
+    if (upShieldLvl) upShieldLvl.textContent = `Cấp: ${sLvl}/1`;
+    if (this.btnBuyShield) {
+      if (sLvl >= 1) {
+        this.btnBuyShield.textContent = 'ĐÃ SẴN SÀNG 🛡️';
+        this.btnBuyShield.className = 'btn-buy maxed';
+        this.btnBuyShield.disabled = true;
+      } else {
+        const cost = sCosts[0];
+        this.btnBuyShield.textContent = `${cost} ${icon}`;
+        this.btnBuyShield.className = 'btn-buy';
+        this.btnBuyShield.disabled = curRes < cost;
+      }
+    }
   }
 
   pauseGame() {
@@ -2080,6 +2625,8 @@ class Game {
       }
 
       this.sound.playDrawComplete();
+      this.initHelpers();
+      this.shieldCharges = (this.upgrades && this.upgrades.shield > 0) ? 1 : 0;
       this.setState(STATE.PLAYING);
       this.spawnFlora(); // Spawn grass & flowers inside the new pen!
       this.addAnt(false);
@@ -2100,6 +2647,16 @@ class Game {
   }
 
   handleTap(x, y) {
+    // 1. Check if player tapped on a Collectible item (Milk / Sugar / Gold)
+    for (let i = this.collectibles.length - 1; i >= 0; i--) {
+      const item = this.collectibles[i];
+      if (item.alive && item.containsPoint(x, y)) {
+        this.collectItem(item);
+        return;
+      }
+    }
+
+    // 2. Check Animal redirection tap
     for (const ant of this.ants) {
       if (!ant.escaped && ant.containsPoint(x, y)) {
         ant.redirect();
@@ -2161,6 +2718,8 @@ class Game {
     this.sound.playClick();
     this.enclosure = [];
     this.ants = [];
+    this.collectibles = [];
+    this.helpers = [];
     this.currentPath = [];
     this.ripples = [];
     this.particles = [];
@@ -2175,6 +2734,28 @@ class Game {
     this.spawnFlora();
     this.createMenuAnts();
     this.setState(STATE.DRAWING);
+  }
+
+  quitToMenu() {
+    this.sound.playClick();
+    this.enclosure = [];
+    this.ants = [];
+    this.collectibles = [];
+    this.helpers = [];
+    this.currentPath = [];
+    this.ripples = [];
+    this.particles = [];
+    this.floatingTexts = [];
+    this.score = 0;
+    this.maxAnts = 0;
+    this.currentLevel = 1;
+    this.levelTimer = 0;
+    this.antIdCounter = 0;
+    this.gameOverFlash = 0;
+    this.gameOverDelay = 0;
+    this.spawnFlora();
+    this.createMenuAnts();
+    this.setState(STATE.MENU);
   }
 
   setState(newState) {
@@ -2275,6 +2856,12 @@ class Game {
     if (this.levelBadge) {
       this.levelBadge.textContent = `🏆 ${t.levelBadge} ${this.currentLevel}`;
     }
+    if (this.resourceDisplay) {
+      const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+      const icon = this.animal === 'cow' ? '🥛' : '🍯';
+      const count = this.resources[resKey] || 0;
+      this.resourceDisplay.textContent = `${icon} ${count}`;
+    }
   }
 
   formatTime(sec) {
@@ -2300,11 +2887,25 @@ class Game {
     } catch (e) { /* ignore */ }
   }
 
-  // --- Collision Detection ---
+  // --- Collision Detection & Shield Protection ---
   checkEscapes() {
     for (const ant of this.ants) {
       if (ant.escaped) continue;
       if (!isPointInPolygon(ant.x, ant.y, this.enclosure)) {
+        // Shield Bumper Protection Check
+        if (this.shieldCharges > 0) {
+          this.shieldCharges--;
+          const toCenter = Math.atan2(this.centroid.y - ant.y, this.centroid.x - ant.x);
+          ant.angle = toCenter + (Math.random() - 0.5) * 0.4;
+          ant.wanderTarget = ant.angle;
+          ant.startled = true;
+          ant.startledTimer = 0.8;
+          this.sound.playShieldSave();
+          this.ripples.push(new Ripple(ant.x, ant.y));
+          this.floatingTexts.push(new FloatingText(ant.x, ant.y, '🛡️ Khiên đã cứu!'));
+          return;
+        }
+
         ant.escaped = true;
         this.setState(STATE.GAME_OVER);
         return;
@@ -2458,6 +3059,13 @@ class Game {
         if (!ant.escaped) ant.update(dt, this);
       }
 
+      // Update Collectibles (Milk 🥛, Sugar 🍯, Gold 🪙)
+      for (const c of this.collectibles) c.update(dt, this);
+      this.collectibles = this.collectibles.filter(c => c.alive);
+
+      // Update Helpers (Patrol along fence perimeter)
+      for (const h of this.helpers) h.update(dt, this.enclosure, this.ants, this);
+
       // Update effects
       for (const r of this.ripples) r.update(dt);
       this.ripples = this.ripples.filter(r => r.alive);
@@ -2513,6 +3121,11 @@ class Game {
       fl.draw(this.ctx);
     }
 
+    // --- 1.5 Draw Collectibles (Milk 🥛, Sugar 🍯, Gold 🪙) ---
+    for (const col of this.collectibles) {
+      col.draw(this.ctx);
+    }
+
     // --- 2. MENU: decorative ants ---
     if (this.state === STATE.MENU) {
       for (const ant of this.menuAnts) {
@@ -2523,6 +3136,13 @@ class Game {
     // --- 3. DRAWING / PLAYING / PAUSED / GAME OVER: enclosure ---
     if (this.state !== STATE.MENU) {
       this.drawEnclosure(timestamp);
+    }
+
+    // --- 3.5 DRAW HELPERS on the fence perimeter ---
+    if (this.state === STATE.PLAYING || this.state === STATE.PAUSED) {
+      for (const h of this.helpers) {
+        h.draw(this.ctx);
+      }
     }
 
     // --- 4. PLAYING / PAUSED / GAME OVER: ants & effects ---
