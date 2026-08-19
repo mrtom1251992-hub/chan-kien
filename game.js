@@ -1304,7 +1304,10 @@ class Helper {
 
           // Rare speech bubble (only 8% chance) so screen stays clean and quiet
           if (Math.random() < 0.08 && game.floatingTexts.length < 3) {
-            const taunt = this.type === 'cow' ? '🤠 Quay xe!' : '👨‍🌾 Đã chặn!';
+            const isEn = game.lang === 'en';
+            const taunt = this.type === 'cow' 
+              ? (isEn ? '🤠 U-Turn!' : '🤠 Quay xe!') 
+              : (isEn ? '👨‍🌾 Blocked!' : '👨‍🌾 Đã chặn!');
             game.floatingTexts.push(new FloatingText(this.x, this.y - 12, taunt));
           }
           break;
@@ -2120,6 +2123,9 @@ class Game {
     if (adTagText) adTagText.textContent = t.adTag;
     const adSubtitleText = document.getElementById('ad-subtitle-text');
     if (adSubtitleText) adSubtitleText.textContent = t.adSubtitle;
+    const adPlaceholderText = document.getElementById('ad-placeholder-text');
+    if (adPlaceholderText) adPlaceholderText.textContent = t.adPlaceholder;
+
     // Quick Buy labels
     const qbHelperName = document.getElementById('qb-helper-name');
     if (qbHelperName) {
@@ -2469,13 +2475,21 @@ class Game {
       this.updateHUD();
       this.updateQuickBuyUI();
 
+      const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+      const isEn = this.lang === 'en';
       const label = type === 'helper' 
-        ? (this.animal === 'cow' ? '🤠 Cao Bồi' : '👨‍🌾 Nông Dân') 
-        : (type === 'magnet' ? '🧲 Nam Châm' : '🛡️ Khiên');
+        ? (this.animal === 'cow' ? `🤠 ${t.qbHelperCow}` : `👨‍🌾 ${t.qbHelperAnt}`) 
+        : (type === 'magnet' ? `🧲 ${t.qbMagnet}` : `🛡️ ${isEn ? 'Shield' : 'Khiên'}`);
+      
       this.floatingTexts.push(new FloatingText(this.centroid.x, this.centroid.y, `+1 ${label}!`));
-      this.showToast(`🎉 Đã mở khóa ${label} cấp ${this.upgrades[type]}!`);
+      this.showToast(isEn 
+        ? `🎉 Unlocked ${label} (Level ${this.upgrades[type]})!` 
+        : `🎉 Đã mở khóa ${label} cấp ${this.upgrades[type]}!`);
     } else {
-      this.showToast(`❌ Cần ${cost} ${resKey === 'milk' ? '🥛' : '🍯'} để mở khóa!`);
+      const isEn = this.lang === 'en';
+      this.showToast(isEn 
+        ? `❌ Need ${cost} ${resKey === 'milk' ? '🥛' : '🍯'} to unlock!` 
+        : `❌ Cần ${cost} ${resKey === 'milk' ? '🥛' : '🍯'} để mở khóa!`);
     }
   }
 
