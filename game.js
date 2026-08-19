@@ -60,6 +60,22 @@ const TRANSLATIONS = {
       "Chạy thoát rồi nè! 🏃‍♂️🐜",
       "Lêu lêu! Lêu lêu! 😛"
     ],
+    tapTaunts: [
+      "Á đù! 😵",
+      "Đau nha má! 💢",
+      "Né đẹp chưa! 💃",
+      "Quay xe! 🚗💨",
+      "Bắt hộ cái! 😜",
+      "Gà mờ! 🐔",
+      "Đừng sờ tui! 😤",
+      "Ahihi hụt rồi! 😝",
+      "Chóng mặt quá! 🌀",
+      "Ui da! 💥",
+      "Còn non lắm! 🍼",
+      "Ủa alo? 📱",
+      "Lêu lêu! 😛",
+      "Chạy đâu cho thoát! 🏃"
+    ],
     levelUpVoice: (lvl) => `Cấp ${lvl}! Cố lên!`
   },
   en: {
@@ -116,6 +132,20 @@ const TRANSLATIONS = {
       "Haha missed me! 😝",
       "I'm free! Run! 🏃‍♂️🐜",
       "Na-na-na-na boo-boo! 😛"
+    ],
+    tapTaunts: [
+      "Ouch! 😵",
+      "Missed me! 😜",
+      "U-Turn! ↩️",
+      "Too slow! 💨",
+      "Hey watch it! 😤",
+      "Dodge! 💃",
+      "Haha noob! 🐔",
+      "Spinning! 🌀",
+      "Can't touch this! 🕺",
+      "Whoops! 😝",
+      "Boing! 💥",
+      "Na-na boo-boo! 🤪"
     ],
     levelUpVoice: (lvl) => `Level ${lvl}! Keep going!`
   }
@@ -440,6 +470,35 @@ class SoundManager {
     s.osc.start(s.t);
     s.osc.stop(s.t + 0.05);
   }
+
+  playAntSqueak(phrase = null) {
+    if (!this.ctx) return;
+    // Funny high pitch cartoon boing
+    const s = this._createOsc('sine', 400, 0.15, 0.25);
+    if (s) {
+      s.osc.frequency.setValueAtTime(450, s.t);
+      s.osc.frequency.exponentialRampToValueAtTime(1600, s.t + 0.1);
+      s.gain.gain.exponentialRampToValueAtTime(0.001, s.t + 0.15);
+      s.osc.start(s.t);
+      s.osc.stop(s.t + 0.15);
+    }
+
+    // High pitch cartoon speech (35% chance to speak funny word)
+    if (phrase && Math.random() < 0.35 && 'speechSynthesis' in window) {
+      try {
+        const cleanPhrase = phrase.replace(/[^a-zA-Z0-9à-ỹÀ-Ỹ\s!?']/g, '').trim();
+        if (cleanPhrase) {
+          const currentTrans = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+          const utter = new SpeechSynthesisUtterance(cleanPhrase);
+          utter.lang = currentTrans.tauntVoiceLang;
+          utter.pitch = 2.0; // Max high cartoon squeak pitch
+          utter.rate = 1.6;  // Fast cartoon speed
+          utter.volume = 0.9;
+          window.speechSynthesis.speak(utter);
+        }
+      } catch (e) {}
+    }
+  }
 }
 
 // ============================================
@@ -509,6 +568,85 @@ class Particle {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ============================================
+// FLOATING TEXT CLASS (Comic / Bựa Popups)
+// ============================================
+
+class FloatingText {
+  constructor(x, y, text) {
+    this.x = x;
+    this.y = y - 18;
+    this.text = text;
+    this.vy = -45 - Math.random() * 20;
+    this.vx = (Math.random() - 0.5) * 24;
+    this.alpha = 1.0;
+    this.life = 0;
+    this.maxLife = 1.15;
+    this.alive = true;
+    this.scale = 0.5;
+  }
+
+  update(dt) {
+    this.life += dt;
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+
+    if (this.scale < 1.0) {
+      this.scale = Math.min(1.0, this.scale + dt * 4.5);
+    }
+
+    if (this.life > 0.55) {
+      this.alpha = Math.max(0, 1 - (this.life - 0.55) / (this.maxLife - 0.55));
+    }
+
+    if (this.life >= this.maxLife) {
+      this.alive = false;
+    }
+  }
+
+  draw(ctx) {
+    if (!this.alive || this.alpha <= 0) return;
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.scale, this.scale);
+    ctx.globalAlpha = this.alpha;
+
+    ctx.font = 'bold 13px Outfit, sans-serif';
+    const textMetrics = ctx.measureText(this.text);
+    const boxW = textMetrics.width + 16;
+    const boxH = 24;
+
+    // Pill badge background
+    ctx.fillStyle = 'rgba(10, 15, 45, 0.9)';
+    ctx.strokeStyle = '#00f3ff';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = '#00f3ff';
+    ctx.shadowBlur = 10;
+
+    ctx.beginPath();
+    ctx.roundRect(-boxW / 2, -boxH / 2, boxW, boxH, 12);
+    ctx.fill();
+    ctx.stroke();
+
+    // Funny bubble tail
+    ctx.beginPath();
+    ctx.moveTo(-3, boxH / 2);
+    ctx.lineTo(0, boxH / 2 + 5);
+    ctx.lineTo(3, boxH / 2);
+    ctx.fillStyle = 'rgba(10, 15, 45, 0.9)';
+    ctx.fill();
+
+    // Text with neon yellow / orange pop
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#ffe600';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(this.text, 0, 0);
+
     ctx.restore();
   }
 }
@@ -757,6 +895,7 @@ class Game {
     this.ants = [];
     this.ripples = [];
     this.particles = [];
+    this.floatingTexts = [];
     this.score = 0;
     this.maxAnts = 0;
     this.antIdCounter = 0;
@@ -1069,6 +1208,7 @@ class Game {
     this.currentPath = [];
     this.ripples = [];
     this.particles = [];
+    this.floatingTexts = [];
     this.score = 0;
     this.maxAnts = 0;
     this.currentLevel = 1;
@@ -1208,7 +1348,15 @@ class Game {
       if (!ant.escaped && ant.containsPoint(x, y)) {
         ant.redirect();
         this.ripples.push(new Ripple(x, y));
+        
+        // Random funny / trolling phrase popup
+        const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+        const taunts = t.tapTaunts || ["Á đù! 😵", "Đau nha má! 💢", "Né đẹp chưa! 💃"];
+        const phrase = taunts[Math.floor(Math.random() * taunts.length)];
+        this.floatingTexts.push(new FloatingText(ant.x, ant.y, phrase));
+
         this.sound.playTap();
+        this.sound.playAntSqueak(phrase);
         return;
       }
     }
@@ -1259,6 +1407,7 @@ class Game {
     this.currentPath = [];
     this.ripples = [];
     this.particles = [];
+    this.floatingTexts = [];
     this.score = 0;
     this.maxAnts = 0;
     this.currentLevel = 1;
@@ -1524,6 +1673,10 @@ class Game {
       for (const r of this.ripples) r.update(dt);
       this.ripples = this.ripples.filter(r => r.alive);
 
+      // Update floating texts
+      for (const ft of this.floatingTexts) ft.update(dt);
+      this.floatingTexts = this.floatingTexts.filter(ft => ft.alive);
+
       this.checkEscapes();
     }
 
@@ -1552,6 +1705,10 @@ class Game {
       // Update remaining ripples
       for (const r of this.ripples) r.update(dt);
       this.ripples = this.ripples.filter(r => r.alive);
+
+      // Update floating texts
+      for (const ft of this.floatingTexts) ft.update(dt);
+      this.floatingTexts = this.floatingTexts.filter(ft => ft.alive);
     }
   }
 
@@ -1565,13 +1722,13 @@ class Game {
       }
     }
 
-    // --- DRAWING / PLAYING / GAME OVER: enclosure ---
+    // --- DRAWING / PLAYING / PAUSED / GAME OVER: enclosure ---
     if (this.state !== STATE.MENU) {
       this.drawEnclosure(timestamp);
     }
 
-    // --- PLAYING / GAME OVER: ants & effects ---
-    if (this.state === STATE.PLAYING || this.state === STATE.GAME_OVER) {
+    // --- PLAYING / PAUSED / GAME OVER: ants & effects ---
+    if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.GAME_OVER) {
       for (const ant of this.ants) {
         ant.draw(this.ctx);
       }
@@ -1580,6 +1737,9 @@ class Game {
       }
       for (const p of this.particles) {
         p.draw(this.ctx);
+      }
+      for (const ft of this.floatingTexts) {
+        ft.draw(this.ctx);
       }
     }
 
