@@ -32,6 +32,14 @@ const TRANSLATIONS = {
     adTag: "Quảng Cáo / Ủng Hộ",
     adSubtitle: "Ủng hộ duy trì máy chủ",
     adPlaceholder: "Cảm ơn bạn đã chơi! Bấm ủng hộ giúp tác giả duy trì máy chủ & cập nhật tính năng mới nhé.",
+    pauseTitle: "⏸ Đang Tạm Dừng",
+    resumeBtn: "Tiếp Tục Chơi",
+    pauseRestart: "Chơi Lại Từ Đầu",
+    mainMenuBtn: "Về Màn Hình Chính",
+    shareBtn: "Chia Sẻ Thành Tựu",
+    shareCopied: "Đã sao chép thành tựu! Hãy dán để khoe bạn bè 🎉",
+    shareText: (score, ants, mode, level) => 
+      `🐜 Tôi vừa giữ được ${ants} con kiến sống sót trong ${score} ${mode === 'level' ? `(Cấp ${level})` : ''} ở game Chăn Kiến!\n👉 Thử thách xem bạn có bắt kịp tôi không: https://chan-kien.pages.dev`,
     tauntInitial: "Lêu lêu! 😝",
     tauntVoiceLang: "vi-VN",
     taunts: [
@@ -81,6 +89,14 @@ const TRANSLATIONS = {
     adTag: "Ads / Support",
     adSubtitle: "Support to keep servers running",
     adPlaceholder: "Thank you for playing! Click ads to support developer with new game updates.",
+    pauseTitle: "⏸ Game Paused",
+    resumeBtn: "Resume Game",
+    pauseRestart: "Restart From Beginning",
+    mainMenuBtn: "Main Menu",
+    shareBtn: "Share Achievement",
+    shareCopied: "Achievement copied! Paste to challenge your friends 🎉",
+    shareText: (score, ants, mode, level) => 
+      `🐜 I survived ${score} with ${ants} ants ${mode === 'level' ? `(Level ${level})` : ''} in Ant Herder!\n👉 Can you beat my high score? Play now: https://chan-kien.pages.dev`,
     tauntInitial: "Na-na-na boo-boo! 😝",
     tauntVoiceLang: "en-US",
     taunts: [
@@ -128,6 +144,7 @@ const STATE = {
   MENU: 'menu',
   DRAWING: 'drawing',
   PLAYING: 'playing',
+  PAUSED: 'paused',
   GAME_OVER: 'gameover',
 };
 
@@ -695,8 +712,10 @@ class Game {
 
     // UI Elements
     this.startScreen = document.getElementById('start-screen');
+    this.pauseScreen = document.getElementById('pause-screen');
     this.gameOverScreen = document.getElementById('game-over-screen');
     this.hud = document.getElementById('hud');
+    this.inGameControls = document.getElementById('in-game-controls');
     this.levelBadge = document.getElementById('level-badge');
     this.levelDivider = document.getElementById('level-divider');
     this.addAntBtn = document.getElementById('add-ant-btn');
@@ -710,6 +729,12 @@ class Game {
     this.finalAntsEl = document.getElementById('final-ants');
     this.highScoreEl = document.getElementById('high-score');
     this.modeDescEl = document.getElementById('mode-desc');
+    this.toastMsg = document.getElementById('toast-msg');
+
+    // Pause Screen Elements
+    this.pauseModeVal = document.getElementById('pause-mode-val');
+    this.pauseTimeVal = document.getElementById('pause-time-val');
+    this.pauseAntsVal = document.getElementById('pause-ants-val');
 
     // Sound
     this.sound = new SoundManager();
@@ -727,6 +752,7 @@ class Game {
 
     // Game state
     this.state = STATE.MENU;
+    this.previousState = STATE.PLAYING;
     this.enclosure = [];
     this.ants = [];
     this.ripples = [];
@@ -743,6 +769,7 @@ class Game {
     this.centroid = { x: 0, y: 0 };
     this.pulseTime = 0;
     this.gameOverDelay = 0;
+    this.toastTimeout = null;
 
     // High scores
     this.highScores = this.loadHighScore();
@@ -829,6 +856,29 @@ class Game {
     const restartBtnText = document.getElementById('restart-btn-text');
     if (restartBtnText) restartBtnText.textContent = t.restartBtn;
 
+    // Pause Screen texts
+    const pauseTitle = document.getElementById('pause-title');
+    if (pauseTitle) pauseTitle.textContent = t.pauseTitle;
+    const pauseLabelMode = document.getElementById('pause-label-mode');
+    if (pauseLabelMode) pauseLabelMode.textContent = `🎮 ${t.scoreMode}`;
+    const pauseLabelTime = document.getElementById('pause-label-time');
+    if (pauseLabelTime) pauseLabelTime.textContent = `⏱ ${t.scoreTime}`;
+    const pauseLabelAnts = document.getElementById('pause-label-ants');
+    if (pauseLabelAnts) pauseLabelAnts.textContent = `🐜 ${t.scoreAnts}`;
+    const resumeBtnText = document.getElementById('resume-btn-text');
+    if (resumeBtnText) resumeBtnText.textContent = t.resumeBtn;
+    const pauseRestartText = document.getElementById('pause-restart-text');
+    if (pauseRestartText) pauseRestartText.textContent = t.pauseRestart;
+    const pauseMenuText = document.getElementById('pause-menu-text');
+    if (pauseMenuText) pauseMenuText.textContent = t.mainMenuBtn;
+
+    // Share & Menu buttons in GameOver
+    const shareBtnText = document.getElementById('share-btn-text');
+    if (shareBtnText) shareBtnText.textContent = t.shareBtn;
+    const gameoverMenuText = document.getElementById('gameover-menu-text');
+    if (gameoverMenuText) gameoverMenuText.textContent = t.mainMenuBtn;
+
+    // Ad slot
     const adTagText = document.getElementById('ad-tag-text');
     if (adTagText) adTagText.textContent = t.adTag;
     const adSubtitleText = document.getElementById('ad-subtitle-text');
@@ -926,7 +976,7 @@ class Game {
 
     // Mode Switcher Buttons
     document.querySelectorAll('.mode-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;
         this.setGameMode(mode);
       });
@@ -935,6 +985,31 @@ class Game {
     // Buttons & Interactive
     document.getElementById('start-btn').addEventListener('click', () => this.startGame());
     document.getElementById('restart-btn').addEventListener('click', () => this.restartGame());
+    
+    // In-game controls
+    const pauseBtn = document.getElementById('pause-btn');
+    if (pauseBtn) pauseBtn.addEventListener('click', () => this.pauseGame());
+    
+    const quickRestartBtn = document.getElementById('quick-restart-btn');
+    if (quickRestartBtn) quickRestartBtn.addEventListener('click', () => this.restartGame());
+
+    // Pause Screen Buttons
+    const resumeBtn = document.getElementById('resume-btn');
+    if (resumeBtn) resumeBtn.addEventListener('click', () => this.resumeGame());
+
+    const pauseRestartBtn = document.getElementById('pause-restart-btn');
+    if (pauseRestartBtn) pauseRestartBtn.addEventListener('click', () => this.restartGame());
+
+    const pauseMenuBtn = document.getElementById('pause-menu-btn');
+    if (pauseMenuBtn) pauseMenuBtn.addEventListener('click', () => this.quitToMenu());
+
+    // Game Over Buttons
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) shareBtn.addEventListener('click', () => this.shareAchievement());
+
+    const gameoverMenuBtn = document.getElementById('gameover-menu-btn');
+    if (gameoverMenuBtn) gameoverMenuBtn.addEventListener('click', () => this.quitToMenu());
+
     this.addAntBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.addAnt();
@@ -962,6 +1037,96 @@ class Game {
 
     // Prevent context menu on long press
     this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  pauseGame() {
+    if (this.state !== STATE.PLAYING && this.state !== STATE.DRAWING) return;
+    this.sound.playClick();
+    this.previousState = this.state;
+    this.setState(STATE.PAUSED);
+
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    if (this.pauseModeVal) {
+      this.pauseModeVal.textContent = this.mode === 'level' ? `🏆 ${t.modeLevel}` : `🎯 ${t.modeFree}`;
+    }
+    if (this.pauseTimeVal) {
+      this.pauseTimeVal.textContent = this.formatTime(this.score);
+    }
+    if (this.pauseAntsVal) {
+      this.pauseAntsVal.textContent = `${this.ants.filter(a => !a.escaped).length}`;
+    }
+  }
+
+  resumeGame() {
+    this.sound.playClick();
+    this.setState(this.previousState || STATE.PLAYING);
+  }
+
+  quitToMenu() {
+    this.sound.playClick();
+    this.enclosure = [];
+    this.ants = [];
+    this.currentPath = [];
+    this.ripples = [];
+    this.particles = [];
+    this.score = 0;
+    this.maxAnts = 0;
+    this.currentLevel = 1;
+    this.levelTimer = 0;
+    this.antIdCounter = 0;
+    this.gameOverFlash = 0;
+    this.gameOverDelay = 0;
+    this.createMenuAnts();
+    this.setState(STATE.MENU);
+  }
+
+  async shareAchievement() {
+    this.sound.playClick();
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    const formattedTime = this.formatTime(this.score);
+    const antsCount = this.maxAnts || this.ants.length;
+    const text = t.shareText(formattedTime, antsCount, this.mode, this.currentLevel);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `🐜 ${t.gameTitle} - High Score`,
+          text: text,
+          url: 'https://chan-kien.pages.dev'
+        });
+        return;
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.log('Share error:', err);
+        }
+      }
+    }
+
+    // Fallback: Copy to clipboard
+    try {
+      await navigator.clipboard.writeText(text);
+      this.showToast(t.shareCopied);
+    } catch (err) {
+      const tempInput = document.createElement('textarea');
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      this.showToast(t.shareCopied);
+    }
+  }
+
+  showToast(msg) {
+    if (!this.toastMsg) return;
+    this.toastMsg.textContent = msg;
+    this.toastMsg.classList.remove('show');
+    void this.toastMsg.offsetWidth;
+    this.toastMsg.classList.add('show');
+    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.toastMsg.classList.remove('show');
+    }, 3000);
   }
 
   setGameMode(mode) {
@@ -1101,16 +1266,16 @@ class Game {
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
-    if (this.levelUpPopup) this.levelUpPopup.classList.remove('show');
     this.createMenuAnts();
-    this.setState(STATE.MENU);
+    this.setState(STATE.DRAWING);
   }
 
   setState(newState) {
+    const prevState = this.state;
     this.state = newState;
     this.updateUIVisibility();
 
-    if (newState === STATE.PLAYING) {
+    if (newState === STATE.PLAYING && prevState !== STATE.PAUSED) {
       this.score = 0;
       this.currentLevel = 1;
       this.levelTimer = 0;
@@ -1119,8 +1284,6 @@ class Game {
     if (newState === STATE.GAME_OVER) {
       this.gameOverFlash = 0.6;
       this.gameOverDelay = 1.0;
-
-      if (this.levelUpPopup) this.levelUpPopup.classList.remove('show');
 
       // Sound effects
       this.sound.playGameOver();
@@ -1173,10 +1336,16 @@ class Game {
 
   updateUIVisibility() {
     this.startScreen.classList.toggle('visible', this.state === STATE.MENU);
+    this.pauseScreen.classList.toggle('visible', this.state === STATE.PAUSED);
     this.gameOverScreen.classList.toggle('visible',
       this.state === STATE.GAME_OVER && this.gameOverDelay <= 0);
-    this.hud.classList.toggle('visible', this.state === STATE.PLAYING);
+    this.hud.classList.toggle('visible', this.state === STATE.PLAYING || this.state === STATE.PAUSED);
     
+    // In-game controls (pause & restart)
+    if (this.inGameControls) {
+      this.inGameControls.classList.toggle('visible', this.state === STATE.PLAYING || this.state === STATE.DRAWING);
+    }
+
     // Add ant FAB only visible in Free Mode
     this.addAntBtn.classList.toggle('visible', this.state === STATE.PLAYING && this.mode === 'free');
     

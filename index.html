@@ -35,6 +35,16 @@
       <div id="ant-count" class="hud-item">🐜 × 0</div>
     </div>
 
+    <!-- In-Game Controls (Top-Right: Pause & Quick Restart) -->
+    <div id="in-game-controls">
+      <button id="pause-btn" class="hud-control-btn" aria-label="Tạm dừng" title="Tạm dừng / Pause">
+        <span>⏸</span>
+      </button>
+      <button id="quick-restart-btn" class="hud-control-btn" aria-label="Chơi lại" title="Chơi lại / Restart">
+        <span>↻</span>
+      </button>
+    </div>
+
     <!-- Add Ant FAB -->
     <button id="add-ant-btn" aria-label="Thêm kiến">
       <span class="fab-icon">➕</span>
@@ -97,6 +107,41 @@
             <span class="shopee-icon">🛍️</span>
             <span id="shopee-btn-text">Click Shopee để ủng hộ</span>
           </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause Screen Modal -->
+    <div id="pause-screen" class="overlay">
+      <div class="overlay-content">
+        <h2 id="pause-title" class="gameover-title">⏸ Đang Tạm Dừng</h2>
+        <div class="score-card glass-panel">
+          <div class="score-row">
+            <span id="pause-label-mode" class="score-label">🎮 Chế độ</span>
+            <span id="pause-mode-val" class="score-value">Tự Do</span>
+          </div>
+          <div class="score-row">
+            <span id="pause-label-time" class="score-label">⏱ Thời gian</span>
+            <span id="pause-time-val" class="score-value">00:00</span>
+          </div>
+          <div class="score-row">
+            <span id="pause-label-ants" class="score-label">🐜 Số kiến</span>
+            <span id="pause-ants-val" class="score-value">0</span>
+          </div>
+        </div>
+        <div class="action-buttons-group">
+          <button id="resume-btn" class="btn-primary">
+            <span id="resume-btn-text">Tiếp Tục Chơi</span>
+            <span class="btn-arrow">▶</span>
+          </button>
+          <button id="pause-restart-btn" class="btn-secondary" type="button">
+            <span>↻</span>
+            <span id="pause-restart-text">Chơi Lại Từ Đầu</span>
+          </button>
+          <button id="pause-menu-btn" class="btn-secondary" type="button">
+            <span>🏠</span>
+            <span id="pause-menu-text">Về Màn Hình Chính</span>
+          </button>
         </div>
       </div>
     </div>
@@ -168,6 +213,14 @@
             <span id="restart-btn-text">Chơi Lại</span>
             <span class="btn-arrow">↻</span>
           </button>
+          <button id="share-btn" class="btn-share" type="button">
+            <span>📤</span>
+            <span id="share-btn-text">Chia Sẻ Thành Tựu</span>
+          </button>
+          <button id="gameover-menu-btn" class="btn-secondary" type="button">
+            <span>🏠</span>
+            <span id="gameover-menu-text">Về Màn Hình Chính</span>
+          </button>
           <a href="https://s.shopee.vn/3qMPGGcTFV" target="_blank" rel="noopener noreferrer" class="shopee-btn" aria-label="Shopee">
             <span class="shopee-icon">🛍️</span>
             <span id="shopee-btn-text-2">Click Shopee để ủng hộ</span>
@@ -175,6 +228,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-msg">Đã sao chép thành tựu! 🎉</div>
 
     <!-- Floating Shopee Corner Badge -->
     <a href="https://s.shopee.vn/3qMPGGcTFV" target="_blank" rel="noopener noreferrer" id="floating-shopee" class="floating-shopee" title="Click Shopee để ủng hộ">
