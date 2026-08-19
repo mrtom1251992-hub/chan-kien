@@ -769,8 +769,131 @@ class FloatingText {
 }
 
 // ============================================
-// ANT CLASS
+// FLORA CLASS (Grass Patches, Flowers & Treats 🌿🌸🌼)
 // ============================================
+
+class Flora {
+  constructor(x, y, floraType = 'grass') {
+    this.x = x;
+    this.y = y;
+    this.type = floraType; // 'grass', 'flower_daisy', 'flower_pink', 'sugar'
+    this.scale = 0.65 + Math.random() * 0.45;
+    this.rotation = (Math.random() - 0.5) * 0.6;
+    this.alive = true;
+    this.alpha = 1.0;
+    this.eaten = false;
+    this.eatenTimer = 0;
+    this.swayPhase = Math.random() * Math.PI * 2;
+  }
+
+  update(dt) {
+    this.swayPhase += dt * 2.5;
+    if (this.eaten) {
+      this.alpha = Math.max(0, this.alpha - dt * 2.5);
+      this.scale = Math.max(0, this.scale - dt * 1.8);
+      if (this.alpha <= 0) this.alive = false;
+    }
+  }
+
+  draw(ctx) {
+    if (!this.alive || this.alpha <= 0) return;
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.scale, this.scale);
+    ctx.globalAlpha = this.alpha;
+
+    const sway = Math.sin(this.swayPhase) * 0.12;
+    ctx.rotate(this.rotation + sway);
+
+    if (this.type === 'grass') {
+      // Lush green grass blades
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = 'round';
+
+      // Blade 1 (left)
+      ctx.beginPath();
+      ctx.moveTo(-4, 0);
+      ctx.quadraticCurveTo(-7, -8, -10, -12);
+      ctx.stroke();
+
+      // Blade 2 (center, taller)
+      ctx.strokeStyle = '#4ade80';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(2, -10, 1, -16);
+      ctx.stroke();
+
+      // Blade 3 (right)
+      ctx.strokeStyle = '#16a34a';
+      ctx.beginPath();
+      ctx.moveTo(4, 0);
+      ctx.quadraticCurveTo(7, -7, 9, -11);
+      ctx.stroke();
+    } else if (this.type === 'flower_daisy') {
+      // White daisy with yellow center
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(-2, -6, 0, -12);
+      ctx.stroke();
+
+      // Petals
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < 6; i++) {
+        const ang = (i * Math.PI) / 3;
+        ctx.beginPath();
+        ctx.ellipse(Math.cos(ang) * 4.2, -12 + Math.sin(ang) * 4.2, 3, 1.8, ang, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Center
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.arc(0, -12, 2.6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (this.type === 'flower_pink') {
+      // Pink wildflower
+      ctx.strokeStyle = '#16a34a';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(2, -5, 0, -11);
+      ctx.stroke();
+
+      // Petals
+      ctx.fillStyle = '#f472b6';
+      for (let i = 0; i < 5; i++) {
+        const ang = (i * Math.PI * 2) / 5;
+        ctx.beginPath();
+        ctx.arc(Math.cos(ang) * 3.6, -11 + Math.sin(ang) * 3.6, 2.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Center
+      ctx.fillStyle = '#fef08a';
+      ctx.beginPath();
+      ctx.arc(0, -11, 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (this.type === 'sugar') {
+      // Sweet sugar candy / honey drop for ants
+      ctx.fillStyle = '#38bdf8';
+      ctx.shadowColor = '#00f3ff';
+      ctx.shadowBlur = 5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-1, -1, 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+}
 
 // ============================================
 // ANIMAL CLASS (Ant 🐜 & Dairy Cow 🐮)
@@ -791,9 +914,78 @@ class Animal {
     this.escaped = false;
     this.wanderTimer = 0;
     this.wanderTarget = this.angle;
+
+    // Natural Animal Behaviors (Grazing, Sniffing & Chewing)
+    this.behaviorState = 'WALK'; // 'WALK' | 'GRAZE' (Cow) | 'SNIFF' (Ant)
+    this.idleTimer = 2.5 + Math.random() * 3.5;
+    this.grazeDuration = 0;
+    this.chewPhase = 0;
+    this.sniffPhase = 0;
+    this.isChewingGrass = false;
   }
 
-  update(dt) {
+  update(dt, gameRef = null) {
+    if (this.startled) {
+      this.behaviorState = 'WALK';
+      this.startledTimer -= dt;
+      if (this.startledTimer <= 0) this.startled = false;
+    }
+
+    // --- IDLE / GRAZING / SNIFFING BEHAVIOR ---
+    if (this.behaviorState === 'GRAZE' || this.behaviorState === 'SNIFF') {
+      this.grazeDuration -= dt;
+      if (this.animalType === 'cow') {
+        this.chewPhase += dt * 8.5;
+      } else {
+        this.sniffPhase += dt * 15;
+      }
+
+      // Check if cow is grazing close to a grass / flower patch
+      if (gameRef && gameRef.floraList && this.animalType === 'cow' && !this.isChewingGrass) {
+        for (const fl of gameRef.floraList) {
+          if (fl.alive && !fl.eaten && dist(this.x, this.y, fl.x, fl.y) < 24) {
+            fl.eaten = true;
+            this.isChewingGrass = true;
+            if (gameRef.particles) {
+              for (let k = 0; k < 6; k++) {
+                gameRef.particles.push(new Particle(fl.x, fl.y));
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      if (this.grazeDuration <= 0) {
+        this.behaviorState = 'WALK';
+        this.idleTimer = 3.5 + Math.random() * 4.5;
+        this.isChewingGrass = false;
+      }
+      return; // Stand in place while eating / sniffing
+    }
+
+    // Normal walk & periodic grazing countdown
+    this.idleTimer -= dt;
+    if (this.idleTimer <= 0 && !this.startled && !this.escaped) {
+      this.behaviorState = this.animalType === 'cow' ? 'GRAZE' : 'SNIFF';
+      this.grazeDuration = 1.2 + Math.random() * 1.8;
+      this.idleTimer = 4.0 + Math.random() * 5.0;
+
+      // 30% chance to show cute floating thought
+      if (gameRef && gameRef.floatingTexts && Math.random() < 0.32) {
+        const viTaunts = this.animalType === 'cow'
+          ? ["Nhai nhai 🌾", "Mlem mlem 🌸", "Cỏ non ngon quá 😋", "Ngon xỉu 🌿", "Nhai nhóp nhép 🐮"]
+          : ["Ngửi ngửi 👃", "Mùi gì thơm thế 🍬", "Có đường nè 🍯", "Hít hà 👃", "Mùi mật ngọt 🐝"];
+        const enTaunts = this.animalType === 'cow'
+          ? ["Munch munch 🌾", "Yummy grass 😋", "Mlem mlem 🌸", "Chewing 🌿", "Delicious! 🐮"]
+          : ["Sniff sniff 👃", "Smells sweet 🍬", "Found sugar! 🍯", "Sniffing 👃"];
+        const list = (gameRef.lang === 'vi' ? viTaunts : enTaunts);
+        const phrase = list[Math.floor(Math.random() * list.length)];
+        gameRef.floatingTexts.push(new FloatingText(this.x, this.y, phrase));
+      }
+      return;
+    }
+
     // Smooth random walk: pick a new target direction periodically
     this.wanderTimer -= dt;
     if (this.wanderTimer <= 0) {
@@ -814,8 +1006,6 @@ class Animal {
     let currentSpeed = this.speed;
     if (this.startled) {
       currentSpeed *= 1.6;
-      this.startledTimer -= dt;
-      if (this.startledTimer <= 0) this.startled = false;
     }
 
     // Move
@@ -829,6 +1019,7 @@ class Animal {
   redirect() {
     this.angle += Math.PI + (Math.random() - 0.5) * CONFIG.REDIRECT_SPREAD;
     this.wanderTarget = this.angle;
+    this.behaviorState = 'WALK';
     this.startled = true;
     this.startledTimer = 0.4;
   }
@@ -851,6 +1042,10 @@ class Animal {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
 
+    const isSniffing = this.behaviorState === 'SNIFF';
+    const sniffAntenna = isSniffing ? Math.sin(this.sniffPhase) * 5 : 0;
+    const sniffHeadDip = isSniffing ? Math.sin(this.sniffPhase * 0.5) * 1.2 : 0;
+
     // --- Shadow ---
     ctx.fillStyle = 'rgba(0,0,0,0.18)';
     ctx.beginPath();
@@ -865,7 +1060,7 @@ class Animal {
     for (let i = 0; i < 3; i++) {
       const baseX = -7 + i * 6;
       const phase = this.legPhase + i * (Math.PI / 1.5);
-      const swing = Math.sin(phase);
+      const swing = isSniffing ? 0 : Math.sin(phase);
 
       const kneeOffsetY = 7 + Math.abs(swing) * 3;
       const footOffsetX = swing * 4;
@@ -906,57 +1101,57 @@ class Animal {
     ctx.ellipse(2, 0, 4.5, 3.8, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- Head ---
+    // --- Head (with sniffing dip) ---
     ctx.fillStyle = CONFIG.ANT_BODY_COLOR;
     ctx.beginPath();
-    ctx.ellipse(9, 0, 4.5, 4, 0, 0, Math.PI * 2);
+    ctx.ellipse(9 + sniffHeadDip, 0, 4.5, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // --- Mandibles ---
     ctx.strokeStyle = CONFIG.ANT_LEG_COLOR;
     ctx.lineWidth = 1.2;
     ctx.beginPath();
-    ctx.moveTo(12.5, -2);
-    ctx.quadraticCurveTo(15, -2.5, 16, -4);
+    ctx.moveTo(12.5 + sniffHeadDip, -2);
+    ctx.quadraticCurveTo(15 + sniffHeadDip, -2.5, 16 + sniffHeadDip, -4);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(12.5, 2);
-    ctx.quadraticCurveTo(15, 2.5, 16, 4);
+    ctx.moveTo(12.5 + sniffHeadDip, 2);
+    ctx.quadraticCurveTo(15 + sniffHeadDip, 2.5, 16 + sniffHeadDip, 4);
     ctx.stroke();
 
-    // --- Antennae ---
+    // --- Antennae (vibrate while sniffing) ---
     ctx.strokeStyle = CONFIG.ANT_LEG_COLOR;
     ctx.lineWidth = 1;
-    const antennaWave = Math.sin(this.legPhase * 0.7) * 2;
+    const antennaWave = (isSniffing ? sniffAntenna : Math.sin(this.legPhase * 0.7) * 2);
     ctx.beginPath();
-    ctx.moveTo(11, -3);
-    ctx.quadraticCurveTo(16, -7 + antennaWave, 20, -9 + antennaWave);
+    ctx.moveTo(11 + sniffHeadDip, -3);
+    ctx.quadraticCurveTo(16 + sniffHeadDip, -7 + antennaWave, 20 + sniffHeadDip, -9 + antennaWave);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(11, 3);
-    ctx.quadraticCurveTo(16, 7 - antennaWave, 20, 9 - antennaWave);
+    ctx.moveTo(11 + sniffHeadDip, 3);
+    ctx.quadraticCurveTo(16 + sniffHeadDip, 7 - antennaWave, 20 + sniffHeadDip, 9 - antennaWave);
     ctx.stroke();
 
     // --- Antenna tips ---
     ctx.fillStyle = CONFIG.ANT_LEG_COLOR;
     ctx.beginPath();
-    ctx.arc(20, -9 + antennaWave, 1.2, 0, Math.PI * 2);
+    ctx.arc(20 + sniffHeadDip, -9 + antennaWave, 1.2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.arc(20, 9 - antennaWave, 1.2, 0, Math.PI * 2);
+    ctx.arc(20 + sniffHeadDip, 9 - antennaWave, 1.2, 0, Math.PI * 2);
     ctx.fill();
 
     // --- Eyes ---
     ctx.fillStyle = this.startled ? '#ff6b6b' : '#eee';
     ctx.beginPath();
-    ctx.arc(10.5, -2.2, 1.4, 0, Math.PI * 2);
-    ctx.arc(10.5, 2.2, 1.4, 0, Math.PI * 2);
+    ctx.arc(10.5 + sniffHeadDip, -2.2, 1.4, 0, Math.PI * 2);
+    ctx.arc(10.5 + sniffHeadDip, 2.2, 1.4, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = this.startled ? '#cc0000' : '#222';
     ctx.beginPath();
-    ctx.arc(11, -2.2, 0.7, 0, Math.PI * 2);
-    ctx.arc(11, 2.2, 0.7, 0, Math.PI * 2);
+    ctx.arc(11 + sniffHeadDip, -2.2, 0.7, 0, Math.PI * 2);
+    ctx.arc(11 + sniffHeadDip, 2.2, 0.7, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();
@@ -967,8 +1162,10 @@ class Animal {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
 
-    const legWave = Math.sin(this.legPhase) * 4.5;
-    const tailWave = Math.sin(this.legPhase * 1.3) * 0.35;
+    const isGrazing = this.behaviorState === 'GRAZE';
+    const legWave = isGrazing ? 0 : Math.sin(this.legPhase) * 4.5;
+    const tailWave = (isGrazing ? Math.sin(this.chewPhase * 1.2) * 0.5 : Math.sin(this.legPhase * 1.3) * 0.35);
+    const chewMotion = isGrazing ? Math.sin(this.chewPhase) * 1.8 : 0;
 
     // --- Shadow ---
     ctx.fillStyle = 'rgba(0,0,0,0.22)';
@@ -1049,12 +1246,12 @@ class Animal {
     ctx.fill();
     ctx.stroke();
 
-    // --- Head ---
+    // --- Head (Lowers down when grazing) ---
     ctx.fillStyle = '#ffffff';
     ctx.strokeStyle = '#94a3b8';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.ellipse(14, 0, 8, 7.5, 0, 0, Math.PI * 2);
+    ctx.ellipse(14 + (isGrazing ? 1.5 : 0), 0, 8, 7.5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
@@ -1064,16 +1261,17 @@ class Animal {
     ctx.ellipse(12, -3, 3.8, 3, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // --- Ears ---
+    // --- Ears (Wiggle slightly) ---
+    const earWiggle = isGrazing ? Math.sin(this.chewPhase * 1.5) * 0.15 : 0;
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.ellipse(11, -8, 4, 2.2, -Math.PI / 3, 0, Math.PI * 2);
-    ctx.ellipse(11, 8, 4, 2.2, Math.PI / 3, 0, Math.PI * 2);
+    ctx.ellipse(11, -8, 4, 2.2, -Math.PI / 3 + earWiggle, 0, Math.PI * 2);
+    ctx.ellipse(11, 8, 4, 2.2, Math.PI / 3 - earWiggle, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#f472b6'; // Pink inner ear
     ctx.beginPath();
-    ctx.ellipse(11, -8, 2.4, 1.2, -Math.PI / 3, 0, Math.PI * 2);
-    ctx.ellipse(11, 8, 2.4, 1.2, Math.PI / 3, 0, Math.PI * 2);
+    ctx.ellipse(11, -8, 2.4, 1.2, -Math.PI / 3 + earWiggle, 0, Math.PI * 2);
+    ctx.ellipse(11, 8, 2.4, 1.2, Math.PI / 3 - earWiggle, 0, Math.PI * 2);
     ctx.fill();
 
     // --- Horns (Golden/Cream) ---
@@ -1094,18 +1292,33 @@ class Animal {
     ctx.fill();
     ctx.stroke();
 
-    // --- Pink Muzzle & Nostrils ---
+    // --- Pink Muzzle & Chewing Motion ---
     ctx.fillStyle = '#fda4af';
     ctx.beginPath();
-    ctx.ellipse(19, 0, 4.5, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(19 + (isGrazing ? 1.5 : 0), chewMotion * 0.7, 4.5, 5, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Nostrils
     ctx.fillStyle = '#881337';
     ctx.beginPath();
-    ctx.arc(20, -1.8, 1, 0, Math.PI * 2);
-    ctx.arc(20, 1.8, 1, 0, Math.PI * 2);
+    ctx.arc(20 + (isGrazing ? 1.5 : 0), -1.8 + chewMotion * 0.7, 1, 0, Math.PI * 2);
+    ctx.arc(20 + (isGrazing ? 1.5 : 0), 1.8 + chewMotion * 0.7, 1, 0, Math.PI * 2);
     ctx.fill();
+
+    // Grass blade in mouth when grazing or eating grass
+    if (isGrazing || this.isChewingGrass) {
+      ctx.strokeStyle = '#22c55e';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(21, chewMotion * 0.7);
+      ctx.quadraticCurveTo(25, -4, 28, -2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#4ade80';
+      ctx.beginPath();
+      ctx.ellipse(28, -2, 2.5, 1.2, Math.PI / 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // --- Eyes ---
     ctx.fillStyle = this.startled ? '#ef4444' : '#0f172a';
@@ -1185,6 +1398,7 @@ class Game {
     this.previousState = STATE.PLAYING;
     this.enclosure = [];
     this.ants = [];
+    this.floraList = [];
     this.ripples = [];
     this.particles = [];
     this.floatingTexts = [];
@@ -1208,6 +1422,7 @@ class Game {
     // Setup
     this.resizeCanvas();
     this.createBgPattern();
+    this.spawnFlora();
     this.createMenuAnts();
     this.bindEvents();
     this.setAnimal(this.animal, false);
@@ -1230,6 +1445,7 @@ class Game {
       this.sound.playAnimalTap(this.animal);
     }
 
+    this.spawnFlora();
     this.createMenuAnts();
     this.setLanguage(this.lang);
   }
@@ -1346,6 +1562,50 @@ class Game {
     this.updateHUD();
   }
 
+  // --- Flora / Grass & Flower Generation ---
+  spawnFlora() {
+    this.floraList = [];
+    const count = this.state === STATE.MENU ? 18 : 24;
+    for (let i = 0; i < count; i++) {
+      if (this.state === STATE.MENU || this.enclosure.length < 3) {
+        const x = 40 + Math.random() * (this.width - 80);
+        const y = 80 + Math.random() * (this.height - 160);
+        this.floraList.push(new Flora(x, y, this.getRandomFloraType()));
+      } else {
+        this.spawnSingleFloraInEnclosure();
+      }
+    }
+  }
+
+  getRandomFloraType() {
+    if (this.animal === 'cow') {
+      const types = ['grass', 'grass', 'flower_daisy', 'flower_pink'];
+      return types[Math.floor(Math.random() * types.length)];
+    } else {
+      const types = ['sugar', 'grass', 'sugar'];
+      return types[Math.floor(Math.random() * types.length)];
+    }
+  }
+
+  spawnSingleFloraInEnclosure() {
+    if (this.enclosure.length < 3) return;
+    const xs = this.enclosure.map(p => p.x);
+    const ys = this.enclosure.map(p => p.y);
+    const minX = Math.min(...xs) + 12;
+    const maxX = Math.max(...xs) - 12;
+    const minY = Math.min(...ys) + 12;
+    const maxY = Math.max(...ys) - 12;
+
+    for (let attempt = 0; attempt < 25; attempt++) {
+      const rx = minX + Math.random() * (maxX - minX);
+      const ry = minY + Math.random() * (maxY - minY);
+      if (isPointInPolygon(rx, ry, this.enclosure)) {
+        this.floraList.push(new Flora(rx, ry, this.getRandomFloraType()));
+        return;
+      }
+    }
+  }
+
   // --- Canvas Setup ---
   resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
@@ -1392,6 +1652,7 @@ class Game {
     window.addEventListener('resize', () => {
       this.resizeCanvas();
       this.createBgPattern();
+      this.spawnFlora();
     });
 
     // Mouse
@@ -1543,6 +1804,7 @@ class Game {
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
+    this.spawnFlora();
     this.createMenuAnts();
     this.setState(STATE.MENU);
   }
@@ -1654,6 +1916,7 @@ class Game {
 
       this.sound.playDrawComplete();
       this.setState(STATE.PLAYING);
+      this.spawnFlora(); // Spawn grass & flowers inside the new pen!
       this.addAnt(false);
     } else {
       this.currentPath = [];
@@ -1744,6 +2007,7 @@ class Game {
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
+    this.spawnFlora();
     this.createMenuAnts();
     this.setState(STATE.DRAWING);
   }
@@ -1969,10 +2233,14 @@ class Game {
   }
 
   update(dt, timestamp) {
+    // Update flora (grass, flowers, treats)
+    for (const fl of this.floraList) fl.update(dt);
+    this.floraList = this.floraList.filter(fl => fl.alive);
+
     // --- MENU ---
     if (this.state === STATE.MENU) {
       for (const ant of this.menuAnts) {
-        ant.update(dt);
+        ant.update(dt, this);
         // Wrap around screen edges
         if (ant.x < -40) ant.x = this.width + 40;
         if (ant.x > this.width + 40) ant.x = -40;
@@ -1995,8 +2263,13 @@ class Game {
 
       this.updateHUD();
 
+      // Respawn flora if cows eat most of it
+      if (this.floraList.length < 10) {
+        this.spawnSingleFloraInEnclosure();
+      }
+
       for (const ant of this.ants) {
-        if (!ant.escaped) ant.update(dt);
+        if (!ant.escaped) ant.update(dt, this);
       }
 
       // Update effects
@@ -2006,6 +2279,10 @@ class Game {
       // Update floating texts
       for (const ft of this.floatingTexts) ft.update(dt);
       this.floatingTexts = this.floatingTexts.filter(ft => ft.alive);
+
+      // Update particles
+      for (const p of this.particles) p.update(dt);
+      this.particles = this.particles.filter(p => p.alive);
 
       this.checkEscapes();
     }
@@ -2025,7 +2302,7 @@ class Game {
 
       // Keep escaped ant moving
       for (const ant of this.ants) {
-        if (ant.escaped) ant.update(dt);
+        if (ant.escaped) ant.update(dt, this);
       }
 
       // Update particles
@@ -2044,6 +2321,11 @@ class Game {
 
   render(timestamp) {
     this.drawBackground();
+
+    // --- Draw Grass & Flowers / Flora first ---
+    for (const fl of this.floraList) {
+      fl.draw(this.ctx);
+    }
 
     // --- MENU: decorative ants ---
     if (this.state === STATE.MENU) {
@@ -2073,7 +2355,6 @@ class Game {
       }
     }
 
-    // --- GAME OVER: red flash ---
     if (this.state === STATE.GAME_OVER) {
       this.drawGameOverFlash();
     }
