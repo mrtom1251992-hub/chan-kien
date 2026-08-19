@@ -1,15 +1,15 @@
-const CACHE_NAME = 'chan-kien-v1.0.5';
+const CACHE_NAME = 'chan-kien-v2.0.0';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/game.js',
-  '/manifest.json',
-  '/favicon.png',
-  '/icons/icon.svg',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/icon-maskable.png'
+  './',
+  './index.html',
+  './style.css',
+  './game.js',
+  './manifest.json',
+  './favicon.png',
+  './icons/icon.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable.png'
 ];
 
 // Install Event - Pre-cache core assets

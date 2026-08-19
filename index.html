@@ -261,13 +261,23 @@
 
   <!-- PWA Service Worker & Install Handler -->
   <script>
-    // Register Service Worker & Auto Update
+    // Register Service Worker & Auto Update for Installed / Cached Users
     if ('serviceWorker' in navigator) {
+      let refreshing = false;
+
+      // When the new service worker takes over, reload to apply new version
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
           .then((reg) => {
-            console.log('[PWA] Service Worker registered with scope:', reg.scope);
-            reg.update(); // Force check for new version from server
+            console.log('[PWA] Service Worker registered:', reg.scope);
+            reg.update(); // Check for newer version on server
           })
           .catch((err) => console.error('[PWA] Service Worker registration failed:', err));
       });
