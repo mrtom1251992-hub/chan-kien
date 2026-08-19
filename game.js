@@ -113,77 +113,89 @@ const TRANSLATIONS = {
     upMagnetName: "Nam Châm Tự Động",
     upMagnetDesc: "Tự động hút sữa/đường rơi trên sân về túi bạn.",
     upShieldName: "Khiên Đàn Hồi",
-    upShieldDesc: "Phản xạ thú lại nếu lỡ chạm mép (cứu thua 1 lần)."
+    upShieldDesc: "Phản xạ thú lại nếu lỡ chạm mép (cứu thua 1 lần).",
+    historyTitle: "📜 Lịch Sử Đấu",
+    historySubtitle: "Các ván đấu đã chơi gần đây",
+    historyMenuBtn: "Lịch Sử Đấu",
+    historyGameOverBtn: "Lịch Sử",
+    historyClearBtn: "Xóa Lịch Sử",
+    historyCloseBtn: "Đóng ▶",
+    historyEmpty: "Chưa có ván đấu nào. Hãy bắt đầu chơi ngay! 🎮",
+    historySurvive: "Sống sót",
+    historyClearedToast: "Đã xóa toàn bộ lịch sử trò chơi!"
   },
   en: {
     animals: {
       ant: {
-        title: "Ant Herder",
+        title: "Ant Herding",
         emoji: "🐜",
-        subtitle: "Draw a circle · Trap the ants · Tap to redirect",
-        btnName: "Ant Herder",
+        subtitle: "Draw boundary · Keep ants in · Tap to redirect",
+        btnName: "Ant Herding",
         addBtn: "Add Ant",
-        rule1: "Draw a closed loop fence",
-        rule2: "Tap ants to bounce & redirect",
+        rule1: "Draw a closed boundary",
+        rule2: "Tap ants to redirect them inward",
         rule3: "Don't let any ant escape!",
-        gameOver: "Ants Escaped!",
-        countLabel: "Ants Count",
+        gameOver: "Ant Escaped!",
+        countLabel: "Ant count",
         unit: "ants",
         drawInstruction: "Draw a closed loop on the screen!",
         tapTaunts: [
-          "Ouch! 😵", "Missed me! 😜", "U-Turn! ↩️", "Too slow! 💨",
-          "Hey watch it! 😤", "Dodge! 💃", "Haha noob! 🐔", "Spinning! 🌀",
-          "Can't touch this! 🕺", "Whoops! 😝", "Boing! 💥", "Na-na boo-boo! 🤪"
+          "Whoops! 😵", "Hey that tickles! 💢", "Nice dodge! 💃", "U-Turn! 🚗💨",
+          "Catch me if you can! 😜", "Noob! 🐔", "Don't touch me! 😤", "Ahihi missed! 😝",
+          "So dizzy! 🌀", "Ouch! 💥", "Too slow! 🍼", "What's up? 📱",
+          "Na-na-na boo-boo! 😛", "Can't catch me! 🏃"
         ],
         taunts: [
-          "Na-na-na boo-boo! Too slow!",
-          "You let the ants escape! Haha!",
-          "Too slow! Try harder!",
-          "Can't even catch a little ant!"
+          "Na-na-na boo-boo! You're a chicken!",
+          "Can't even herd a few ants? Haha!",
+          "Too fast for you! Na-na-na!",
+          "Ant escaped! You lost!",
+          "Slow hands! Try again! 😜"
         ]
       },
       cow: {
-        title: "Cow Herder",
+        title: "Cow Herding",
         emoji: "🐮",
-        subtitle: "Draw a fence · Herd dairy cows · Tap to redirect",
-        btnName: "Cow Herder",
+        subtitle: "Draw pasture · Keep cows in · Tap to redirect",
+        btnName: "Cow Herding",
         addBtn: "Add Cow",
-        rule1: "Draw a closed fence for cows",
-        rule2: "Tap cows to bounce & redirect",
-        rule3: "Don't let cows escape the ranch!",
-        gameOver: "Cows Escaped!",
-        countLabel: "Cows Count",
+        rule1: "Draw a pasture boundary",
+        rule2: "Tap cows to herd them inward",
+        rule3: "Don't let any cow escape!",
+        gameOver: "Cow Escaped!",
+        countLabel: "Cow count",
         unit: "cows",
-        drawInstruction: "Draw a closed fence on the screen!",
+        drawInstruction: "Draw a pasture loop on the screen!",
         tapTaunts: [
-          "Moooo! 🐮", "Don't touch me! 💢", "Escaping! 🏃", "Holy Cow! 💥",
-          "Too slow! 💨", "Udderly ridiculous! 🥛", "Moo-ve out of the way! 💃",
-          "Haha noob! 🐔", "Spinning! 🌀", "Na-na boo-boo! 🤪"
+          "Moooo! 🐮", "Ouch! 💢", "Watch the horns! 💥", "Nice dodge! 💃",
+          "U-Turn! 🐮💨", "I'm a cow not a chicken! 🐔", "Free fertilizer! 💩",
+          "Escaped! 🏃", "Hello hooman? 📱", "Dizzy cow! 🌀", "Missed me! 😝"
         ],
         taunts: [
-          "Moooo! The cows broke out!",
-          "Na-na-na boo-boo! Cows ran away!",
-          "Too slow! Cows are too fast for you!",
-          "Haha! You let the whole herd escape!"
+          "Moooo! The cows have escaped!",
+          "Herding cows and they all ran away! Haha!",
+          "You're a chicken! Cow escaped!",
+          "Can't even keep a happy herd of cows!",
+          "Moooo! Sweet freedom!"
         ]
       }
     },
-    modeFree: "Free Mode",
+    modeFree: "Free Play",
     modeLevel: "Level Mode",
-    modeDescFree: "Free Mode: Tap ➕ anytime to add animals and test your reflexes!",
-    modeDescLevel: "Level Mode: Level up and spawn a new animal every 10 seconds!",
+    modeDescFree: "Free Play: Press ➕ to add animals at your own pace",
+    modeDescLevel: "Level Mode: Every 10s advances 1 level and adds 1 animal!",
     startBtn: "Start Game",
-    installBtn: "Install App on Phone",
-    shopeeBtn: "Support Creator",
-    floatingShopee: "Support Us",
+    installBtn: "Install App to Home Screen",
+    shopeeBtn: "Click Shopee to Support",
+    floatingShopee: "Support Shopee",
     levelBadge: "Level",
     scoreMode: "Mode",
-    scoreLevel: "Level Reached",
-    scoreTime: "Time Survived",
+    scoreLevel: "Level reached",
+    scoreTime: "Time",
     scoreHigh: "High Score",
-    restartBtn: "Play Again",
+    restartBtn: "Restart",
     adTag: "Ads / Support",
-    adSubtitle: "Support to keep servers running",
+    adSubtitle: "Support to keep server running",
     adPlaceholder: "Thank you for playing! Click ads to support developer with new game updates.",
     pauseTitle: "⏸ Game Paused",
     resumeBtn: "Resume Game",
@@ -208,7 +220,16 @@ const TRANSLATIONS = {
     qbHelperAnt: "Herder",
     qbMagnet: "Magnet",
     qbReach: "Reach",
-    shopTitle: "🛒 Farm Upgrades"
+    shopTitle: "🛒 Farm Upgrades",
+    historyTitle: "📜 Match History",
+    historySubtitle: "Your recent game records",
+    historyMenuBtn: "History",
+    historyGameOverBtn: "History",
+    historyClearBtn: "Clear History",
+    historyCloseBtn: "Close ▶",
+    historyEmpty: "No matches played yet. Start playing now! 🎮",
+    historySurvive: "Survived",
+    historyClearedToast: "Match history cleared!"
   }
 };
 
@@ -1245,7 +1266,7 @@ class Helper {
     this.legPhase = 0;
     this.catchCooldown = 0;
     this.reachLevel = reachLevel;
-    this.reachRadius = 45 + (reachLevel * 30); // Lv0: 45px, Lv1: 75px, Lv2: 105px, Lv3: 135px, Lv4: 165px
+    this.reachRadius = 24 + (reachLevel * 7); // Balanced, snug base reach
   }
 
   update(dt, enclosure, animals, game) {
@@ -1289,42 +1310,55 @@ class Helper {
       accum += segLen;
     }
 
-    // Intercept and redirect animals within reach radius
+    // Dynamic proportional reach calculation:
+    // Scale reach relative to pasture radius so it never dominates the whole enclosure
+    const curDistToCenter = Math.hypot(this.x - game.centroid.x, this.y - game.centroid.y);
+    const maxRatio = 0.16 + (this.reachLevel * 0.05); // 16% -> 21% -> 26% -> 31% -> 36% of radius
+    this.reachRadius = Math.max(18, Math.min(54, curDistToCenter * maxRatio));
+
+    // Intercept and redirect animals within reach radius (Active AOE Whack!)
     if (this.catchCooldown <= 0 && game.state === STATE.PLAYING) {
+      let hitAny = false;
       for (const animal of animals) {
         if (animal.escaped) continue;
         const d = Math.hypot(animal.x - this.x, animal.y - this.y);
         if (d < this.reachRadius) {
-          // Redirect animal firmly towards center
+          // Direct animal firmly towards enclosure center
           const toCenter = Math.atan2(game.centroid.y - animal.y, game.centroid.x - animal.x);
-          animal.angle = toCenter + (Math.random() - 0.5) * 0.3;
-          animal.wanderTarget = animal.angle;
+          animal.angle = toCenter;
+          animal.wanderTarget = toCenter;
           animal.startled = true;
-          animal.startledTimer = 0.8;
-          // Intercept action & cooldown
-          this.actionTimer = 0.45;
-          this.catchCooldown = 0.55;
+          animal.startledTimer = 1.0; // Keep straight inward path for 1 full second
+          
+          // Slight physical knockback inward away from the edge
+          animal.x += Math.cos(toCenter) * 14;
+          animal.y += Math.sin(toCenter) * 14;
 
-          // Sound (occasional gentle whoosh)
-          if (Math.random() < 0.25) {
-            game.sound.playHelperAction();
-          }
+          // Impact ripple on the ground
+          game.ripples.push(new Ripple(animal.x, animal.y));
 
-          // Rare speech bubble (only 8% chance) so screen stays clean and quiet
-          if (Math.random() < 0.08 && game.floatingTexts.length < 3) {
-            const isEn = game.lang === 'en';
-            const taunt = this.type === 'cow' 
-              ? (isEn ? '🤠 U-Turn!' : '🤠 Quay xe!') 
-              : (isEn ? '👨‍🌾 Blocked!' : '👨‍🌾 Đã chặn!');
-            game.floatingTexts.push(new FloatingText(this.x, this.y - 12, taunt));
-          }
-          break;
+          hitAny = true;
+        }
+      }
+
+      if (hitAny) {
+        this.actionTimer = 0.35;
+        this.catchCooldown = 0.22; // Responsive, fast recovery
+        game.sound.playHelperAction();
+
+        // Rare funny speech bubble
+        if (Math.random() < 0.12 && game.floatingTexts.length < 3) {
+          const isEn = game.lang === 'en';
+          const taunt = this.type === 'cow' 
+            ? (isEn ? '🤠 Whack!' : '🤠 Vụt!') 
+            : (isEn ? '👨‍🌾 Quay đầu!' : '👨‍🌾 Vào trong!');
+          game.floatingTexts.push(new FloatingText(this.x, this.y - 14, taunt));
         }
       }
     }
   }
 
-  draw(ctx) {
+  draw(ctx, game) {
     if (this.x === 0 && this.y === 0) return;
     ctx.save();
     ctx.translate(this.x, this.y);
@@ -1332,19 +1366,45 @@ class Helper {
     const isActing = this.actionTimer > 0;
     const swing = Math.sin(this.legPhase) * 4;
 
-    // Glowing aura / Reach field on ground
-    const auraRadius = Math.max(13, this.reachRadius * 0.55);
-    ctx.fillStyle = this.reachLevel > 0 ? 'rgba(255, 215, 0, 0.16)' : 'rgba(0, 243, 255, 0.22)';
-    ctx.beginPath();
-    ctx.arc(0, 2, auraRadius, 0, Math.PI * 2);
-    ctx.fill();
-    if (this.reachLevel > 0) {
-      ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)';
-      ctx.lineWidth = 1.2;
+    // --- Elegant Inward Guard Strike Arc (Vùng quạt bảo vệ hướng tâm) ---
+    if (game && game.centroid) {
+      const toCenter = Math.atan2(game.centroid.y - this.y, game.centroid.x - this.x);
+      const halfAngle = 0.85; // ~100 degrees inward guard fan
+      const r = this.reachRadius;
+      
+      // Soft radial gradient fill facing into the pen
+      const grad = ctx.createRadialGradient(0, 0, 4, 0, 0, r);
+      if (this.reachLevel > 0) {
+        grad.addColorStop(0, 'rgba(255, 215, 0, 0.14)');
+        grad.addColorStop(0.7, 'rgba(255, 215, 0, 0.05)');
+        grad.addColorStop(1, 'rgba(255, 215, 0, 0.0)');
+      } else {
+        grad.addColorStop(0, 'rgba(0, 243, 255, 0.12)');
+        grad.addColorStop(0.7, 'rgba(0, 243, 255, 0.04)');
+        grad.addColorStop(1, 'rgba(0, 243, 255, 0.0)');
+      }
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, r, toCenter - halfAngle, toCenter + halfAngle);
+      ctx.closePath();
+      ctx.fill();
+
+      // Delicate dashed outer border arc
+      ctx.strokeStyle = this.reachLevel > 0 ? 'rgba(255, 215, 0, 0.45)' : 'rgba(0, 243, 255, 0.35)';
+      ctx.lineWidth = 1.3;
       ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.arc(0, 0, r, toCenter - halfAngle, toCenter + halfAngle);
       ctx.stroke();
       ctx.setLineDash([]);
     }
+
+    // Soft shadow under feet
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, 13, 7, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
 
     // Helper body (Chibi sprite)
     if (this.type === 'cow') {
@@ -1400,22 +1460,88 @@ class Helper {
     ctx.lineTo(2.5 - swing, 14);
     ctx.stroke();
 
-    // Arms / Waving hand when intercepting
-    ctx.strokeStyle = '#fed7aa';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    // Arms & Herding Stick (Cây gậy chăn nuôi vung vụt)
+    const stickLength = 12 + this.reachLevel * 3.5; // Compact, balanced stick length
+    ctx.save();
     if (isActing) {
+      // Vung gậy vụt mạnh (Swinging the herding cane / stick)
+      const whackingAngle = (this.actionTimer / 0.45) * Math.PI * 0.85 - Math.PI * 0.4;
+      
+      // Arm holding stick
+      ctx.strokeStyle = '#fed7aa';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(4, 2);
+      ctx.lineTo(10, -3);
+      ctx.stroke();
+
+      // Left arm balance
+      ctx.beginPath();
       ctx.moveTo(-5, 2);
-      ctx.lineTo(-12, -4);
-      ctx.moveTo(5, 2);
-      ctx.lineTo(12, -4);
+      ctx.lineTo(-11, -2);
+      ctx.stroke();
+
+      // Stick with swing arc
+      ctx.save();
+      ctx.translate(10, -3);
+      ctx.rotate(whackingAngle);
+
+      // Swing whoosh trail
+      ctx.strokeStyle = this.reachLevel > 0 ? 'rgba(255, 215, 0, 0.45)' : 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(0, 0, stickLength * 0.8, -0.6, 0.6);
+      ctx.stroke();
+
+      // Main Herding Stick
+      ctx.strokeStyle = this.reachLevel > 0 ? '#d97706' : '#854d0e';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -stickLength);
+      // Curved cane hook at tip
+      ctx.arc(-3, -stickLength + 2, 3.5, 0, Math.PI * 1.5, true);
+      ctx.stroke();
+
+      // Glowing tip if reach upgraded
+      if (this.reachLevel > 0) {
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(-3, -stickLength + 2, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
     } else {
+      // Idle carrying stick
+      ctx.strokeStyle = '#fed7aa';
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
       ctx.moveTo(-5, 2);
       ctx.lineTo(-7, 6);
       ctx.moveTo(5, 2);
-      ctx.lineTo(7, 6);
+      ctx.lineTo(7, 5);
+      ctx.stroke();
+
+      // Stick in hand
+      ctx.strokeStyle = this.reachLevel > 0 ? '#d97706' : '#854d0e';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(7, 6);
+      ctx.lineTo(10 + swing * 0.2, 6 - stickLength);
+      // Cane hook
+      ctx.arc(7.5 + swing * 0.2, 7 - stickLength, 3, 0, Math.PI * 1.5, true);
+      ctx.stroke();
+
+      if (this.reachLevel > 0) {
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(7.5 + swing * 0.2, 7 - stickLength, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
-    ctx.stroke();
+    ctx.restore();
 
     ctx.restore();
   }
@@ -1944,8 +2070,18 @@ class Game {
     this.shopScreen = document.getElementById('shop-screen');
     this.closeShopBtn = document.getElementById('close-shop-btn');
     this.btnBuyHelper = document.getElementById('btn-buy-helper');
+    this.btnBuyReach = document.getElementById('btn-buy-reach');
     this.btnBuyMagnet = document.getElementById('btn-buy-magnet');
     this.btnBuyShield = document.getElementById('btn-buy-shield');
+
+    // Match History Elements
+    this.historyScreen = document.getElementById('history-screen');
+    this.historyList = document.getElementById('history-list');
+    this.historyBtnMenu = document.getElementById('history-btn-menu');
+    this.historyBtnGameover = document.getElementById('history-btn-gameover');
+    this.closeHistoryBtn = document.getElementById('close-history-btn');
+    this.clearHistoryBtn = document.getElementById('clear-history-btn');
+    this.matchHistory = this.loadHistory();
 
     // Pause Screen Elements
     this.pauseModeVal = document.getElementById('pause-mode-val');
@@ -2155,8 +2291,30 @@ class Game {
     if (qbMagnetName) {
       qbMagnetName.textContent = t.qbMagnet;
     }
+    const qbReachName = document.getElementById('qb-reach-name');
+    if (qbReachName) {
+      qbReachName.textContent = t.qbReach;
+    }
+
+    // Match History texts
+    const historyTitle = document.getElementById('history-title');
+    if (historyTitle) historyTitle.textContent = t.historyTitle;
+    const historySubtitle = document.getElementById('history-subtitle');
+    if (historySubtitle) historySubtitle.textContent = t.historySubtitle;
+    const historyMenuText = document.getElementById('history-menu-text');
+    if (historyMenuText) historyMenuText.textContent = t.historyMenuBtn;
+    const historyGameoverText = document.getElementById('history-gameover-text');
+    if (historyGameoverText) historyGameoverText.textContent = t.historyGameOverBtn;
+    const clearHistoryText = document.getElementById('clear-history-text');
+    if (clearHistoryText) clearHistoryText.textContent = t.historyClearBtn;
+    const closeHistoryText = document.getElementById('close-history-text');
+    if (closeHistoryText) closeHistoryText.textContent = t.historyCloseBtn;
 
     this.updateHUD();
+    this.updateShopUI();
+    if (this.state === STATE.HISTORY) {
+      this.renderHistoryList();
+    }
   }
 
   // --- Flora / Grass & Flower Generation ---
@@ -2274,7 +2432,7 @@ class Game {
 
     // Touch (Supports Multi-Touch for 2-4 fingers / players simultaneously)
     this.canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       if (this.state === STATE.DRAWING) {
         const t = e.touches[0];
         if (t) this.onPointerDown(t.clientX, t.clientY);
@@ -2288,7 +2446,7 @@ class Game {
     }, { passive: false });
 
     this.canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       if (this.state === STATE.DRAWING) {
         const t = e.touches[0];
         if (t) this.onPointerMove(t.clientX, t.clientY);
@@ -2296,7 +2454,7 @@ class Game {
     }, { passive: false });
 
     this.canvas.addEventListener('touchend', (e) => {
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       if (this.state === STATE.DRAWING) {
         this.onPointerUp();
       }
@@ -2362,6 +2520,7 @@ class Game {
     if (this.shopBtn) this.shopBtn.addEventListener('click', () => this.openShop());
     if (this.closeShopBtn) this.closeShopBtn.addEventListener('click', () => this.closeShop());
     if (this.btnBuyHelper) this.btnBuyHelper.addEventListener('click', () => this.buyUpgrade('helper'));
+    if (this.btnBuyReach) this.btnBuyReach.addEventListener('click', () => this.buyUpgrade('reach'));
     if (this.btnBuyMagnet) this.btnBuyMagnet.addEventListener('click', () => this.buyUpgrade('magnet'));
     if (this.btnBuyShield) this.btnBuyShield.addEventListener('click', () => this.buyUpgrade('shield'));
 
@@ -2381,6 +2540,12 @@ class Game {
 
     const gameoverMenuBtn = document.getElementById('gameover-menu-btn');
     if (gameoverMenuBtn) gameoverMenuBtn.addEventListener('click', () => this.quitToMenu());
+
+    // History Modal Events
+    if (this.historyBtnMenu) this.historyBtnMenu.addEventListener('click', () => this.openHistory());
+    if (this.historyBtnGameover) this.historyBtnGameover.addEventListener('click', () => this.openHistory());
+    if (this.closeHistoryBtn) this.closeHistoryBtn.addEventListener('click', () => this.closeHistory());
+    if (this.clearHistoryBtn) this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
 
     this.addAntBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2420,7 +2585,7 @@ class Game {
 
   // --- Economy & Farm Upgrades System ---
   loadResources() {
-    return { milk: 0, sugar: 0 };
+    return { milk: 0, sugar: 0, gold: 0 };
   }
 
   saveResources() {
@@ -2508,10 +2673,10 @@ class Game {
     const icon = type === 'reach' ? '🪙' : (this.animal === 'cow' ? '🥛' : '🍯');
     const curRes = this.resources[resKey] || 0;
     const costs = {
-      helper: [5, 10, 18, 30, 45, 65, 90, 120, 160, 210],
-      magnet: [8, 20],
-      reach: [5, 12, 25, 45],
-      shield: [12]
+      helper: [3, 6, 10, 15, 22, 30, 40, 52, 65, 80],
+      magnet: [5, 12],
+      reach: [2, 5, 10, 18],
+      shield: [8]
     };
     const maxLvls = { helper: 10, magnet: 2, reach: 4, shield: 1 };
     const curLvl = this.upgrades[type] || 0;
@@ -2563,7 +2728,7 @@ class Game {
     }
 
     const hLvl = this.upgrades.helper || 0;
-    const hCosts = [5, 10, 18, 30, 45, 65, 90, 120, 160, 210];
+    const hCosts = [3, 6, 10, 15, 22, 30, 40, 52, 65, 80];
     if (this.qbBtnHelper && this.qbHelperCost) {
       if (hLvl >= hCosts.length) {
         this.qbHelperCost.textContent = t.shopMaxed;
@@ -2581,7 +2746,7 @@ class Game {
 
     // Magnet button
     const mLvl = this.upgrades.magnet || 0;
-    const mCosts = [8, 20];
+    const mCosts = [5, 12];
     if (this.qbBtnMagnet && this.qbMagnetCost) {
       if (mLvl >= mCosts.length) {
         this.qbMagnetCost.textContent = t.shopMaxed;
@@ -2599,7 +2764,7 @@ class Game {
 
     // Reach button (Gold currency 🪙)
     const rLvl = this.upgrades.reach || 0;
-    const rCosts = [5, 12, 25, 45];
+    const rCosts = [2, 5, 10, 18];
     const qbReachName = document.getElementById('qb-reach-name');
     if (qbReachName) {
       qbReachName.textContent = t.qbReach;
@@ -2629,12 +2794,13 @@ class Game {
     const shopTitle = document.getElementById('shop-title');
     if (shopTitle) shopTitle.textContent = t.shopTitle;
 
+    const curGold = this.resources.gold || 0;
     const balanceVal = document.getElementById('shop-balance-val');
-    if (balanceVal) balanceVal.textContent = `${curRes} ${icon}`;
+    if (balanceVal) balanceVal.textContent = `${curRes} ${icon} | ${curGold} 🪙`;
 
     // Helper upgrade card
     const hLvl = this.upgrades.helper || 0;
-    const hCosts = [5, 10, 18, 30, 45, 65, 90, 120, 160, 210];
+    const hCosts = [3, 6, 10, 15, 22, 30, 40, 52, 65, 80];
     const upHelperLvl = document.getElementById('up-helper-lvl');
     if (upHelperLvl) upHelperLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${hLvl}/${hCosts.length}`;
     if (this.btnBuyHelper) {
@@ -2650,9 +2816,27 @@ class Game {
       }
     }
 
+    // Reach / Stick upgrade card (Gậy Chăn Dài - Tầm Vụt)
+    const rLvl = this.upgrades.reach || 0;
+    const rCosts = [2, 5, 10, 18];
+    const upReachLvl = document.getElementById('up-reach-lvl');
+    if (upReachLvl) upReachLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${rLvl}/4`;
+    if (this.btnBuyReach) {
+      if (rLvl >= 4) {
+        this.btnBuyReach.textContent = t.shopMaxed;
+        this.btnBuyReach.className = 'btn-buy gold-btn maxed';
+        this.btnBuyReach.disabled = true;
+      } else {
+        const cost = rCosts[rLvl];
+        this.btnBuyReach.textContent = `${cost} 🪙`;
+        this.btnBuyReach.className = 'btn-buy gold-btn';
+        this.btnBuyReach.disabled = curGold < cost;
+      }
+    }
+
     // Magnet upgrade card
     const mLvl = this.upgrades.magnet || 0;
-    const mCosts = [8, 20];
+    const mCosts = [5, 12];
     const upMagnetLvl = document.getElementById('up-magnet-lvl');
     if (upMagnetLvl) upMagnetLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${mLvl}/2`;
     if (this.btnBuyMagnet) {
@@ -2670,7 +2854,7 @@ class Game {
 
     // Shield upgrade card
     const sLvl = this.upgrades.shield || 0;
-    const sCosts = [12];
+    const sCosts = [8];
     const upShieldLvl = document.getElementById('up-shield-lvl');
     if (upShieldLvl) upShieldLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${sLvl}/1`;
     if (this.btnBuyShield) {
@@ -3106,6 +3290,9 @@ class Game {
       } else {
         this.highScoreEl.textContent = `${this.formatTime(activeHs.time)} (${activeHs.ants} ${animalData.unit})`;
       }
+
+      // Save match to Match History log
+      this.saveMatchRecord();
     }
   }
 
@@ -3114,6 +3301,9 @@ class Game {
     this.pauseScreen.classList.toggle('visible', this.state === STATE.PAUSED);
     if (this.shopScreen) {
       this.shopScreen.classList.toggle('visible', this.state === STATE.SHOP);
+    }
+    if (this.historyScreen) {
+      this.historyScreen.classList.toggle('visible', this.state === STATE.HISTORY);
     }
     if (this.quickBuyBar) {
       this.quickBuyBar.classList.toggle('visible', this.state === STATE.PLAYING);
@@ -3182,6 +3372,110 @@ class Game {
     try {
       localStorage.setItem('chan-kien-hs-v2', JSON.stringify(this.highScores));
     } catch (e) { /* ignore */ }
+  }
+
+  // --- Match History Management ---
+  loadHistory() {
+    try {
+      const data = localStorage.getItem('chan-kien-history-v1');
+      if (data) return JSON.parse(data);
+    } catch (e) { /* ignore */ }
+    return [];
+  }
+
+  saveHistory() {
+    try {
+      localStorage.setItem('chan-kien-history-v1', JSON.stringify(this.matchHistory));
+    } catch (e) { /* ignore */ }
+  }
+
+  saveMatchRecord() {
+    if (this.score < 1.5) return; // Don't save 0-second misclicks / immediate restarts
+    const isCow = this.animal === 'cow';
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}`;
+    
+    const record = {
+      id: Date.now(),
+      date: `${timeStr} (${dateStr})`,
+      animal: this.animal,
+      mode: this.mode,
+      score: this.score,
+      scoreFormatted: this.formatTime(this.score),
+      ants: this.maxAnts || this.ants.length,
+      level: this.mode === 'level' ? this.currentLevel : null,
+      helpers: this.upgrades.helper || 0,
+      resEarned: this.resources[isCow ? 'milk' : 'sugar'] || 0,
+      goldEarned: this.resources.gold || 0
+    };
+
+    if (!Array.isArray(this.matchHistory)) this.matchHistory = [];
+    this.matchHistory.unshift(record);
+    if (this.matchHistory.length > 30) this.matchHistory.pop(); // Keep 30 recent matches
+    this.saveHistory();
+  }
+
+  openHistory() {
+    this.sound.playClick();
+    if (this.state !== STATE.HISTORY) {
+      this.previousState = this.state;
+    }
+    this.renderHistoryList();
+    this.setState(STATE.HISTORY);
+  }
+
+  closeHistory() {
+    this.sound.playClick();
+    this.setState(this.previousState || STATE.MENU);
+  }
+
+  clearHistory() {
+    this.sound.playClick();
+    this.matchHistory = [];
+    this.saveHistory();
+    this.renderHistoryList();
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    this.showToast(t.historyClearedToast);
+  }
+
+  renderHistoryList() {
+    if (!this.historyList) return;
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    const history = this.matchHistory || [];
+
+    if (history.length === 0) {
+      this.historyList.innerHTML = `<div class="history-empty">${t.historyEmpty}</div>`;
+      return;
+    }
+
+    let html = '';
+    for (const item of history) {
+      const isCow = item.animal === 'cow';
+      const animalEmoji = isCow ? '🐮' : '🐜';
+      const resIcon = isCow ? '🥛' : '🍯';
+      const modeLabel = item.mode === 'level' 
+        ? `🏆 ${t.modeLevel} ${item.level ? `(${t.levelBadge} ${item.level})` : ''}` 
+        : `🎯 ${t.modeFree}`;
+      
+      html += `
+        <div class="history-card">
+          <div class="history-card-left">
+            <div class="history-animal-icon">${animalEmoji}</div>
+            <div class="history-main-info">
+              <div class="history-time-survived">⏱ ${item.scoreFormatted}</div>
+              <div class="history-details">${modeLabel} · ${animalEmoji} × ${item.ants || 1}</div>
+            </div>
+          </div>
+          <div class="history-card-right">
+            <div class="history-resources">${resIcon} ${item.resEarned || 0} | 🪙 ${item.goldEarned || 0}</div>
+            <div class="history-date">${item.date}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    this.historyList.innerHTML = html;
   }
 
   // --- Collision Detection & Shield Protection ---
@@ -3443,7 +3737,7 @@ class Game {
     // --- 3.5 DRAW HELPERS on the fence perimeter ---
     if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.SHOP) {
       for (const h of this.helpers) {
-        h.draw(this.ctx);
+        h.draw(this.ctx, this);
       }
     }
 

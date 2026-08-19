@@ -45,27 +45,30 @@
         <span class="qb-icon">👨‍🌾</span>
         <span class="qb-text">
           <span class="qb-name" id="qb-helper-name">Nông Dân</span>
-          <span class="qb-cost" id="qb-helper-cost">5 🥛</span>
+          <span class="qb-cost" id="qb-helper-cost">3 🥛</span>
         </span>
       </button>
       <button id="qb-btn-magnet" class="quick-buy-btn glass-panel" type="button" title="Nam Châm Hút Sữa Tự Động">
         <span class="qb-icon">🧲</span>
         <span class="qb-text">
           <span class="qb-name" id="qb-magnet-name">Nam Châm</span>
-          <span class="qb-cost" id="qb-magnet-cost">8 🥛</span>
+          <span class="qb-cost" id="qb-magnet-cost">5 🥛</span>
         </span>
       </button>
       <button id="qb-btn-reach" class="quick-buy-btn glass-panel" type="button" title="Mở Rộng Tầm Chặn Của Người Hỗ Trợ">
         <span class="qb-icon">📢</span>
         <span class="qb-text">
           <span class="qb-name" id="qb-reach-name">Tầm Chặn</span>
-          <span class="qb-cost" id="qb-reach-cost">5 🪙</span>
+          <span class="qb-cost" id="qb-reach-cost">2 🪙</span>
         </span>
       </button>
     </div>
 
-    <!-- In-Game Controls (Top-Right: Pause & Quick Restart) -->
+    <!-- In-Game Controls (Top-Right: Shop, Pause & Quick Restart) -->
     <div id="in-game-controls">
+      <button id="shop-btn" class="hud-control-btn shop-btn" aria-label="Cửa Hàng Nông Trại" title="Cửa hàng nâng cấp / Shop">
+        <span>🛒</span>
+      </button>
       <button id="pause-btn" class="hud-control-btn" aria-label="Tạm dừng" title="Tạm dừng / Pause">
         <span>⏸</span>
       </button>
@@ -78,11 +81,11 @@
     <div id="shop-screen" class="overlay">
       <div class="overlay-content shop-modal-content">
         <h2 id="shop-title" class="gameover-title" style="color: var(--neon-cyan);">🛒 Nâng Cấp Nông Trại</h2>
-        <p class="shop-subtitle">Dùng <span id="shop-res-icon">🥛</span> thu thập được để thuê người chăn & nâng cấp!</p>
+        <p class="shop-subtitle">Dùng <span id="shop-res-icon">🥛</span> & 🪙 thu thập để thuê người chăn & nâng cấp gậy!</p>
         
         <div class="shop-balance-badge glass-panel">
           <span>Ví hiện có:</span>
-          <span id="shop-balance-val" class="shop-balance-val">0 🥛</span>
+          <span id="shop-balance-val" class="shop-balance-val">0 🥛 | 0 🪙</span>
         </div>
 
         <div class="shop-items-grid">
@@ -91,28 +94,41 @@
             <div class="shop-card-icon">👨‍🌾</div>
             <div class="shop-card-info">
               <div class="shop-card-name" id="up-helper-name">Người Chăn Phụ</div>
-              <div class="shop-card-desc" id="up-helper-desc">Chạy tuần tra quanh vòng, đập tay cứu thú chạm rìa!</div>
-              <div class="shop-card-level" id="up-helper-lvl">Cấp: 0/3</div>
+              <div class="shop-card-desc" id="up-helper-desc">Chạy tuần tra quanh vòng, vung gậy vụt cứu thú chạm rìa!</div>
+              <div class="shop-card-level" id="up-helper-lvl">Cấp: 0/10</div>
             </div>
             <button type="button" class="btn-buy" id="btn-buy-helper">
-              <span id="up-helper-cost">5 🥛</span>
+              <span id="up-helper-cost">3 🥛</span>
             </button>
           </div>
 
-          <!-- Upgrade 2: Vacuum Magnet -->
+          <!-- Upgrade 2: Long Herding Stick (Tầm Vụt Gậy) -->
+          <div class="shop-card glass-panel" id="upgrade-card-reach">
+            <div class="shop-card-icon">🦯</div>
+            <div class="shop-card-info">
+              <div class="shop-card-name" id="up-reach-name">Gậy Chăn Dài (Tầm Vụt)</div>
+              <div class="shop-card-desc" id="up-reach-desc">Gậy dài hơn, mở rộng vòng vụt chặn thú từ khoảng cách xa!</div>
+              <div class="shop-card-level" id="up-reach-lvl">Cấp: 0/4</div>
+            </div>
+            <button type="button" class="btn-buy gold-btn" id="btn-buy-reach">
+              <span id="up-reach-cost">2 🪙</span>
+            </button>
+          </div>
+
+          <!-- Upgrade 3: Vacuum Magnet -->
           <div class="shop-card glass-panel" id="upgrade-card-magnet">
             <div class="shop-card-icon">🧲</div>
             <div class="shop-card-info">
               <div class="shop-card-name" id="up-magnet-name">Nam Châm Tự Động</div>
-              <div class="shop-card-desc" id="up-magnet-desc">Tự động hút sữa/đường rơi trên sân về túi bạn.</div>
+              <div class="shop-card-desc" id="up-magnet-desc">Tự động hút sữa/đường/vàng rơi trên sân về túi bạn.</div>
               <div class="shop-card-level" id="up-magnet-lvl">Cấp: 0/2</div>
             </div>
             <button type="button" class="btn-buy" id="btn-buy-magnet">
-              <span id="up-magnet-cost">8 🥛</span>
+              <span id="up-magnet-cost">5 🥛</span>
             </button>
           </div>
 
-          <!-- Upgrade 3: Bumper Shield -->
+          <!-- Upgrade 4: Bumper Shield -->
           <div class="shop-card glass-panel" id="upgrade-card-shield">
             <div class="shop-card-icon">🛡️</div>
             <div class="shop-card-info">
@@ -121,7 +137,7 @@
               <div class="shop-card-level" id="up-shield-lvl">Cấp: 0/1</div>
             </div>
             <button type="button" class="btn-buy" id="btn-buy-shield">
-              <span id="up-shield-cost">12 🥛</span>
+              <span id="up-shield-cost">8 🥛</span>
             </button>
           </div>
         </div>
@@ -199,6 +215,10 @@
           <button id="start-btn" class="btn-primary">
             <span id="start-btn-text">Bắt Đầu</span>
             <span class="btn-arrow">→</span>
+          </button>
+          <button id="history-btn-menu" class="btn-secondary" type="button">
+            <span>📜</span>
+            <span id="history-menu-text">Lịch Sử Đấu</span>
           </button>
           <button id="install-pwa-btn" class="btn-install" type="button">
             <span>📱</span>
@@ -321,6 +341,10 @@
               <span>📤</span>
               <span id="share-btn-text">Chia Sẻ</span>
             </button>
+            <button id="history-btn-gameover" class="btn-secondary" type="button">
+              <span>📜</span>
+              <span id="history-gameover-text">Lịch Sử</span>
+            </button>
             <button id="gameover-menu-btn" class="btn-secondary" type="button">
               <span>🏠</span>
               <span id="gameover-menu-text">Menu</span>
@@ -330,6 +354,28 @@
             <span class="shopee-icon">🛍️</span>
             <span id="shopee-btn-text-2">Click Shopee để ủng hộ</span>
           </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match History Modal -->
+    <div id="history-screen" class="overlay">
+      <div class="overlay-content history-modal-content">
+        <h2 id="history-title" class="gameover-title" style="color: var(--neon-cyan);">📜 Lịch Sử Đấu</h2>
+        <p id="history-subtitle" class="history-subtitle">Các ván đấu đã chơi gần đây</p>
+        
+        <div id="history-list" class="history-list glass-panel">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <div class="history-actions-row">
+          <button id="clear-history-btn" class="btn-secondary danger" type="button">
+            <span>🗑️</span>
+            <span id="clear-history-text">Xóa Lịch Sử</span>
+          </button>
+          <button id="close-history-btn" class="btn-primary" type="button">
+            <span id="close-history-text">Đóng ▶</span>
+          </button>
         </div>
       </div>
     </div>
