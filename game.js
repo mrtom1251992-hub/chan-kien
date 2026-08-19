@@ -1503,8 +1503,8 @@ class Animal {
       this.grazeDuration = 1.2 + Math.random() * 1.8;
       this.idleTimer = 4.0 + Math.random() * 5.0;
 
-      // 30% chance to show cute floating thought
-      if (gameRef && gameRef.floatingTexts && Math.random() < 0.32) {
+      // Rare cute floating thought (only 8% chance & max 2 texts on screen)
+      if (gameRef && gameRef.floatingTexts && gameRef.floatingTexts.length < 2 && Math.random() < 0.08) {
         const viTaunts = this.animalType === 'cow'
           ? ["Nhai nhai 🌾", "Mlem mlem 🌸", "Cỏ non ngon quá 😋", "Ngon xỉu 🌿", "Nhai nhóp nhép 🐮"]
           : ["Ngửi ngửi 👃", "Mùi gì thơm thế 🍬", "Có đường nè 🍯", "Hít hà 👃", "Mùi mật ngọt 🐝"];
@@ -2873,16 +2873,17 @@ class Game {
       if (!ant.escaped && ant.containsPoint(x, y)) {
         ant.redirect(this.centroid);
         this.ripples.push(new Ripple(x, y));
-        
-        // Random funny / trolling phrase popup
-        const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
-        const animalData = t.animals[this.animal] || t.animals.ant;
-        const taunts = animalData.tapTaunts || ["Á đù! 😵", "Đau nha má! 💢", "Né đẹp chưa! 💃"];
-        const phrase = taunts[Math.floor(Math.random() * taunts.length)];
-        this.floatingTexts.push(new FloatingText(ant.x, ant.y, phrase));
-
         this.sound.playTap();
-        this.sound.playAnimalTap(this.animal, phrase);
+        
+        // Rare speech bubble (only ~15% chance & max 2 texts on screen) to keep screen clean and clear
+        if (Math.random() < 0.15 && this.floatingTexts.length < 2) {
+          const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+          const animalData = t.animals[this.animal] || t.animals.ant;
+          const taunts = animalData.tapTaunts || ["Á đù! 😵", "Đau nha má! 💢", "Né đẹp chưa! 💃"];
+          const phrase = taunts[Math.floor(Math.random() * taunts.length)];
+          this.floatingTexts.push(new FloatingText(ant.x, ant.y, phrase));
+          this.sound.playAnimalTap(this.animal, phrase);
+        }
         return;
       }
     }
