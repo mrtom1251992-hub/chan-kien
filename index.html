@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <meta name="description" content="Chăn Kiến - Trò chơi vẽ vòng tròn và giữ kiến bên trong. Chơi trên web và điện thoại!">
+  <meta name="description" content="Chăn Kiến - Trò chơi vẽ vòng tròn và giữ kiến bên trong. Chơi trên web và điện thoại Android!">
   <meta name="theme-color" content="#0a0e27">
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Chăn Kiến">
+  
   <title>🐜 Chăn Kiến - Ant Herding Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +80,10 @@
           <button id="start-btn" class="btn-primary">
             <span>Bắt Đầu</span>
             <span class="btn-arrow">→</span>
+          </button>
+          <button id="install-pwa-btn" class="btn-install" type="button">
+            <span>📱</span>
+            <span>Cài Đặt App Vào Điện Thoại</span>
           </button>
           <a href="https://s.shopee.vn/3qMPGGcTFV" target="_blank" rel="noopener noreferrer" class="shopee-btn" aria-label="Shopee">
             <span class="shopee-icon">🛍️</span>
@@ -142,5 +156,47 @@
   </div>
 
   <script src="game.js"></script>
+
+  <!-- PWA Service Worker & Install Handler -->
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('[PWA] Service Worker registered with scope:', reg.scope))
+          .catch((err) => console.error('[PWA] Service Worker registration failed:', err));
+      });
+    }
+
+    // Handle PWA Install Prompt
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-pwa-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installBtn) {
+        installBtn.classList.add('visible');
+      }
+    });
+
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`[PWA] User response: ${outcome}`);
+        deferredPrompt = null;
+        installBtn.classList.remove('visible');
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWA] App successfully installed');
+      if (installBtn) {
+        installBtn.classList.remove('visible');
+      }
+    });
+  </script>
 </body>
 </html>
