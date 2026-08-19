@@ -100,6 +100,7 @@ const TRANSLATIONS = {
     qbHelperCow: "Cao Bồi",
     qbHelperAnt: "Nông Dân",
     qbMagnet: "Nam Châm",
+    qbReach: "Tầm Chặn",
     shopTitle: "🛒 Nâng Cấp Nông Trại",
     shopSubtitle: "Dùng tài nguyên thu thập để thuê người chăn & nâng cấp!",
     shopBalance: "Ví hiện có:",
@@ -202,7 +203,12 @@ const TRANSLATIONS = {
       "I'm free! Run! 🏃‍♂️",
       "Na-na-na-na boo-boo! 😛"
     ],
-    levelUpVoice: (lvl) => `Level ${lvl}! Keep going!`
+    levelUpVoice: (lvl) => `Level ${lvl}! Keep going!`,
+    qbHelperCow: "Cowboy",
+    qbHelperAnt: "Herder",
+    qbMagnet: "Magnet",
+    qbReach: "Reach",
+    shopTitle: "🛒 Farm Upgrades"
   }
 };
 
@@ -1225,8 +1231,8 @@ class Collectible {
 // ============================================
 
 class Helper {
-  constructor(index, totalHelpers = 1, helperType = 'ant') {
-    this.index = index;
+  constructor(index, totalHelpers = 1, helperType = 'ant', reachLevel = 0) {
+    this.id = index;
     this.total = totalHelpers;
     this.type = helperType; // 'ant' -> Little Herder Boy 👨‍🌾, 'cow' -> Cowboy 🤠
     this.progress = (index / Math.max(1, totalHelpers)); // 0 to 1 along perimeter
@@ -1238,6 +1244,8 @@ class Helper {
     this.patrolDir = index % 2 === 0 ? 1 : -1;
     this.legPhase = 0;
     this.catchCooldown = 0;
+    this.reachLevel = reachLevel;
+    this.reachRadius = 45 + (reachLevel * 30); // Lv0: 45px, Lv1: 75px, Lv2: 105px, Lv3: 135px, Lv4: 165px
   }
 
   update(dt, enclosure, animals, game) {
@@ -1281,18 +1289,18 @@ class Helper {
       accum += segLen;
     }
 
-    // Intercept and redirect animals near the boundary
+    // Intercept and redirect animals within reach radius
     if (this.catchCooldown <= 0 && game.state === STATE.PLAYING) {
       for (const animal of animals) {
         if (animal.escaped) continue;
         const d = Math.hypot(animal.x - this.x, animal.y - this.y);
-        if (d < 50) {
-          // Redirect animal towards center
+        if (d < this.reachRadius) {
+          // Redirect animal firmly towards center
           const toCenter = Math.atan2(game.centroid.y - animal.y, game.centroid.x - animal.x);
-          animal.angle = toCenter + (Math.random() - 0.5) * 0.5;
+          animal.angle = toCenter + (Math.random() - 0.5) * 0.3;
           animal.wanderTarget = animal.angle;
           animal.startled = true;
-          animal.startledTimer = 0.6;
+          animal.startledTimer = 0.8;
           // Intercept action & cooldown
           this.actionTimer = 0.45;
           this.catchCooldown = 0.55;
@@ -1324,11 +1332,19 @@ class Helper {
     const isActing = this.actionTimer > 0;
     const swing = Math.sin(this.legPhase) * 4;
 
-    // Glowing aura on ground
-    ctx.fillStyle = 'rgba(0, 243, 255, 0.25)';
+    // Glowing aura / Reach field on ground
+    const auraRadius = Math.max(13, this.reachRadius * 0.55);
+    ctx.fillStyle = this.reachLevel > 0 ? 'rgba(255, 215, 0, 0.16)' : 'rgba(0, 243, 255, 0.22)';
     ctx.beginPath();
-    ctx.arc(0, 2, 13, 0, Math.PI * 2);
+    ctx.arc(0, 2, auraRadius, 0, Math.PI * 2);
     ctx.fill();
+    if (this.reachLevel > 0) {
+      ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
 
     // Helper body (Chibi sprite)
     if (this.type === 'cow') {
@@ -1903,6 +1919,7 @@ class Game {
     this.scoreDisplay = document.getElementById('score');
     this.antCountDisplay = document.getElementById('ant-count');
     this.resourceDisplay = document.getElementById('resource-count');
+    this.goldDisplay = document.getElementById('gold-count');
     this.finalModeEl = document.getElementById('final-mode');
     this.finalLevelRow = document.getElementById('final-level-row');
     this.finalLevelEl = document.getElementById('final-level');
@@ -1916,8 +1933,11 @@ class Game {
     this.quickBuyBar = document.getElementById('quick-buy-bar');
     this.qbBtnHelper = document.getElementById('qb-btn-helper');
     this.qbBtnMagnet = document.getElementById('qb-btn-magnet');
+    this.qbBtnReach = document.getElementById('qb-btn-reach');
     this.qbHelperCost = document.getElementById('qb-helper-cost');
     this.qbMagnetCost = document.getElementById('qb-magnet-cost');
+    this.qbReachCost = document.getElementById('qb-reach-cost');
+    this.qbReachName = document.getElementById('qb-reach-name');
 
     // Shop Elements
     this.shopBtn = document.getElementById('shop-btn');
@@ -2252,22 +2272,34 @@ class Game {
       this.onPointerUp();
     });
 
-    // Touch
+    // Touch (Supports Multi-Touch for 2-4 fingers / players simultaneously)
     this.canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      const t = e.touches[0];
-      this.onPointerDown(t.clientX, t.clientY);
+      if (this.state === STATE.DRAWING) {
+        const t = e.touches[0];
+        if (t) this.onPointerDown(t.clientX, t.clientY);
+      } else if (this.state === STATE.PLAYING) {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          const t = e.changedTouches[i];
+          const pos = this.getCanvasPos(t.clientX, t.clientY, false);
+          this.handleTap(pos.x, pos.y);
+        }
+      }
     }, { passive: false });
 
     this.canvas.addEventListener('touchmove', (e) => {
       e.preventDefault();
-      const t = e.touches[0];
-      this.onPointerMove(t.clientX, t.clientY);
+      if (this.state === STATE.DRAWING) {
+        const t = e.touches[0];
+        if (t) this.onPointerMove(t.clientX, t.clientY);
+      }
     }, { passive: false });
 
     this.canvas.addEventListener('touchend', (e) => {
       e.preventDefault();
-      this.onPointerUp();
+      if (this.state === STATE.DRAWING) {
+        this.onPointerUp();
+      }
     }, { passive: false });
 
     // Animal Switcher Buttons (Kiến 🐜 / Bò 🐮)
@@ -2306,6 +2338,12 @@ class Game {
       this.qbBtnMagnet.addEventListener('click', (e) => {
         e.stopPropagation();
         this.buyUpgrade('magnet');
+      });
+    }
+    if (this.qbBtnReach) {
+      this.qbBtnReach.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.buyUpgrade('reach');
       });
     }
 
@@ -2390,7 +2428,7 @@ class Game {
   }
 
   loadUpgrades() {
-    return { helper: 0, magnet: 0, shield: 0 };
+    return { helper: 0, magnet: 0, reach: 0, shield: 0 };
   }
 
   saveUpgrades() {
@@ -2399,7 +2437,7 @@ class Game {
 
   resetRunEconomy() {
     this.resources = { milk: 0, sugar: 0, gold: 0 };
-    this.upgrades = { helper: 0, magnet: 0, shield: 0 };
+    this.upgrades = { helper: 0, magnet: 0, reach: 0, shield: 0 };
     this.helpers = [];
     this.collectibles = [];
     this.shieldCharges = 0;
@@ -2410,9 +2448,10 @@ class Game {
   initHelpers() {
     this.helpers = [];
     const count = this.upgrades.helper || 0;
+    const reach = this.upgrades.reach || 0;
     if (count > 0 && this.enclosure.length >= 3) {
       for (let i = 0; i < count; i++) {
-        const h = new Helper(i, count, this.animal);
+        const h = new Helper(i, count, this.animal, reach);
         h.speed = 105 + (i % 4) * 15; // Balanced, energetic patrol
         this.helpers.push(h);
       }
@@ -2421,18 +2460,29 @@ class Game {
 
   collectItem(item) {
     item.alive = false;
-    const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
-    const icon = this.animal === 'cow' ? '🥛' : '🍯';
-    this.resources[resKey] = (this.resources[resKey] || 0) + item.value;
+    let icon = '🥛';
+    if (item.type === 'gold') {
+      icon = '🪙';
+      this.resources.gold = (this.resources.gold || 0) + item.value;
+      if (this.goldDisplay) {
+        this.goldDisplay.classList.remove('bump');
+        void this.goldDisplay.offsetWidth;
+        this.goldDisplay.classList.add('bump');
+      }
+    } else {
+      const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+      icon = this.animal === 'cow' ? '🥛' : '🍯';
+      this.resources[resKey] = (this.resources[resKey] || 0) + item.value;
+      if (this.resourceDisplay) {
+        this.resourceDisplay.classList.remove('bump');
+        void this.resourceDisplay.offsetWidth;
+        this.resourceDisplay.classList.add('bump');
+      }
+    }
     this.sound.playCollect();
 
     // Floating score popup + bump effect on HUD
     this.floatingTexts.push(new FloatingText(item.x, item.y, `+${item.value} ${icon}`));
-    if (this.resourceDisplay) {
-      this.resourceDisplay.classList.remove('bump');
-      void this.resourceDisplay.offsetWidth;
-      this.resourceDisplay.classList.add('bump');
-    }
     this.updateHUD();
     this.updateQuickBuyUI();
   }
@@ -2454,14 +2504,16 @@ class Game {
   }
 
   buyUpgrade(type) {
-    const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+    const resKey = type === 'reach' ? 'gold' : (this.animal === 'cow' ? 'milk' : 'sugar');
+    const icon = type === 'reach' ? '🪙' : (this.animal === 'cow' ? '🥛' : '🍯');
     const curRes = this.resources[resKey] || 0;
     const costs = {
       helper: [5, 10, 18, 30, 45, 65, 90, 120, 160, 210],
       magnet: [8, 20],
+      reach: [5, 12, 25, 45],
       shield: [12]
     };
-    const maxLvls = { helper: 10, magnet: 2, shield: 1 };
+    const maxLvls = { helper: 10, magnet: 2, reach: 4, shield: 1 };
     const curLvl = this.upgrades[type] || 0;
     if (curLvl >= maxLvls[type]) return;
 
@@ -2479,17 +2531,17 @@ class Game {
       const isEn = this.lang === 'en';
       const label = type === 'helper' 
         ? (this.animal === 'cow' ? `🤠 ${t.qbHelperCow}` : `👨‍🌾 ${t.qbHelperAnt}`) 
-        : (type === 'magnet' ? `🧲 ${t.qbMagnet}` : `🛡️ ${isEn ? 'Shield' : 'Khiên'}`);
+        : (type === 'magnet' ? `🧲 ${t.qbMagnet}` : (type === 'reach' ? `📢 ${t.qbReach}` : `🛡️ ${isEn ? 'Shield' : 'Khiên'}`));
       
       this.floatingTexts.push(new FloatingText(this.centroid.x, this.centroid.y, `+1 ${label}!`));
       this.showToast(isEn 
-        ? `🎉 Unlocked ${label} (Level ${this.upgrades[type]})!` 
-        : `🎉 Đã mở khóa ${label} cấp ${this.upgrades[type]}!`);
+        ? `🎉 Upgraded ${label} (Level ${this.upgrades[type]})!` 
+        : `🎉 Đã nâng cấp ${label} lên cấp ${this.upgrades[type]}!`);
     } else {
       const isEn = this.lang === 'en';
       this.showToast(isEn 
-        ? `❌ Need ${cost} ${resKey === 'milk' ? '🥛' : '🍯'} to unlock!` 
-        : `❌ Cần ${cost} ${resKey === 'milk' ? '🥛' : '🍯'} để mở khóa!`);
+        ? `❌ Need ${cost} ${icon} to upgrade!` 
+        : `❌ Cần ${cost} ${icon} để nâng cấp!`);
     }
   }
 
@@ -2498,6 +2550,7 @@ class Game {
     const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
     const icon = this.animal === 'cow' ? '🥛' : '🍯';
     const curRes = this.resources[resKey] || 0;
+    const curGold = this.resources.gold || 0;
 
     // Helper button
     const qbHelperName = document.getElementById('qb-helper-name');
@@ -2540,6 +2593,28 @@ class Game {
           this.qbBtnMagnet.className = 'quick-buy-btn glass-panel can-buy';
         } else {
           this.qbBtnMagnet.className = 'quick-buy-btn glass-panel';
+        }
+      }
+    }
+
+    // Reach button (Gold currency 🪙)
+    const rLvl = this.upgrades.reach || 0;
+    const rCosts = [5, 12, 25, 45];
+    const qbReachName = document.getElementById('qb-reach-name');
+    if (qbReachName) {
+      qbReachName.textContent = t.qbReach;
+    }
+    if (this.qbBtnReach && this.qbReachCost) {
+      if (rLvl >= rCosts.length) {
+        this.qbReachCost.textContent = t.shopMaxed;
+        this.qbBtnReach.className = 'quick-buy-btn glass-panel maxed';
+      } else {
+        const cost = rCosts[rLvl];
+        this.qbReachCost.textContent = `${cost} 🪙`;
+        if (curGold >= cost) {
+          this.qbBtnReach.className = 'quick-buy-btn glass-panel can-buy';
+        } else {
+          this.qbBtnReach.className = 'quick-buy-btn glass-panel';
         }
       }
     }
@@ -3079,6 +3154,9 @@ class Game {
       const icon = this.animal === 'cow' ? '🥛' : '🍯';
       const count = this.resources[resKey] || 0;
       this.resourceDisplay.textContent = `${icon} ${count}`;
+    }
+    if (this.goldDisplay) {
+      this.goldDisplay.textContent = `🪙 ${this.resources.gold || 0}`;
     }
     this.updateQuickBuyUI();
   }
