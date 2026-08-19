@@ -37,11 +37,26 @@
       <div id="resource-count" class="hud-item resource-item" title="Sữa / Hạt Đường thu thập">🥛 0</div>
     </div>
 
-    <!-- In-Game Controls (Top-Right: Shop, Pause & Quick Restart) -->
-    <div id="in-game-controls">
-      <button id="shop-btn" class="hud-control-btn shop-btn" aria-label="Nâng Cấp" title="Cửa hàng nâng cấp / Shop">
-        <span>🛒</span>
+    <!-- Quick Buy Bar (1-Click Instant In-Game Upgrades) -->
+    <div id="quick-buy-bar" class="quick-buy-bar">
+      <button id="qb-btn-helper" class="quick-buy-btn glass-panel" type="button" title="Thuê Nông Dân Tuần Tra">
+        <span class="qb-icon">👨‍🌾</span>
+        <span class="qb-text">
+          <span class="qb-name" id="qb-helper-name">Nông Dân</span>
+          <span class="qb-cost" id="qb-helper-cost">5 🥛</span>
+        </span>
       </button>
+      <button id="qb-btn-magnet" class="quick-buy-btn glass-panel" type="button" title="Nam Châm Hút Sữa Tự Động">
+        <span class="qb-icon">🧲</span>
+        <span class="qb-text">
+          <span class="qb-name" id="qb-magnet-name">Nam Châm</span>
+          <span class="qb-cost" id="qb-magnet-cost">8 🥛</span>
+        </span>
+      </button>
+    </div>
+
+    <!-- In-Game Controls (Top-Right: Pause & Quick Restart) -->
+    <div id="in-game-controls">
       <button id="pause-btn" class="hud-control-btn" aria-label="Tạm dừng" title="Tạm dừng / Pause">
         <span>⏸</span>
       </button>

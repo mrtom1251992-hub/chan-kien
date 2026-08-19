@@ -96,7 +96,23 @@ const TRANSLATIONS = {
       "Chạy thoát rồi nè! 🏃‍♂️",
       "Lêu lêu! Lêu lêu! 😛"
     ],
-    levelUpVoice: (lvl) => `Cấp ${lvl}! Cố lên!`
+    levelUpVoice: (lvl) => `Cấp ${lvl}! Cố lên!`,
+    qbHelperCow: "Cao Bồi",
+    qbHelperAnt: "Nông Dân",
+    qbMagnet: "Nam Châm",
+    shopTitle: "🛒 Nâng Cấp Nông Trại",
+    shopSubtitle: "Dùng tài nguyên thu thập để thuê người chăn & nâng cấp!",
+    shopBalance: "Ví hiện có:",
+    shopMaxed: "ĐÃ TỐI ĐA ⭐",
+    shopReady: "ĐÃ SẴN SÀNG 🛡️",
+    shopResume: "Tiếp Tục Chơi ▶",
+    upHelperNameCow: "Cao Bồi Tuần Tra",
+    upHelperNameAnt: "Người Chăn Phụ",
+    upHelperDesc: "Chạy tuần tra quanh vòng, đập tay cứu thú chạm rìa!",
+    upMagnetName: "Nam Châm Tự Động",
+    upMagnetDesc: "Tự động hút sữa/đường rơi trên sân về túi bạn.",
+    upShieldName: "Khiên Đàn Hồi",
+    upShieldDesc: "Phản xạ thú lại nếu lỡ chạm mép (cứu thua 1 lần)."
   },
   en: {
     animals: {
@@ -192,7 +208,7 @@ const TRANSLATIONS = {
 
 // --- Configuration ---
 const CONFIG = {
-  ANT_SPEED: 55,
+  ANT_SPEED: 32,
   ANT_SIZE: 14,
   ANT_HIT_RADIUS: 38,
   WANDER_STRENGTH: 1.8,
@@ -214,6 +230,7 @@ const STATE = {
   DRAWING: 'drawing',
   PLAYING: 'playing',
   PAUSED: 'paused',
+  SHOP: 'shop',
   GAME_OVER: 'gameover',
 };
 
@@ -1276,13 +1293,20 @@ class Helper {
           animal.wanderTarget = animal.angle;
           animal.startled = true;
           animal.startledTimer = 0.6;
+          // Intercept action & cooldown
           this.actionTimer = 0.45;
           this.catchCooldown = 0.55;
 
-          // Sound & feedback
-          game.sound.playHelperAction();
-          const taunt = this.type === 'cow' ? '🤠 Bò ngoan nào! 👋' : '👨‍🌾 Đã chặn lại! 👋';
-          game.floatingTexts.push(new FloatingText(this.x, this.y - 12, taunt));
+          // Sound (occasional gentle whoosh)
+          if (Math.random() < 0.25) {
+            game.sound.playHelperAction();
+          }
+
+          // Rare speech bubble (only 8% chance) so screen stays clean and quiet
+          if (Math.random() < 0.08 && game.floatingTexts.length < 3) {
+            const taunt = this.type === 'cow' ? '🤠 Quay xe!' : '👨‍🌾 Đã chặn!';
+            game.floatingTexts.push(new FloatingText(this.x, this.y - 12, taunt));
+          }
           break;
         }
       }
@@ -1389,7 +1413,8 @@ class Animal {
     this.y = y;
     this.animalType = animalType;
     this.angle = Math.random() * Math.PI * 2;
-    this.speed = (animalType === 'cow' ? CONFIG.ANT_SPEED * 0.9 : CONFIG.ANT_SPEED) + (Math.random() - 0.5) * 10;
+    this.baseSpeed = (animalType === 'cow' ? 26 : 30) + (Math.random() - 0.5) * 5;
+    this.speed = this.baseSpeed;
     this.wanderStrength = CONFIG.WANDER_STRENGTH;
     this.legPhase = Math.random() * Math.PI * 2;
     this.startled = false;
@@ -1405,7 +1430,7 @@ class Animal {
     this.chewPhase = 0;
     this.sniffPhase = 0;
     this.isChewingGrass = false;
-    this.dropTimer = 4.0 + Math.random() * 7.0;
+    this.dropTimer = 3.5 + Math.random() * 5.5;
   }
 
   update(dt, gameRef = null) {
@@ -1413,6 +1438,11 @@ class Animal {
       this.behaviorState = 'WALK';
       this.startledTimer -= dt;
       if (this.startledTimer <= 0) this.startled = false;
+    }
+
+    // Speed starts calm and scales smoothly with survival time
+    if (gameRef && gameRef.score && !this.startled) {
+      this.speed = this.baseSpeed + Math.min(28, gameRef.score * 0.3);
     }
 
     // Periodic Resource Drop (Milk 🥛, Sugar 🍯, Gold 🪙)
@@ -1485,26 +1515,28 @@ class Animal {
       return;
     }
 
-    // Smooth random walk: pick a new target direction periodically
-    this.wanderTimer -= dt;
-    if (this.wanderTimer <= 0) {
-      this.wanderTimer = 0.5 + Math.random() * 1.5;
-      this.wanderTarget = this.angle + (Math.random() - 0.5) * Math.PI * 0.8;
+    // Smooth random walk: only wander when calm and not startled
+    if (!this.startled) {
+      this.wanderTimer -= dt;
+      if (this.wanderTimer <= 0) {
+        this.wanderTimer = 0.8 + Math.random() * 1.5;
+        this.wanderTarget = this.angle + (Math.random() - 0.5) * Math.PI * 0.4;
+      }
+
+      // Smoothly rotate toward wander target
+      let angleDiff = normalizeAngle(this.wanderTarget - this.angle);
+      this.angle += angleDiff * this.wanderStrength * dt;
+
+      // Occasional gentle turns for natural variety
+      if (Math.random() < CONFIG.BIG_TURN_CHANCE) {
+        this.wanderTarget = this.angle + (Math.random() - 0.5) * Math.PI * 0.5;
+      }
     }
 
-    // Smoothly rotate toward wander target
-    let angleDiff = normalizeAngle(this.wanderTarget - this.angle);
-    this.angle += angleDiff * this.wanderStrength * dt;
-
-    // Occasional big turns for unpredictability
-    if (Math.random() < CONFIG.BIG_TURN_CHANCE) {
-      this.wanderTarget = this.angle + (Math.random() - 0.5) * Math.PI * 1.5;
-    }
-
-    // Startled state (faster movement after redirect)
+    // Startled state (focused inward movement after player tap)
     let currentSpeed = this.speed;
     if (this.startled) {
-      currentSpeed *= 1.6;
+      currentSpeed *= 1.35;
     }
 
     // Move
@@ -1515,12 +1547,18 @@ class Animal {
     this.legPhase += currentSpeed * dt * (this.animalType === 'cow' ? 0.14 : 0.18);
   }
 
-  redirect() {
-    this.angle += Math.PI + (Math.random() - 0.5) * CONFIG.REDIRECT_SPREAD;
+  redirect(targetCenter = null) {
+    if (targetCenter) {
+      // Direct animal firmly towards center of enclosure with minor natural variation (+- 15 degrees)
+      const toCenter = Math.atan2(targetCenter.y - this.y, targetCenter.x - this.x);
+      this.angle = toCenter + (Math.random() - 0.5) * 0.22;
+    } else {
+      this.angle += Math.PI + (Math.random() - 0.5) * 0.22;
+    }
     this.wanderTarget = this.angle;
     this.behaviorState = 'WALK';
     this.startled = true;
-    this.startledTimer = 0.4;
+    this.startledTimer = 0.85; // Stay firmly focused on returning towards center
   }
 
   containsPoint(px, py) {
@@ -1871,6 +1909,13 @@ class Game {
     this.modeDescEl = document.getElementById('mode-desc');
     this.toastMsg = document.getElementById('toast-msg');
 
+    // Quick Buy Elements (In-Game 1-Click Upgrades)
+    this.quickBuyBar = document.getElementById('quick-buy-bar');
+    this.qbBtnHelper = document.getElementById('qb-btn-helper');
+    this.qbBtnMagnet = document.getElementById('qb-btn-magnet');
+    this.qbHelperCost = document.getElementById('qb-helper-cost');
+    this.qbMagnetCost = document.getElementById('qb-magnet-cost');
+
     // Shop Elements
     this.shopBtn = document.getElementById('shop-btn');
     this.shopScreen = document.getElementById('shop-screen');
@@ -2075,8 +2120,15 @@ class Game {
     if (adTagText) adTagText.textContent = t.adTag;
     const adSubtitleText = document.getElementById('ad-subtitle-text');
     if (adSubtitleText) adSubtitleText.textContent = t.adSubtitle;
-    const adPlaceholderText = document.getElementById('ad-placeholder-text');
-    if (adPlaceholderText) adPlaceholderText.textContent = t.adPlaceholder;
+    // Quick Buy labels
+    const qbHelperName = document.getElementById('qb-helper-name');
+    if (qbHelperName) {
+      qbHelperName.textContent = this.animal === 'cow' ? t.qbHelperCow : t.qbHelperAnt;
+    }
+    const qbMagnetName = document.getElementById('qb-magnet-name');
+    if (qbMagnetName) {
+      qbMagnetName.textContent = t.qbMagnet;
+    }
 
     this.updateHUD();
   }
@@ -2237,6 +2289,20 @@ class Game {
       });
     });
 
+    // Quick Buy Bar Button Bindings
+    if (this.qbBtnHelper) {
+      this.qbBtnHelper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.buyUpgrade('helper');
+      });
+    }
+    if (this.qbBtnMagnet) {
+      this.qbBtnMagnet.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.buyUpgrade('magnet');
+      });
+    }
+
     // Buttons & Interactive
     document.getElementById('start-btn').addEventListener('click', () => this.startGame());
     document.getElementById('restart-btn').addEventListener('click', () => this.restartGame());
@@ -2310,31 +2376,29 @@ class Game {
 
   // --- Economy & Farm Upgrades System ---
   loadResources() {
-    try {
-      const data = localStorage.getItem('chan-kien-res-v1');
-      if (data) return JSON.parse(data);
-    } catch (e) {}
     return { milk: 0, sugar: 0 };
   }
 
   saveResources() {
-    try {
-      localStorage.setItem('chan-kien-res-v1', JSON.stringify(this.resources));
-    } catch (e) {}
+    // Runs are fresh each game for optimal roguelite fun
   }
 
   loadUpgrades() {
-    try {
-      const data = localStorage.getItem('chan-kien-upgrades-v1');
-      if (data) return JSON.parse(data);
-    } catch (e) {}
     return { helper: 0, magnet: 0, shield: 0 };
   }
 
   saveUpgrades() {
-    try {
-      localStorage.setItem('chan-kien-upgrades-v1', JSON.stringify(this.upgrades));
-    } catch (e) {}
+    // Runs are fresh each game
+  }
+
+  resetRunEconomy() {
+    this.resources = { milk: 0, sugar: 0, gold: 0 };
+    this.upgrades = { helper: 0, magnet: 0, shield: 0 };
+    this.helpers = [];
+    this.collectibles = [];
+    this.shieldCharges = 0;
+    this.updateHUD();
+    this.updateQuickBuyUI();
   }
 
   initHelpers() {
@@ -2343,7 +2407,7 @@ class Game {
     if (count > 0 && this.enclosure.length >= 3) {
       for (let i = 0; i < count; i++) {
         const h = new Helper(i, count, this.animal);
-        if (count === 3) h.speed = 140; // Speed boost when helper is maxed
+        h.speed = 105 + (i % 4) * 15; // Balanced, energetic patrol
         this.helpers.push(h);
       }
     }
@@ -2354,7 +2418,6 @@ class Game {
     const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
     const icon = this.animal === 'cow' ? '🥛' : '🍯';
     this.resources[resKey] = (this.resources[resKey] || 0) + item.value;
-    this.saveResources();
     this.sound.playCollect();
 
     // Floating score popup + bump effect on HUD
@@ -2365,19 +2428,22 @@ class Game {
       this.resourceDisplay.classList.add('bump');
     }
     this.updateHUD();
+    this.updateQuickBuyUI();
   }
 
   openShop() {
     this.sound.playClick();
-    this.previousState = this.state;
-    this.setState(STATE.PAUSED);
+    if (this.state === STATE.PLAYING || this.state === STATE.DRAWING || this.state === STATE.PAUSED) {
+      this.previousState = this.state;
+    } else {
+      this.previousState = STATE.PLAYING;
+    }
     this.updateShopUI();
-    if (this.shopScreen) this.shopScreen.classList.add('visible');
+    this.setState(STATE.SHOP);
   }
 
   closeShop() {
     this.sound.playClick();
-    if (this.shopScreen) this.shopScreen.classList.remove('visible');
     this.setState(this.previousState || STATE.PLAYING);
   }
 
@@ -2385,11 +2451,11 @@ class Game {
     const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
     const curRes = this.resources[resKey] || 0;
     const costs = {
-      helper: [5, 15, 30],
+      helper: [5, 10, 18, 30, 45, 65, 90, 120, 160, 210],
       magnet: [8, 20],
       shield: [12]
     };
-    const maxLvls = { helper: 3, magnet: 2, shield: 1 };
+    const maxLvls = { helper: 10, magnet: 2, shield: 1 };
     const curLvl = this.upgrades[type] || 0;
     if (curLvl >= maxLvls[type]) return;
 
@@ -2398,37 +2464,93 @@ class Game {
       this.resources[resKey] -= cost;
       this.upgrades[type] = curLvl + 1;
       if (type === 'shield') this.shieldCharges = 1;
-      this.saveResources();
-      this.saveUpgrades();
       this.initHelpers();
       this.sound.playUpgrade();
       this.updateHUD();
-      this.updateShopUI();
-      this.showToast(`🎉 Đã nâng cấp ${type.toUpperCase()} lên cấp ${this.upgrades[type]}!`);
+      this.updateQuickBuyUI();
+
+      const label = type === 'helper' 
+        ? (this.animal === 'cow' ? '🤠 Cao Bồi' : '👨‍🌾 Nông Dân') 
+        : (type === 'magnet' ? '🧲 Nam Châm' : '🛡️ Khiên');
+      this.floatingTexts.push(new FloatingText(this.centroid.x, this.centroid.y, `+1 ${label}!`));
+      this.showToast(`🎉 Đã mở khóa ${label} cấp ${this.upgrades[type]}!`);
     } else {
-      this.showToast(`❌ Không đủ tài nguyên! Cần ${cost} ${resKey === 'milk' ? '🥛' : '🍯'}`);
+      this.showToast(`❌ Cần ${cost} ${resKey === 'milk' ? '🥛' : '🍯'} để mở khóa!`);
     }
   }
 
-  updateShopUI() {
+  updateQuickBuyUI() {
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
     const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
     const icon = this.animal === 'cow' ? '🥛' : '🍯';
     const curRes = this.resources[resKey] || 0;
 
-    const shopResIcon = document.getElementById('shop-res-icon');
-    if (shopResIcon) shopResIcon.textContent = icon;
+    // Helper button
+    const qbHelperName = document.getElementById('qb-helper-name');
+    if (qbHelperName) {
+      qbHelperName.textContent = this.animal === 'cow' ? t.qbHelperCow : t.qbHelperAnt;
+    }
+    const qbMagnetName = document.getElementById('qb-magnet-name');
+    if (qbMagnetName) {
+      qbMagnetName.textContent = t.qbMagnet;
+    }
+
+    const hLvl = this.upgrades.helper || 0;
+    const hCosts = [5, 10, 18, 30, 45, 65, 90, 120, 160, 210];
+    if (this.qbBtnHelper && this.qbHelperCost) {
+      if (hLvl >= hCosts.length) {
+        this.qbHelperCost.textContent = t.shopMaxed;
+        this.qbBtnHelper.className = 'quick-buy-btn glass-panel maxed';
+      } else {
+        const cost = hCosts[hLvl];
+        this.qbHelperCost.textContent = `${cost} ${icon}`;
+        if (curRes >= cost) {
+          this.qbBtnHelper.className = 'quick-buy-btn glass-panel can-buy';
+        } else {
+          this.qbBtnHelper.className = 'quick-buy-btn glass-panel';
+        }
+      }
+    }
+
+    // Magnet button
+    const mLvl = this.upgrades.magnet || 0;
+    const mCosts = [8, 20];
+    if (this.qbBtnMagnet && this.qbMagnetCost) {
+      if (mLvl >= mCosts.length) {
+        this.qbMagnetCost.textContent = t.shopMaxed;
+        this.qbBtnMagnet.className = 'quick-buy-btn glass-panel maxed';
+      } else {
+        const cost = mCosts[mLvl];
+        this.qbMagnetCost.textContent = `${cost} ${icon}`;
+        if (curRes >= cost) {
+          this.qbBtnMagnet.className = 'quick-buy-btn glass-panel can-buy';
+        } else {
+          this.qbBtnMagnet.className = 'quick-buy-btn glass-panel';
+        }
+      }
+    }
+  }
+
+  updateShopUI() {
+    const t = TRANSLATIONS[this.lang] || TRANSLATIONS.vi;
+    const resKey = this.animal === 'cow' ? 'milk' : 'sugar';
+    const icon = this.animal === 'cow' ? '🥛' : '🍯';
+    const curRes = this.resources[resKey] || 0;
+
+    const shopTitle = document.getElementById('shop-title');
+    if (shopTitle) shopTitle.textContent = t.shopTitle;
 
     const balanceVal = document.getElementById('shop-balance-val');
     if (balanceVal) balanceVal.textContent = `${curRes} ${icon}`;
 
     // Helper upgrade card
     const hLvl = this.upgrades.helper || 0;
-    const hCosts = [5, 15, 30];
+    const hCosts = [5, 10, 18, 30, 45, 65, 90, 120, 160, 210];
     const upHelperLvl = document.getElementById('up-helper-lvl');
-    if (upHelperLvl) upHelperLvl.textContent = `Cấp: ${hLvl}/3`;
+    if (upHelperLvl) upHelperLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${hLvl}/${hCosts.length}`;
     if (this.btnBuyHelper) {
-      if (hLvl >= 3) {
-        this.btnBuyHelper.textContent = 'ĐÃ TỐI ĐA ⭐';
+      if (hLvl >= hCosts.length) {
+        this.btnBuyHelper.textContent = t.shopMaxed;
         this.btnBuyHelper.className = 'btn-buy maxed';
         this.btnBuyHelper.disabled = true;
       } else {
@@ -2443,10 +2565,10 @@ class Game {
     const mLvl = this.upgrades.magnet || 0;
     const mCosts = [8, 20];
     const upMagnetLvl = document.getElementById('up-magnet-lvl');
-    if (upMagnetLvl) upMagnetLvl.textContent = `Cấp: ${mLvl}/2`;
+    if (upMagnetLvl) upMagnetLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${mLvl}/2`;
     if (this.btnBuyMagnet) {
       if (mLvl >= 2) {
-        this.btnBuyMagnet.textContent = 'ĐÃ TỐI ĐA ⭐';
+        this.btnBuyMagnet.textContent = t.shopMaxed;
         this.btnBuyMagnet.className = 'btn-buy maxed';
         this.btnBuyMagnet.disabled = true;
       } else {
@@ -2461,10 +2583,10 @@ class Game {
     const sLvl = this.upgrades.shield || 0;
     const sCosts = [12];
     const upShieldLvl = document.getElementById('up-shield-lvl');
-    if (upShieldLvl) upShieldLvl.textContent = `Cấp: ${sLvl}/1`;
+    if (upShieldLvl) upShieldLvl.textContent = `${this.lang === 'en' ? 'Level' : 'Cấp'}: ${sLvl}/1`;
     if (this.btnBuyShield) {
       if (sLvl >= 1) {
-        this.btnBuyShield.textContent = 'ĐÃ SẴN SÀNG 🛡️';
+        this.btnBuyShield.textContent = t.shopReady;
         this.btnBuyShield.className = 'btn-buy maxed';
         this.btnBuyShield.disabled = true;
       } else {
@@ -2585,26 +2707,48 @@ class Game {
     }
   }
 
-  getCanvasPos(clientX, clientY) {
+  getSafeDrawingBounds() {
+    const isMobile = this.width <= 768;
+    const topMargin = isMobile ? 96 : 115;   // Below HUD & Quick Buy bar with comfortable padding
+    const bottomMargin = isMobile ? 78 : 88; // Above support button with comfortable padding
+    const sideMargin = isMobile ? 14 : 22;
+    return {
+      minX: sideMargin,
+      maxX: this.width - sideMargin,
+      minY: topMargin,
+      maxY: this.height - bottomMargin,
+      width: this.width - sideMargin * 2,
+      height: this.height - topMargin - bottomMargin
+    };
+  }
+
+  getCanvasPos(clientX, clientY, clampToSafeZone = false) {
     const rect = this.canvas.getBoundingClientRect();
-    return { x: clientX - rect.left, y: clientY - rect.top };
+    let x = clientX - rect.left;
+    let y = clientY - rect.top;
+    if (clampToSafeZone) {
+      const b = this.getSafeDrawingBounds();
+      x = Math.max(b.minX, Math.min(b.maxX, x));
+      y = Math.max(b.minY, Math.min(b.maxY, y));
+    }
+    return { x, y };
   }
 
   // --- Input Handlers ---
   onPointerDown(clientX, clientY) {
-    const pos = this.getCanvasPos(clientX, clientY);
-
     if (this.state === STATE.DRAWING) {
+      const pos = this.getCanvasPos(clientX, clientY, true);
       this.isDrawing = true;
       this.currentPath = [pos];
     } else if (this.state === STATE.PLAYING) {
+      const pos = this.getCanvasPos(clientX, clientY, false);
       this.handleTap(pos.x, pos.y);
     }
   }
 
   onPointerMove(clientX, clientY) {
     if (!this.isDrawing || this.state !== STATE.DRAWING) return;
-    const pos = this.getCanvasPos(clientX, clientY);
+    const pos = this.getCanvasPos(clientX, clientY, true);
     const last = this.currentPath[this.currentPath.length - 1];
     if (dist(pos.x, pos.y, last.x, last.y) >= CONFIG.MIN_DRAW_DIST) {
       this.currentPath.push(pos);
@@ -2635,6 +2779,60 @@ class Game {
     }
   }
 
+  drawSafeDrawingZone(timestamp) {
+    if (this.state !== STATE.DRAWING) return;
+    const ctx = this.ctx;
+    const b = this.getSafeDrawingBounds();
+    const cornerSize = 16;
+
+    ctx.save();
+    
+    // Subtle background tint for the safe pasture zone
+    ctx.fillStyle = 'rgba(0, 255, 136, 0.018)';
+    ctx.fillRect(b.minX, b.minY, b.width, b.height);
+
+    // Dashed guide border
+    ctx.strokeStyle = 'rgba(0, 255, 136, 0.32)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([8, 8]);
+    ctx.strokeRect(b.minX, b.minY, b.width, b.height);
+
+    // Crisp neon corner brackets
+    ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(0, 243, 255, 0.75)';
+    ctx.lineWidth = 2.5;
+
+    // Top-left
+    ctx.beginPath();
+    ctx.moveTo(b.minX, b.minY + cornerSize);
+    ctx.lineTo(b.minX, b.minY);
+    ctx.lineTo(b.minX + cornerSize, b.minY);
+    ctx.stroke();
+
+    // Top-right
+    ctx.beginPath();
+    ctx.moveTo(b.maxX - cornerSize, b.minY);
+    ctx.lineTo(b.maxX, b.minY);
+    ctx.lineTo(b.maxX, b.minY + cornerSize);
+    ctx.stroke();
+
+    // Bottom-left
+    ctx.beginPath();
+    ctx.moveTo(b.minX, b.maxY - cornerSize);
+    ctx.lineTo(b.minX, b.maxY);
+    ctx.lineTo(b.minX + cornerSize, b.maxY);
+    ctx.stroke();
+
+    // Bottom-right
+    ctx.beginPath();
+    ctx.moveTo(b.maxX - cornerSize, b.maxY);
+    ctx.lineTo(b.maxX, b.maxY);
+    ctx.lineTo(b.maxX, b.maxY - cornerSize);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
   findSafeCenter() {
     const xs = this.enclosure.map(p => p.x);
     const ys = this.enclosure.map(p => p.y);
@@ -2659,7 +2857,7 @@ class Game {
     // 2. Check Animal redirection tap
     for (const ant of this.ants) {
       if (!ant.escaped && ant.containsPoint(x, y)) {
-        ant.redirect();
+        ant.redirect(this.centroid);
         this.ripples.push(new Ripple(x, y));
         
         // Random funny / trolling phrase popup
@@ -2711,6 +2909,7 @@ class Game {
     this.sound.init();
     this.sound.resume();
     this.sound.playClick();
+    this.resetRunEconomy();
     this.setState(STATE.DRAWING);
   }
 
@@ -2718,8 +2917,6 @@ class Game {
     this.sound.playClick();
     this.enclosure = [];
     this.ants = [];
-    this.collectibles = [];
-    this.helpers = [];
     this.currentPath = [];
     this.ripples = [];
     this.particles = [];
@@ -2731,6 +2928,7 @@ class Game {
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
+    this.resetRunEconomy();
     this.spawnFlora();
     this.createMenuAnts();
     this.setState(STATE.DRAWING);
@@ -2740,8 +2938,6 @@ class Game {
     this.sound.playClick();
     this.enclosure = [];
     this.ants = [];
-    this.collectibles = [];
-    this.helpers = [];
     this.currentPath = [];
     this.ripples = [];
     this.particles = [];
@@ -2753,6 +2949,7 @@ class Game {
     this.antIdCounter = 0;
     this.gameOverFlash = 0;
     this.gameOverDelay = 0;
+    this.resetRunEconomy();
     this.spawnFlora();
     this.createMenuAnts();
     this.setState(STATE.MENU);
@@ -2763,7 +2960,7 @@ class Game {
     this.state = newState;
     this.updateUIVisibility();
 
-    if (newState === STATE.PLAYING && prevState !== STATE.PAUSED) {
+    if (newState === STATE.PLAYING && prevState !== STATE.PAUSED && prevState !== STATE.SHOP) {
       this.score = 0;
       this.currentLevel = 1;
       this.levelTimer = 0;
@@ -2825,13 +3022,19 @@ class Game {
   updateUIVisibility() {
     this.startScreen.classList.toggle('visible', this.state === STATE.MENU);
     this.pauseScreen.classList.toggle('visible', this.state === STATE.PAUSED);
+    if (this.shopScreen) {
+      this.shopScreen.classList.toggle('visible', this.state === STATE.SHOP);
+    }
+    if (this.quickBuyBar) {
+      this.quickBuyBar.classList.toggle('visible', this.state === STATE.PLAYING);
+    }
     this.gameOverScreen.classList.toggle('visible',
       this.state === STATE.GAME_OVER && this.gameOverDelay <= 0);
-    this.hud.classList.toggle('visible', this.state === STATE.PLAYING || this.state === STATE.PAUSED);
+    this.hud.classList.toggle('visible', this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.SHOP);
     
     // In-game controls (pause & restart)
     if (this.inGameControls) {
-      this.inGameControls.classList.toggle('visible', this.state === STATE.PLAYING || this.state === STATE.DRAWING);
+      this.inGameControls.classList.toggle('visible', this.state === STATE.PLAYING || this.state === STATE.DRAWING || this.state === STATE.PAUSED || this.state === STATE.SHOP);
     }
 
     // Add ant FAB only visible in Free Mode
@@ -2862,6 +3065,7 @@ class Game {
       const count = this.resources[resKey] || 0;
       this.resourceDisplay.textContent = `${icon} ${count}`;
     }
+    this.updateQuickBuyUI();
   }
 
   formatTime(sec) {
@@ -3121,6 +3325,11 @@ class Game {
       fl.draw(this.ctx);
     }
 
+    // --- 1.2 DRAWING: Safe drawing zone boundaries ---
+    if (this.state === STATE.DRAWING) {
+      this.drawSafeDrawingZone(timestamp);
+    }
+
     // --- 1.5 Draw Collectibles (Milk 🥛, Sugar 🍯, Gold 🪙) ---
     for (const col of this.collectibles) {
       col.draw(this.ctx);
@@ -3139,14 +3348,14 @@ class Game {
     }
 
     // --- 3.5 DRAW HELPERS on the fence perimeter ---
-    if (this.state === STATE.PLAYING || this.state === STATE.PAUSED) {
+    if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.SHOP) {
       for (const h of this.helpers) {
         h.draw(this.ctx);
       }
     }
 
-    // --- 4. PLAYING / PAUSED / GAME OVER: ants & effects ---
-    if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.GAME_OVER) {
+    // --- 4. PLAYING / PAUSED / SHOP / GAME OVER: ants & effects ---
+    if (this.state === STATE.PLAYING || this.state === STATE.PAUSED || this.state === STATE.SHOP || this.state === STATE.GAME_OVER) {
       for (const ant of this.ants) {
         ant.draw(this.ctx);
       }
