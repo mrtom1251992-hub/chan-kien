@@ -641,12 +641,15 @@ class Ripple {
   draw(ctx) {
     if (!this.alive) return;
     ctx.save();
-    ctx.strokeStyle = `rgba(0, 255, 136, ${this.alpha})`;
-    ctx.lineWidth = 2.5;
-    ctx.shadowColor = CONFIG.NEON_COLOR;
-    ctx.shadowBlur = 8;
+    // Lightweight dual stroke for neon glow without heavy GPU blur
+    ctx.strokeStyle = `rgba(0, 255, 136, ${this.alpha * 0.4})`;
+    ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = `rgba(0, 255, 136, ${this.alpha})`;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
     ctx.restore();
   }
@@ -680,8 +683,6 @@ class Particle {
     if (!this.alive) return;
     ctx.save();
     ctx.fillStyle = `rgba(255, 77, 106, ${this.alpha})`;
-    ctx.shadowColor = '#ff4d6a';
-    ctx.shadowBlur = 6;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
@@ -737,11 +738,10 @@ class FloatingText {
     const boxW = textMetrics.width + 16;
     const boxH = 24;
 
-    // Pill badge background
+    // Pill badge background with crisp neon border (no heavy shadowBlur)
     ctx.fillStyle = 'rgba(10, 15, 45, 0.9)';
     ctx.strokeStyle = '#00f3ff';
     ctx.lineWidth = 1.5;
-    ctx.shadowColor = '#00f3ff';
     ctx.shadowBlur = 10;
 
     ctx.beginPath();
@@ -1757,17 +1757,26 @@ class Game {
 
   // --- Canvas Setup ---
   resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
+    // Cap devicePixelRatio to 1.75 on mobile to prevent rendering 20+ megapixels per frame
+    const maxDpr = isMobile ? 1.75 : 2.0;
+    const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
     const w = window.innerWidth;
     const h = window.innerHeight;
-    this.canvas.width = w * dpr;
-    this.canvas.height = h * dpr;
+    this.canvas.width = Math.round(w * dpr);
+    this.canvas.height = Math.round(h * dpr);
     this.canvas.style.width = w + 'px';
     this.canvas.style.height = h + 'px';
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.scale(dpr, dpr);
     this.width = w;
     this.height = h;
+
+    // Cache background gradient (avoids creating 60 gradient objects per second)
+    this.bgGradient = this.ctx.createLinearGradient(0, 0, this.width * 0.3, this.height);
+    this.bgGradient.addColorStop(0, '#080c22');
+    this.bgGradient.addColorStop(0.4, '#0b1030');
+    this.bgGradient.addColorStop(1, '#150a28');
   }
 
   createBgPattern() {
@@ -1913,6 +1922,13 @@ class Game {
 
     // Prevent context menu on long press
     this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // Auto-pause and save battery/CPU when tab/app is in background
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && this.state === STATE.PLAYING) {
+        this.pauseGame();
+      }
+    });
   }
 
   pauseGame() {
@@ -2301,17 +2317,12 @@ class Game {
   // ============================================
 
   drawBackground() {
-    const ctx = this.ctx;
-    const grad = ctx.createLinearGradient(0, 0, this.width * 0.3, this.height);
-    grad.addColorStop(0, '#080c22');
-    grad.addColorStop(0.4, '#0b1030');
-    grad.addColorStop(1, '#150a28');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.fillStyle = this.bgGradient || '#0b1030';
+    this.ctx.fillRect(0, 0, this.width, this.height);
 
     if (this.bgPattern) {
-      ctx.fillStyle = this.bgPattern;
-      ctx.fillRect(0, 0, this.width, this.height);
+      this.ctx.fillStyle = this.bgPattern;
+      this.ctx.fillRect(0, 0, this.width, this.height);
     }
   }
 
@@ -2320,19 +2331,17 @@ class Game {
     const path = this.state === STATE.DRAWING ? this.currentPath : this.enclosure;
     if (path.length < 2) return;
 
-    const pulse = Math.sin(timestamp * 0.003) * 4;
     const isGameOver = this.state === STATE.GAME_OVER;
+    const mainColor = isGameOver ? '#ff4d6a' : CONFIG.NEON_COLOR;
+    const glowColor = isGameOver ? 'rgba(255, 77, 106, 0.28)' : 'rgba(0, 255, 136, 0.28)';
 
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // Outer glow
-    ctx.strokeStyle = isGameOver ? '#ff4d6a' : CONFIG.NEON_COLOR;
-    ctx.lineWidth = 3;
-    ctx.shadowColor = isGameOver ? '#ff4d6a' : CONFIG.NEON_COLOR;
-    ctx.shadowBlur = CONFIG.NEON_GLOW + pulse;
-
+    // 1. Fast, beautiful outer glow pass (without expensive GPU Gaussian blur)
+    ctx.strokeStyle = glowColor;
+    ctx.lineWidth = 7;
     ctx.beginPath();
     ctx.moveTo(path[0].x, path[0].y);
     for (let i = 1; i < path.length; i++) {
@@ -2343,13 +2352,17 @@ class Game {
     }
     ctx.stroke();
 
-    // Inner bright line
-    ctx.shadowBlur = 4;
-    ctx.lineWidth = 1.2;
+    // 2. Main crisp neon line
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // 3. Inner bright highlight line
+    ctx.lineWidth = 1;
     ctx.strokeStyle = isGameOver ? '#ffaabb' : '#bbffdd';
     ctx.stroke();
 
-    // Subtle fill
+    // 4. Subtle inner fill
     if (this.state !== STATE.DRAWING && this.enclosure.length > 0) {
       const fillColor = isGameOver ? 'rgba(255, 77, 106, 0.04)' : 'rgba(0, 255, 136, 0.025)';
       ctx.fillStyle = fillColor;
